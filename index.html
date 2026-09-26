@@ -3,95 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Purchasing & Procurement System — High Performance Visual Hub</title>
-  <!-- Tailwind CSS via CDN -->
+  <title>ALU-GLASS PROCUREMENT | Management Hub</title>
+  
+  <!-- Tailwind CSS v3 Engine -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
-          screens: {
-            'xs': '420px',
-            '3xl': '1600px'
-          },
           colors: {
             brand: {
-              50: '#f0f7ff',
-              100: '#e0effe',
-              500: '#0284c7',
-              600: '#0369a1',
-              700: '#075985',
-              800: '#0c4a6e',
-              900: '#082f49',
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
             }
           }
         }
       }
     }
   </script>
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Complete Aesthetic & Resilience Styling Layer -->
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-    
     :root {
       --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --bg-dark: #0f172a;
+      --bg-darker: #020617;
     }
-
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-font-smoothing: antialiased;
       -webkit-tap-highlight-color: transparent;
       text-rendering: optimizeLegibility;
+      background-color: #f8fafc;
+      color: #0f172a;
     }
-
     .mono { font-family: 'JetBrains Mono', monospace; }
-
+    
+    /* Hardware acceleration & layout containment to stop browser reflow lag */
     .card-contain {
       contain: layout style paint;
       transform: translateZ(0);
       will-change: transform, box-shadow;
-      transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    
     @media (hover: hover) and (pointer: fine) {
       .card-contain:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px -6px rgba(15, 23, 42, 0.12);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.12), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
       }
     }
-
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
+    
+    /* Dedicated aesthetic overrides for maximum visual polish */
+    .app-header {
+      background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e293b 100%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.25);
     }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
-
-    .pb-safe {
-      padding-bottom: calc(4.5rem + var(--safe-bottom));
+    .glass-pill:hover {
+      background: rgba(255, 255, 255, 0.10);
+      border-color: rgba(255, 255, 255, 0.20);
     }
+    .btn-gradient-primary {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+    }
+    .btn-gradient-primary:hover {
+      background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.45);
+    }
+    .btn-gradient-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
+    }
+    .btn-gradient-success:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.45);
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .pb-safe { padding-bottom: calc(4.5rem + var(--safe-bottom)); }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col pb-safe md:pb-6">
+<body class="antialiased min-h-screen flex flex-col pb-safe md:pb-6">
 
-  <!-- TOP APP NAV -->
-  <header class="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40 shadow-xs">
+  <!-- TOP APP BAR -->
+  <header class="app-header text-white sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
         
         <!-- Logo & Branding -->
         <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20 shrink-0">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/25 shrink-0 border border-white/20">
             <i data-lucide="layers" class="w-4 h-4 sm:w-5 sm:h-5 text-white"></i>
           </div>
           <div class="min-w-0">
             <div class="flex items-center gap-1.5 sm:gap-2">
-              <span class="font-bold tracking-tight text-white text-xs sm:text-sm lg:text-base truncate">ALU-GLASS PROCUREMENT</span>
-              <span class="hidden xs:inline-flex text-[9px] sm:text-[10px] uppercase font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30 px-1.5 py-0.5 rounded-full shrink-0">Live Hub</span>
+              <span class="font-extrabold tracking-tight text-white text-xs sm:text-sm lg:text-base truncate">ALU-GLASS PROCUREMENT</span>
+              <span class="hidden xs:inline-flex text-[9px] sm:text-[10px] uppercase font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2 py-0.5 rounded-full shrink-0 shadow-xs">Live Hub</span>
             </div>
-            <p class="text-[10px] sm:text-xs text-slate-400 truncate hidden xs:block">Architectural Fenestration &amp; Material Operations</p>
+            <p class="text-[10px] sm:text-xs text-slate-400 truncate hidden xs:block font-medium">Architectural Fenestration &amp; Material Operations</p>
           </div>
         </div>
 
@@ -99,42 +130,42 @@
         <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
           
           <!-- Cloud Sync Badge -->
-          <button onclick="openModal('cloud-config-modal')" id="cloud-status-badge" title="Click to Configure Cloud Database Sync" class="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[11px] text-slate-300 transition cursor-pointer active:scale-95">
-            <span id="cloud-pulse-dot" class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
-            <span id="cloud-sync-text" class="font-medium text-slate-200">Local Storage</span>
-            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-slate-700 pl-2">Offline</span>
+          <button onclick="openModal('cloud-config-modal')" id="cloud-status-badge" title="View Cloud Database Instance Details" class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 glass-pill rounded-xl text-[11px] text-slate-200 transition cursor-pointer active:scale-95 shadow-xs">
+            <span id="cloud-pulse-dot" class="w-2 h-2 rounded-full bg-amber-400 shrink-0 shadow-xs"></span>
+            <span id="cloud-sync-text" class="font-semibold text-slate-100">Connecting...</span>
+            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-white/10 pl-2">default</span>
           </button>
 
-          <!-- Large screen KPI telemetry -->
-          <div class="hidden lg:flex items-center gap-5 border-l border-slate-800 pl-5 text-xs mr-1">
+          <!-- Large Screen KPI Telemetry -->
+          <div class="hidden lg:flex items-center gap-5 border-l border-slate-700/60 pl-5 text-xs mr-1">
             <div>
-              <span class="text-slate-400 block text-[10px] uppercase">Active SKUs</span>
-              <span class="font-semibold text-slate-100 mono" id="sku-count-header">8</span>
+              <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Active SKUs</span>
+              <span class="font-bold text-slate-100 mono text-sm" id="sku-count-header">--</span>
             </div>
             <div>
-              <span class="text-slate-400 block text-[10px] uppercase">Vendors</span>
-              <span class="font-semibold text-emerald-400 mono" id="vendor-count-header">6 Active</span>
+              <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Vendors</span>
+              <span class="font-bold text-emerald-400 mono text-sm" id="vendor-count-header">--</span>
             </div>
             <div>
-              <span class="text-slate-400 block text-[10px] uppercase">Open PO Value</span>
-              <span class="font-semibold text-sky-400 mono" id="po-value-header">$11,302.50</span>
+              <span class="text-slate-400 block text-[9px] uppercase font-bold tracking-wider">Open PO Value</span>
+              <span class="font-bold text-sky-400 mono text-sm" id="po-value-header">$--</span>
             </div>
           </div>
           
           <!-- Landed Cost Tool -->
-          <button onclick="openModal('quick-calc-modal')" aria-label="Open Landed Cost Calculator" class="p-2 sm:px-3 sm:py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 flex items-center gap-1.5 transition active:scale-95">
+          <button onclick="openModal('quick-calc-modal')" aria-label="Open Landed Cost Calculator" class="p-2 sm:px-3 sm:py-2 glass-pill text-slate-200 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition active:scale-95 shadow-xs">
             <i data-lucide="calculator" class="w-4 h-4 text-sky-400"></i>
             <span class="hidden sm:inline">Landed Cost</span>
           </button>
 
-          <!-- Primary + New Entry Action -->
-          <button onclick="openNewEntryModal('material')" aria-label="Create New Entry" class="px-2.5 py-2 sm:px-3.5 sm:py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition shadow-xs active:scale-95">
+          <!-- Primary Entry Action -->
+          <button onclick="openNewEntryModal('material')" aria-label="Create New Entry" class="px-2.5 py-2 sm:px-3.5 sm:py-2 btn-gradient-success text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition active:scale-95">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
             <span class="inline">+ New Entry</span>
           </button>
 
-          <!-- Force Push to Cloud / Reset Button -->
-          <button onclick="forceSyncAllToCloud()" title="Upload / Sync All Records to Firebase Cloud" aria-label="Push All to Cloud" class="p-2 text-sky-400 hover:text-white hover:bg-slate-800 rounded-lg transition active:scale-95">
+          <!-- Force Direct Push to Cloud -->
+          <button onclick="window.forceSyncAllToCloud()" title="Force Upload All Records to Firestore instance 'default'" aria-label="Force Sync to Cloud" class="p-2 text-sky-400 hover:text-white glass-pill rounded-xl transition active:scale-95">
             <i data-lucide="cloud-upload" class="w-4 h-4"></i>
           </button>
         </div>
@@ -144,31 +175,31 @@
   </header>
 
   <!-- VIEW NAV & SEARCH FILTER BAR -->
-  <div class="bg-white border-b border-slate-200 shadow-xs sticky top-14 sm:top-16 z-30">
+  <div class="bg-white border-b border-slate-200 sticky top-14 sm:top-16 z-30 shadow-xs">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
         
         <!-- Gallery Mode Navigation Tabs -->
-        <nav class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full md:w-auto overflow-x-auto no-scrollbar text-xs font-medium touch-pan-x" aria-label="Gallery Views">
-          <button onclick="switchGallery('materials')" id="tab-materials" class="tab-btn active-tab px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 bg-white text-slate-900 shadow-xs shrink-0 transition whitespace-nowrap">
+        <nav class="flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl w-full md:w-auto overflow-x-auto no-scrollbar text-xs font-medium touch-pan-x border border-slate-200/60" aria-label="Gallery Views">
+          <button onclick="switchGallery('materials')" id="tab-materials" class="tab-btn active-tab px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 bg-white text-slate-900 shadow-sm shrink-0 transition whitespace-nowrap font-bold">
             <i data-lucide="box" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600"></i>
             <span>Materials</span>
-            <span class="bg-sky-100 text-sky-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="mat-count-badge">8</span>
+            <span class="bg-sky-100 text-sky-700 px-1.5 py-0.2 rounded-full text-[10px] font-bold" id="mat-count-badge">0</span>
           </button>
           
-          <button onclick="switchGallery('suppliers')" id="tab-suppliers" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
+          <button onclick="switchGallery('suppliers')" id="tab-suppliers" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap font-medium">
             <i data-lucide="building-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500"></i>
             <span>Vendors</span>
-            <span class="bg-slate-200 text-slate-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="sup-count-badge">6</span>
+            <span class="bg-slate-200 text-slate-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="sup-count-badge">0</span>
           </button>
           
-          <button onclick="switchGallery('pipeline')" id="tab-pipeline" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
+          <button onclick="switchGallery('pipeline')" id="tab-pipeline" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap font-medium">
             <i data-lucide="truck" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500"></i>
             <span>Logistics &amp; POs</span>
-            <span class="bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="po-count-badge">4</span>
+            <span class="bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="po-count-badge">0</span>
           </button>
 
-          <button onclick="switchGallery('sop')" id="tab-sop" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
+          <button onclick="switchGallery('sop')" id="tab-sop" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap font-medium">
             <i data-lucide="shield-check" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500"></i>
             <span>SOP Rules</span>
           </button>
@@ -176,13 +207,12 @@
 
         <!-- Search & Filter Controls -->
         <div class="flex items-center gap-2 w-full md:w-auto">
-          <div class="relative flex-1 md:w-60 lg:w-72">
-            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
-            <input type="text" id="gallery-search" oninput="filterCards()" placeholder="Search code, specs, vendors..." class="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 bg-slate-50 hover:bg-slate-100 focus:bg-white text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition">
+          <div class="relative flex-1 md:w-64 lg:w-72">
+            <input type="text" id="gallery-search" oninput="filterCards()" placeholder="Search code, specs, vendors..." class="w-full pl-3 pr-3 py-1.5 sm:py-2 bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition shadow-inner">
           </div>
 
           <div class="relative shrink-0">
-            <select id="category-filter" onchange="filterCards()" aria-label="Filter by material category" class="bg-slate-50 border border-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 sm:py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
+            <select id="category-filter" onchange="filterCards()" aria-label="Filter by material category" class="bg-slate-50 border border-slate-200 text-xs font-semibold rounded-xl px-2.5 py-1.5 sm:py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500/20 shadow-xs">
               <option value="all">All Categories</option>
               <option value="aluminum">Aluminum</option>
               <option value="glass">Glass</option>
@@ -201,29 +231,29 @@
 
     <!-- 1. MATERIALS CATALOG GALLERY -->
     <section id="gallery-materials" class="space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-          <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+          <h2 class="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-2">
             <span>Material Inventory &amp; Specification Cards</span>
-            <span class="text-[11px] font-normal text-slate-500 hidden sm:inline">(BOM Driven Items)</span>
+            <span class="text-[11px] font-semibold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200 hidden sm:inline">BOM Driven Items</span>
           </h2>
           <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Real-time balances against Reorder Point (ROP), packaging profiles, and standard unit costs.</p>
         </div>
         
         <div class="flex items-center justify-between sm:justify-end gap-2">
-          <div class="flex items-center gap-1.5 text-[10px] sm:text-xs">
-            <span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+          <div class="flex items-center gap-1.5 text-[10px] sm:text-xs font-medium">
+            <span class="inline-flex items-center gap-1 text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> In Stock
             </span>
-            <span class="inline-flex items-center gap-1 text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+            <span class="inline-flex items-center gap-1 text-amber-900 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">
               <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Low
             </span>
-            <span class="inline-flex items-center gap-1 text-rose-800 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+            <span class="inline-flex items-center gap-1 text-rose-900 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">
               <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Reorder
             </span>
           </div>
 
-          <button onclick="openNewEntryModal('material')" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition shadow-xs shrink-0">
+          <button onclick="openNewEntryModal('material')" class="btn-gradient-primary text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 transition shadow-xs shrink-0 active:scale-95">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
             <span class="hidden xs:inline">Add SKU</span>
           </button>
@@ -235,15 +265,15 @@
 
     <!-- 2. VENDOR DIRECTORY GALLERY -->
     <section id="gallery-suppliers" class="space-y-4 hidden">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-          <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+          <h2 class="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-2">
             <span>Approved Supplier List (ASL) Gallery</span>
-            <span class="text-[11px] font-normal text-slate-500 hidden sm:inline">(100-Point Scorecard)</span>
+            <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 hidden sm:inline">100-Point Scorecard</span>
           </h2>
           <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Weighted across Price (25%), Quality (25%), OTIF Delivery (20%), Specs (15%), Credit (10%), and Service (5%).</p>
         </div>
-        <button onclick="openNewEntryModal('supplier')" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shadow-xs self-start sm:self-auto">
+        <button onclick="openNewEntryModal('supplier')" class="btn-gradient-primary text-white text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-xs self-start sm:self-auto active:scale-95">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i>
           <span>Register Vendor</span>
         </button>
@@ -254,20 +284,20 @@
 
     <!-- 3. OPEN PO & LOGISTICS PIPELINE GALLERY -->
     <section id="gallery-pipeline" class="space-y-4 hidden">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-          <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+          <h2 class="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-2">
             <span>Open Purchase Orders &amp; Expediting Cards</span>
           </h2>
           <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Real-time status progression, overdue delivery flags, and factory dock checkpoints.</p>
         </div>
         <div class="flex items-center gap-2 self-start sm:self-auto">
-          <button onclick="openNewEntryModal('po')" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shadow-xs">
+          <button onclick="openNewEntryModal('po')" class="btn-gradient-primary text-white text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-xs active:scale-95">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
             <span>Issue PO</span>
           </button>
-          <div class="text-[11px] sm:text-xs mono font-semibold text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">
-            Dock: <span class="text-sky-600 font-bold" id="dock-today-count">2 Today</span>
+          <div class="text-[11px] sm:text-xs mono font-bold text-slate-700 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl shadow-inner">
+            Dock: <span class="text-sky-600 font-extrabold" id="dock-today-count">2 Today</span>
           </div>
         </div>
       </div>
@@ -277,36 +307,36 @@
 
     <!-- 4. SOP & GOVERNANCE GALLERY -->
     <section id="gallery-sop" class="space-y-5 hidden">
-      <div>
-        <h2 class="text-sm sm:text-base font-bold text-slate-900">Standard Operating Procedures &amp; Official Forms</h2>
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+        <h2 class="text-sm sm:text-base font-extrabold text-slate-900">Standard Operating Procedures &amp; Official Forms</h2>
         <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Core internal controls, financial delegation thresholds, and 3-way matching rules.</p>
       </div>
 
-      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-xl sm:rounded-2xl p-4 sm:p-5 text-white shadow-xs border border-slate-700">
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-4 sm:p-6 text-white shadow-lg border border-slate-700">
         <div class="flex items-center gap-2 mb-3 text-sky-400">
-          <i data-lucide="shield-check" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-          <h3 class="text-xs font-bold uppercase tracking-wider">The 10 Non-Negotiable Procurement Rules</h3>
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
+          <h3 class="text-xs font-extrabold uppercase tracking-wider">The 10 Non-Negotiable Procurement Rules</h3>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-3 text-xs">
-          <div class="bg-white/5 border border-white/10 rounded-lg p-2.5">
-            <span class="text-sky-400 font-bold block mb-0.5">01. PR First</span>
-            No PR = Zero purchase. Demands must trace to BOM.
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-xs">
+            <span class="text-sky-400 font-bold block mb-1">01. PR First</span>
+            No PR = Zero purchase. Demands must trace directly to approved BOM.
           </div>
-          <div class="bg-white/5 border border-white/10 rounded-lg p-2.5">
-            <span class="text-sky-400 font-bold block mb-0.5">02. No Approval, No PO</span>
-            Orders must be authorized by approved financial tier.
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-xs">
+            <span class="text-sky-400 font-bold block mb-1">02. Approved PO</span>
+            Orders must be signed off by designated financial authorization tier.
           </div>
-          <div class="bg-white/5 border border-white/10 rounded-lg p-2.5">
-            <span class="text-sky-400 font-bold block mb-0.5">03. Dual Sourcing</span>
-            Never single-source critical aluminum dies or float glass.
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-xs">
+            <span class="text-sky-400 font-bold block mb-1">03. Dual Sourcing</span>
+            Never single-source critical aluminum dies or architectural float glass.
           </div>
-          <div class="bg-white/5 border border-white/10 rounded-lg p-2.5">
-            <span class="text-sky-400 font-bold block mb-0.5">04. QC Gate</span>
-            Delivered cargo quarantined until QC passes inspection.
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-xs">
+            <span class="text-sky-400 font-bold block mb-1">04. QC Gate</span>
+            All inward dock cargo quarantined until QC certifies dimensional tolerance.
           </div>
-          <div class="bg-white/5 border border-white/10 rounded-lg p-2.5">
-            <span class="text-sky-400 font-bold block mb-0.5">05. 3-Way Match</span>
-            PO Rate = GRN Qty = Invoice before payment release.
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-xs">
+            <span class="text-sky-400 font-bold block mb-1">05. 3-Way Match</span>
+            PO Rate = GRN Accepted Qty = Commercial Invoice before payment release.
           </div>
         </div>
       </div>
@@ -317,96 +347,81 @@
   </main>
 
   <!-- MOBILE BOTTOM APP NAVIGATION BAR -->
-  <aside class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 px-2 py-1.5 shadow-lg" aria-label="Mobile Navigation">
+  <aside class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 px-2 py-1.5 shadow-xl" aria-label="Mobile Navigation">
     <div class="grid grid-cols-4 gap-1 text-[10px] text-center font-medium">
-      <button onclick="switchGallery('materials')" id="m-nav-materials" class="flex flex-col items-center justify-center py-1 rounded-lg text-sky-700 bg-sky-50 font-bold">
+      <button onclick="switchGallery('materials')" id="m-nav-materials" class="flex flex-col items-center justify-center py-1 rounded-xl text-sky-700 bg-sky-50 font-bold">
         <i data-lucide="box" class="w-4 h-4 mb-0.5"></i>
         <span>Materials</span>
       </button>
-      <button onclick="switchGallery('suppliers')" id="m-nav-suppliers" class="flex flex-col items-center justify-center py-1 rounded-lg text-slate-500 hover:text-slate-900">
+      <button onclick="switchGallery('suppliers')" id="m-nav-suppliers" class="flex flex-col items-center justify-center py-1 rounded-xl text-slate-500 hover:text-slate-900">
         <i data-lucide="building-2" class="w-4 h-4 mb-0.5"></i>
         <span>Vendors</span>
       </button>
-      <button onclick="switchGallery('pipeline')" id="m-nav-pipeline" class="flex flex-col items-center justify-center py-1 rounded-lg text-slate-500 hover:text-slate-900">
+      <button onclick="switchGallery('pipeline')" id="m-nav-pipeline" class="flex flex-col items-center justify-center py-1 rounded-xl text-slate-500 hover:text-slate-900">
         <i data-lucide="truck" class="w-4 h-4 mb-0.5"></i>
         <span>Orders</span>
       </button>
-      <button onclick="switchGallery('sop')" id="m-nav-sop" class="flex flex-col items-center justify-center py-1 rounded-lg text-slate-500 hover:text-slate-900">
+      <button onclick="switchGallery('sop')" id="m-nav-sop" class="flex flex-col items-center justify-center py-1 rounded-xl text-slate-500 hover:text-slate-900">
         <i data-lucide="shield-check" class="w-4 h-4 mb-0.5"></i>
         <span>SOP</span>
       </button>
     </div>
   </aside>
 
-  <!-- MODAL: CLOUD DATABASE SETUP -->
-  <div id="cloud-config-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-    <div class="bg-white rounded-xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
-      <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
-        <div class="flex items-center gap-2">
-          <i data-lucide="cloud" class="w-5 h-5 text-sky-400"></i>
+  <!-- MODAL: CLOUD CONFIG / STATUS -->
+  <div id="cloud-config-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between shrink-0 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center">
+            <i data-lucide="cloud" class="w-4 h-4"></i>
+          </div>
           <div>
-            <h3 class="font-bold text-xs sm:text-sm">Cloud Database Configuration</h3>
-            <p class="text-[10px] sm:text-[11px] text-slate-400">Shared real-time persistence across team members</p>
+            <h3 class="font-bold text-xs sm:text-sm">Cloud Database Diagnostics</h3>
+            <p class="text-[10px] text-slate-400">Project: purchasing-system-b7ef2 | Database: "default"</p>
           </div>
         </div>
-        <button onclick="closeModal('cloud-config-modal')" class="text-slate-400 hover:text-white p-1">
+        <button onclick="closeModal('cloud-config-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <div class="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
-        <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 text-slate-700 space-y-2">
-          <span class="font-bold text-sky-900 flex items-center gap-1.5">
-            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Required in Firebase Console:
+      <div class="p-5 space-y-4 text-xs overflow-y-auto flex-1">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-slate-700 space-y-1.5">
+          <span class="font-bold text-emerald-900 flex items-center gap-1.5">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Connected Directly to Database "default"
           </span>
-          <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-600">
-            <li>Open your Firestore tab: <strong>Security</strong> &rarr; ensure <code>allow read, write: if true;</code> and click <strong>Publish</strong>.</li>
-            <li>Click <strong>⚡ Push All to Cloud</strong> below to send all 8 materials, 6 vendors, and 4 POs to Firestore immediately!</li>
-          </ol>
+          <p class="text-[11px] text-slate-600 leading-relaxed">Configured explicitly with <code class="mono bg-white px-1.5 py-0.5 border rounded font-semibold text-emerald-800">databaseId: "default"</code> in region <code class="mono">asia-southeast1</code> with HTTP long-polling transport.</p>
         </div>
 
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Firebase Project Config (JSON)</label>
-          <textarea id="cfg-firebase-json" rows="6" placeholder='{
-  "apiKey": "AIzaSy...",
-  "authDomain": "your-app.firebaseapp.com",
-  "projectId": "your-app",
-  "storageBucket": "your-app.appspot.com",
-  "messagingSenderId": "123456789",
-  "appId": "1:123456789:web:abcdef"
-}' class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono bg-slate-50 focus:bg-white"></textarea>
-        </div>
+        <button onclick="window.forceSyncAllToCloud()" class="w-full py-2.5 btn-gradient-success text-white font-bold rounded-xl text-xs shadow-sm flex items-center justify-center gap-2">
+          <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+          <span>⚡ Force Upload All Records to Firestore</span>
+        </button>
 
-        <div class="pt-2 flex flex-col gap-2">
-          <button onclick="forceSyncAllToCloud()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg text-xs shadow-xs flex items-center justify-center gap-1.5">
-            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-            <span>⚡ Push All Local &amp; Master Data into Firestore</span>
-          </button>
-          <p class="text-[10px] text-slate-400 text-center">Click this to immediately create the 3 collections in your Firebase console.</p>
-        </div>
+        <button onclick="window.resetLocalStorageToDefaults()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          <span>Restore Master Catalog Defaults (8 SKUs)</span>
+        </button>
       </div>
 
-      <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 flex justify-between items-center shrink-0">
-        <button onclick="clearCloudConfig()" class="text-rose-600 hover:text-rose-700 text-xs font-semibold">Reset to Offline</button>
-        <div class="flex gap-2">
-          <button onclick="closeModal('cloud-config-modal')" class="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 text-xs">Cancel</button>
-          <button onclick="saveCloudConfig()" class="px-4 py-1.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg text-xs shadow-xs">Save &amp; Connect</button>
-        </div>
+      <div class="bg-slate-50 px-5 py-3.5 border-t border-slate-200 flex justify-end items-center shrink-0">
+        <button onclick="closeModal('cloud-config-modal')" class="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-xs shadow-xs">Close</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL: SPECIFICATION DETAILS -->
-  <div id="spec-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-    <div class="bg-white rounded-xl sm:rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
-      <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
+  <div id="spec-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between shrink-0 border-b border-slate-800">
         <div class="flex items-center gap-2.5 min-w-0">
           <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-xs shrink-0">
             <i data-lucide="file-text" class="w-4 h-4"></i>
           </div>
           <div class="min-w-0">
             <h3 class="font-bold text-xs sm:text-sm truncate" id="modal-title">Item Specification Docket</h3>
-            <p class="text-[10px] sm:text-[11px] text-slate-400 mono truncate" id="modal-subtitle">SKU: AL-PROF-01</p>
+            <p class="text-[10px] text-slate-400 mono truncate" id="modal-subtitle">SKU: AL-PROF-01</p>
           </div>
         </div>
         <button onclick="closeModal('spec-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg">
@@ -414,26 +429,24 @@
         </button>
       </div>
 
-      <div class="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1 text-xs" id="modal-content"></div>
+      <div class="p-5 space-y-4 overflow-y-auto flex-1 text-xs" id="modal-content"></div>
 
-      <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 shrink-0">
-        <span class="text-[10px] sm:text-xs text-slate-500 text-center sm:text-left">Technical Rule: Verify CAD profile before issuing PO.</span>
-        <button onclick="closeModal('spec-modal')" class="w-full sm:w-auto bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-slate-800 transition">
-          Close Docket
-        </button>
+      <div class="bg-slate-50 px-5 py-3.5 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 shrink-0">
+        <span class="text-[10px] sm:text-xs text-slate-500 text-center sm:text-left font-medium">Technical Rule: Verify CAD profile before issuing PO.</span>
+        <button onclick="closeModal('spec-modal')" class="w-full sm:w-auto bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-slate-800 transition">Close Docket</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL: QUICK CALCULATOR -->
-  <div id="quick-calc-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-    <div class="bg-white rounded-xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
-      <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
+  <div id="quick-calc-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between shrink-0 border-b border-slate-800">
         <div class="flex items-center gap-2">
           <i data-lucide="calculator" class="w-5 h-5 text-sky-400"></i>
           <div>
             <h3 class="font-bold text-xs sm:text-sm">True Landed Cost Engine</h3>
-            <p class="text-[10px] sm:text-[11px] text-slate-400">Total Cost of Ownership (TCO) Calculator</p>
+            <p class="text-[10px] text-slate-400">Total Cost of Ownership (TCO) Calculator</p>
           </div>
         </div>
         <button onclick="closeModal('quick-calc-modal')" class="text-slate-400 hover:text-white p-1">
@@ -441,66 +454,64 @@
         </button>
       </div>
 
-      <div class="p-4 sm:p-6 space-y-3.5 text-xs overflow-y-auto flex-1">
+      <div class="p-5 space-y-3.5 text-xs overflow-y-auto flex-1">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Order Quantity (Units/KG)</label>
-            <input type="number" id="calc-qty" value="1000" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+            <label class="block font-semibold text-slate-700 mb-1">Order Quantity (Units/KG)</label>
+            <input type="number" id="calc-qty" value="1000" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Base Unit Price ($)</label>
-            <input type="number" step="0.01" id="calc-price" value="2.50" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+            <label class="block font-semibold text-slate-700 mb-1">Base Unit Price ($)</label>
+            <input type="number" step="0.01" id="calc-price" value="2.50" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Discount %</label>
-            <input type="number" step="0.1" id="calc-discount" value="3.0" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+            <label class="block font-semibold text-slate-700 mb-1">Discount %</label>
+            <input type="number" step="0.1" id="calc-discount" value="3.0" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Freight Total ($)</label>
-            <input type="number" id="calc-freight" value="150" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+            <label class="block font-semibold text-slate-700 mb-1">Freight Total ($)</label>
+            <input type="number" id="calc-freight" value="150" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Handling / Duty ($)</label>
-            <input type="number" id="calc-other" value="50" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+            <label class="block font-semibold text-slate-700 mb-1">Handling / Duty ($)</label>
+            <input type="number" id="calc-other" value="50" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
         </div>
 
-        <div class="bg-sky-50 border border-sky-100 rounded-xl p-3.5 sm:p-4 mt-2">
-          <div class="flex justify-between items-center mb-1 text-slate-600">
+        <div class="bg-sky-50 border border-sky-100 rounded-2xl p-4 mt-2 shadow-inner">
+          <div class="flex justify-between items-center mb-1 text-slate-600 font-medium">
             <span>Nominal Base Price:</span>
             <span class="mono font-semibold" id="calc-res-base">$2.50 / unit</span>
           </div>
-          <div class="flex justify-between items-center mb-2 text-slate-600">
+          <div class="flex justify-between items-center mb-2 text-slate-600 font-medium">
             <span>Freight &amp; Surcharge:</span>
             <span class="mono font-semibold text-amber-700" id="calc-res-overhead">+$0.20 / unit</span>
           </div>
-          <div class="border-t border-sky-200 pt-2 flex justify-between items-center">
-            <span class="font-bold text-sky-950 text-xs sm:text-sm">True Landed Cost:</span>
-            <span class="mono font-bold text-sky-700 text-sm sm:text-base" id="calc-res-landed">$2.625 / unit</span>
+          <div class="border-t border-sky-200 pt-2.5 flex justify-between items-center">
+            <span class="font-extrabold text-sky-950 text-xs sm:text-sm">True Landed Cost:</span>
+            <span class="mono font-extrabold text-sky-700 text-sm sm:text-base" id="calc-res-landed">$2.625 / unit</span>
           </div>
         </div>
       </div>
 
-      <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 text-right shrink-0">
-        <button onclick="closeModal('quick-calc-modal')" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
-          Done
-        </button>
+      <div class="bg-slate-50 px-5 py-3.5 border-t border-slate-200 text-right shrink-0">
+        <button onclick="closeModal('quick-calc-modal')" class="w-full sm:w-auto btn-gradient-primary text-white text-xs font-bold px-5 py-2 rounded-xl transition">Done</button>
       </div>
     </div>
   </div>
 
   <!-- MODAL: DIRECT DATA ENTRY -->
-  <div id="new-entry-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-    <div class="bg-white rounded-xl sm:rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
-      <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
+  <div id="new-entry-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
+      <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between shrink-0 border-b border-slate-800">
         <div class="flex items-center gap-2">
           <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-400"></i>
           <div>
             <h3 class="font-bold text-xs sm:text-sm">Direct Procurement Entry</h3>
-            <p class="text-[10px] sm:text-[11px] text-slate-400">Add materials, register vendors, or issue POs directly</p>
+            <p class="text-[10px] text-slate-400">Add materials, register vendors, or issue POs directly</p>
           </div>
         </div>
         <button onclick="closeModal('new-entry-modal')" class="text-slate-400 hover:text-white p-1">
@@ -509,28 +520,28 @@
       </div>
 
       <!-- Tab Switcher -->
-      <div class="flex border-b border-slate-200 px-4 sm:px-6 bg-slate-50 text-xs font-medium overflow-x-auto no-scrollbar shrink-0">
-        <button type="button" id="entry-tab-material" onclick="switchEntryTab('material')" class="px-3 sm:px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
+      <div class="flex border-b border-slate-200 px-5 bg-slate-50 text-xs font-semibold overflow-x-auto no-scrollbar shrink-0">
+        <button type="button" id="entry-tab-material" onclick="switchEntryTab('material')" class="px-3 sm:px-4 py-3 border-b-2 border-sky-600 text-sky-700 font-bold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
           <i data-lucide="box" class="w-3.5 h-3.5"></i> Material SKU
         </button>
-        <button type="button" id="entry-tab-supplier" onclick="switchEntryTab('supplier')" class="px-3 sm:px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
+        <button type="button" id="entry-tab-supplier" onclick="switchEntryTab('supplier')" class="px-3 sm:px-4 py-3 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
           <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Register Vendor
         </button>
-        <button type="button" id="entry-tab-po" onclick="switchEntryTab('po')" class="px-3 sm:px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
+        <button type="button" id="entry-tab-po" onclick="switchEntryTab('po')" class="px-3 sm:px-4 py-3 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
           <i data-lucide="truck" class="w-3.5 h-3.5"></i> Issue PO
         </button>
       </div>
 
       <!-- Form 1: Add Material SKU -->
-      <form id="form-add-material" onsubmit="submitMaterial(event)" class="p-4 sm:p-6 space-y-3 sm:space-y-3.5 text-xs overflow-y-auto flex-1">
+      <form id="form-add-material" onsubmit="submitMaterial(event)" class="p-5 space-y-3.5 text-xs overflow-y-auto flex-1">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block font-medium text-slate-700 mb-1">SKU / Item Code *</label>
-            <input type="text" id="mat-code" required placeholder="e.g. AL-80-CASEMENT" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase">
+            <label class="block font-semibold text-slate-700 mb-1">SKU / Item Code *</label>
+            <input type="text" id="mat-code" required placeholder="e.g. AL-80-CASEMENT" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs mono uppercase focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Category *</label>
-            <select id="mat-category" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+            <label class="block font-semibold text-slate-700 mb-1">Category *</label>
+            <select id="mat-category" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
               <option value="aluminum">Aluminum Profile</option>
               <option value="glass">Architectural Glass</option>
               <option value="hardware">Hardware Accessories</option>
@@ -541,143 +552,143 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div class="sm:col-span-2">
-            <label class="block font-medium text-slate-700 mb-1">Material Name *</label>
-            <input type="text" id="mat-name" required placeholder="e.g. Sliding Outer Track Heavy" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+            <label class="block font-semibold text-slate-700 mb-1">Material Name *</label>
+            <input type="text" id="mat-name" required placeholder="e.g. Sliding Outer Track Heavy" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Unit of Measure (UOM) *</label>
-            <input type="text" id="mat-uom" required placeholder="KG, SQM, PCS, M" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs uppercase mono">
+            <label class="block font-semibold text-slate-700 mb-1">Unit of Measure (UOM) *</label>
+            <input type="text" id="mat-uom" required placeholder="KG, SQM, PCS, M" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs uppercase mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
         </div>
 
         <div>
-          <label class="block font-medium text-slate-700 mb-1">Technical Specification *</label>
-          <input type="text" id="mat-specs" required placeholder="Alloy 6063-T5 | 1.4mm | Powder Coated Matte Black RAL9005" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+          <label class="block font-semibold text-slate-700 mb-1">Technical Specification *</label>
+          <input type="text" id="mat-specs" required placeholder="Alloy 6063-T5 | 1.4mm | Powder Coated Matte Black RAL9005" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           <div>
-            <label class="block font-medium text-slate-700 mb-1 truncate">Current Stock</label>
-            <input type="number" id="mat-stock" required value="100" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono">
+            <label class="block font-semibold text-slate-700 mb-1 truncate">Current Stock</label>
+            <input type="number" id="mat-stock" required value="100" class="w-full px-2.5 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1 truncate">Safety Stock</label>
-            <input type="number" id="mat-safety" required value="50" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono">
+            <label class="block font-semibold text-slate-700 mb-1 truncate">Safety Stock</label>
+            <input type="number" id="mat-safety" required value="50" class="w-full px-2.5 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1 truncate">Reorder Point</label>
-            <input type="number" id="mat-rop" required value="150" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono">
+            <label class="block font-semibold text-slate-700 mb-1 truncate">Reorder Point</label>
+            <input type="number" id="mat-rop" required value="150" class="w-full px-2.5 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1 truncate">Std Cost ($)</label>
-            <input type="number" step="0.01" id="mat-cost" required value="2.80" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono">
+            <label class="block font-semibold text-slate-700 mb-1 truncate">Std Cost ($)</label>
+            <input type="number" step="0.01" id="mat-cost" required value="2.80" class="w-full px-2.5 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Approved Vendor</label>
-            <select id="mat-vendor-select" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></select>
+            <label class="block font-semibold text-slate-700 mb-1">Approved Vendor</label>
+            <select id="mat-vendor-select" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none"></select>
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">BOM / Production Link</label>
-            <input type="text" id="mat-bom" placeholder="e.g. SD-100 Sliding Patio Series" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+            <label class="block font-semibold text-slate-700 mb-1">BOM / Production Link</label>
+            <input type="text" id="mat-bom" placeholder="e.g. SD-100 Sliding Patio Series" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
         </div>
 
         <div class="pt-3 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-2">
-          <button type="button" onclick="closeModal('new-entry-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
-          <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg shadow-xs">Save Material SKU</button>
+          <button type="button" onclick="closeModal('new-entry-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-semibold">Cancel</button>
+          <button type="submit" class="w-full sm:w-auto px-5 py-2 btn-gradient-primary text-white font-bold rounded-xl shadow-xs">Save Material SKU</button>
         </div>
       </form>
 
       <!-- Form 2: Register Supplier -->
-      <form id="form-add-supplier" onsubmit="submitSupplier(event)" class="p-4 sm:p-6 space-y-3 sm:space-y-3.5 text-xs overflow-y-auto flex-1 hidden">
+      <form id="form-add-supplier" onsubmit="submitSupplier(event)" class="p-5 space-y-3.5 text-xs overflow-y-auto flex-1 hidden">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Supplier Code / ID *</label>
-            <input type="text" id="sup-id" required placeholder="VND-GLS-08" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase">
+            <label class="block font-semibold text-slate-700 mb-1">Supplier Code / ID *</label>
+            <input type="text" id="sup-id" required placeholder="VND-GLS-08" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs mono uppercase focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div class="sm:col-span-2">
-            <label class="block font-medium text-slate-700 mb-1">Company / Supplier Name *</label>
-            <input type="text" id="sup-name" required placeholder="e.g. Apex Tempered Glass Co., Ltd." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+            <label class="block font-semibold text-slate-700 mb-1">Company / Supplier Name *</label>
+            <input type="text" id="sup-name" required placeholder="e.g. Apex Tempered Glass Co., Ltd." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Category Provided *</label>
-            <input type="text" id="sup-cat" required placeholder="e.g. Architectural Glass" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+            <label class="block font-semibold text-slate-700 mb-1">Category Provided *</label>
+            <input type="text" id="sup-cat" required placeholder="e.g. Architectural Glass" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">ASL Tier</label>
-            <select id="sup-tier" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+            <label class="block font-semibold text-slate-700 mb-1">ASL Tier</label>
+            <select id="sup-tier" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
               <option value="Tier 1: Preferred">Tier 1: Preferred</option>
               <option value="Tier 2: Conditional">Tier 2: Conditional</option>
             </select>
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Scorecard (0-100)</label>
-            <input type="number" id="sup-score" min="1" max="100" value="88" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+            <label class="block font-semibold text-slate-700 mb-1">Scorecard (0-100)</label>
+            <input type="number" id="sup-score" min="1" max="100" value="88" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Payment Terms</label>
-            <input type="text" id="sup-terms" required value="Net 30 Days" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+            <label class="block font-semibold text-slate-700 mb-1">Payment Terms</label>
+            <input type="text" id="sup-terms" required value="Net 30 Days" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Lead Time</label>
-            <input type="text" id="sup-lead" required value="7 Days" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+            <label class="block font-semibold text-slate-700 mb-1">Lead Time</label>
+            <input type="text" id="sup-lead" required value="7 Days" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Historical OTIF %</label>
-            <input type="text" id="sup-otif" required value="96.5%" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+            <label class="block font-semibold text-slate-700 mb-1">Historical OTIF %</label>
+            <input type="text" id="sup-otif" required value="96.5%" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
         </div>
 
         <div>
-          <label class="block font-medium text-slate-700 mb-1">Sales Contact &amp; Phone</label>
-          <input type="text" id="sup-contact" required placeholder="e.g. John Doe (+855 12 345 678)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+          <label class="block font-semibold text-slate-700 mb-1">Sales Contact &amp; Phone</label>
+          <input type="text" id="sup-contact" required placeholder="e.g. John Doe (+855 12 345 678)" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
         </div>
 
         <div class="pt-3 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-2">
-          <button type="button" onclick="closeModal('new-entry-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
-          <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg shadow-xs">Register Vendor</button>
+          <button type="button" onclick="closeModal('new-entry-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-semibold">Cancel</button>
+          <button type="submit" class="w-full sm:w-auto px-5 py-2 btn-gradient-success text-white font-bold rounded-xl shadow-xs">Register Vendor</button>
         </div>
       </form>
 
       <!-- Form 3: Issue PO -->
-      <form id="form-add-po" onsubmit="submitPO(event)" class="p-4 sm:p-6 space-y-3 sm:space-y-3.5 text-xs overflow-y-auto flex-1 hidden">
+      <form id="form-add-po" onsubmit="submitPO(event)" class="p-5 space-y-3.5 text-xs overflow-y-auto flex-1 hidden">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block font-medium text-slate-700 mb-1">PO Number *</label>
-            <input type="text" id="po-num" required placeholder="PO-2026-101" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase">
+            <label class="block font-semibold text-slate-700 mb-1">PO Number *</label>
+            <input type="text" id="po-num" required placeholder="PO-2026-101" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs mono uppercase focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Vendor *</label>
-            <select id="po-vendor-select" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></select>
+            <label class="block font-semibold text-slate-700 mb-1">Vendor *</label>
+            <select id="po-vendor-select" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none"></select>
           </div>
         </div>
 
         <div>
-          <label class="block font-medium text-slate-700 mb-1">Items Description &amp; Quantity *</label>
-          <input type="text" id="po-items" required placeholder="e.g. AL-76 Black Sliding Outer (1,500 KG)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+          <label class="block font-semibold text-slate-700 mb-1">Items Description &amp; Quantity *</label>
+          <input type="text" id="po-items" required placeholder="e.g. AL-76 Black Sliding Outer (1,500 KG)" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Total PO Value ($) *</label>
-            <input type="number" step="0.01" id="po-val" required placeholder="3975.00" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+            <label class="block font-semibold text-slate-700 mb-1">Total PO Value ($) *</label>
+            <input type="number" step="0.01" id="po-val" required placeholder="3975.00" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Delivery Due Date *</label>
-            <input type="date" id="po-due" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+            <label class="block font-semibold text-slate-700 mb-1">Delivery Due Date *</label>
+            <input type="date" id="po-due" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
           </div>
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Initial Status</label>
-            <select id="po-status" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+            <label class="block font-semibold text-slate-700 mb-1">Initial Status</label>
+            <select id="po-status" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
               <option value="Order Confirmed">Order Confirmed</option>
               <option value="In Transit">In Transit</option>
               <option value="Arrived at Dock">Arrived at Dock</option>
@@ -687,29 +698,29 @@
         </div>
 
         <div>
-          <label class="block font-medium text-slate-700 mb-1">Dock Expediting Action Note</label>
-          <input type="text" id="po-action" placeholder="e.g. Splicing inspection scheduled with QC on arrival" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+          <label class="block font-semibold text-slate-700 mb-1">Dock Expediting Action Note</label>
+          <input type="text" id="po-action" placeholder="e.g. Splicing inspection scheduled with QC on arrival" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
         </div>
 
         <div class="pt-3 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-2">
-          <button type="button" onclick="closeModal('new-entry-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
-          <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg shadow-xs">Issue PO Docket</button>
+          <button type="button" onclick="closeModal('new-entry-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-semibold">Cancel</button>
+          <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-xs transition">Issue PO Docket</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- MODAL: DELETE CONFIRMATION -->
-  <div id="delete-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4">
-    <div class="bg-white rounded-xl sm:rounded-2xl max-w-sm w-full p-4 sm:p-5 shadow-2xl border border-slate-100 text-center space-y-3">
-      <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
-        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+  <div id="delete-modal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-slate-100 text-center space-y-3.5">
+      <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto shadow-inner">
+        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
       </div>
-      <h3 class="font-bold text-slate-900 text-sm" id="del-modal-title">Confirm Deletion</h3>
-      <p class="text-xs text-slate-500" id="del-modal-msg">Are you sure you want to remove this record?</p>
+      <h3 class="font-extrabold text-slate-900 text-sm" id="del-modal-title">Confirm Deletion</h3>
+      <p class="text-xs text-slate-500 leading-relaxed" id="del-modal-msg">Are you sure you want to remove this record?</p>
       <div class="flex items-center justify-center gap-2 pt-2">
-        <button onclick="closeModal('delete-modal')" class="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">Cancel</button>
-        <button id="del-confirm-btn" class="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-lg shadow-xs transition">Delete</button>
+        <button onclick="closeModal('delete-modal')" class="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">Cancel</button>
+        <button id="del-confirm-btn" class="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl shadow-xs transition">Delete</button>
       </div>
     </div>
   </div>
@@ -717,11 +728,19 @@
   <!-- TOAST NOTIFICATIONS -->
   <div id="toast-container" class="fixed top-4 left-3 right-3 sm:left-auto sm:top-auto sm:bottom-5 sm:right-5 z-50 space-y-2 pointer-events-none sm:max-w-sm"></div>
 
-  <!-- JAVASCRIPT SYSTEM & OPTIMIZED PERSISTENCE -->
+  <!-- UNIFIED APPLICATION & FIRESTORE ENGINE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { 
+      initializeFirestore, 
+      doc, 
+      setDoc, 
+      deleteDoc, 
+      onSnapshot, 
+      collection, 
+      getDocs 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // HARDWARE-ACCELERATED INLINED SVG ENGINE
     const ICONS = {
@@ -747,7 +766,18 @@
       return ICONS.box;
     }
 
-    // DEFAULT MASTER DATASETS
+    // EMBEDDED PRODUCTION FIREBASE CONFIG
+    const EMBEDDED_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyCGRDupJViKmVZdY3ksD7tnW0KPY7Ap08I",
+      authDomain: "purchasing-system-b7ef2.firebaseapp.com",
+      databaseURL: "https://purchasing-system-b7ef2-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "purchasing-system-b7ef2",
+      storageBucket: "purchasing-system-b7ef2.firebasestorage.app",
+      messagingSenderId: "9199159764",
+      appId: "1:9199159764:web:0b656ee19420076a5e01cb"
+    };
+
+    // MASTER DEFAULT DATASETS
     const defaultMaterials = [
       {
         code: "AL-76-SLD-BLK",
@@ -1128,21 +1158,34 @@
       }
     ];
 
-    // LOCAL DATA STORAGE
+    // STATE INITIALIZATION
     let materialsData = [...defaultMaterials];
     let suppliersData = [...defaultSuppliers];
     let pipelineData = [...defaultPipeline];
 
+    let auth = null;
+    let db = null;
+    let activeUid = null;
+
     function loadLocalData() {
       try {
         const m = localStorage.getItem('alu_procurement_materials');
-        if (m) materialsData = JSON.parse(m);
+        if (m) {
+          const parsed = JSON.parse(m);
+          if (Array.isArray(parsed) && parsed.length > 0) materialsData = parsed;
+        }
         const s = localStorage.getItem('alu_procurement_suppliers');
-        if (s) suppliersData = JSON.parse(s);
+        if (s) {
+          const parsed = JSON.parse(s);
+          if (Array.isArray(parsed) && parsed.length > 0) suppliersData = parsed;
+        }
         const p = localStorage.getItem('alu_procurement_pipeline');
-        if (p) pipelineData = JSON.parse(p);
+        if (p) {
+          const parsed = JSON.parse(p);
+          if (Array.isArray(parsed) && parsed.length > 0) pipelineData = parsed;
+        }
       } catch (e) {
-        console.warn("Local storage parse note:", e);
+        console.warn("Storage parse error:", e);
       }
     }
 
@@ -1160,16 +1203,31 @@
       }, 150);
     }
 
+    window.resetLocalStorageToDefaults = function() {
+      materialsData = [...defaultMaterials];
+      suppliersData = [...defaultSuppliers];
+      pipelineData = [...defaultPipeline];
+      localStorage.removeItem('alu_procurement_materials');
+      localStorage.removeItem('alu_procurement_suppliers');
+      localStorage.removeItem('alu_procurement_pipeline');
+      debouncedSaveLocalData();
+      renderMaterials(materialsData);
+      renderSuppliers();
+      renderPipeline();
+      updateHeaderKPIs();
+      showToast("Reset Complete", "Restored master catalog defaults.");
+    };
+
     loadLocalData();
 
-    // RENDER MATERIALS
+    // RENDER FUNCTIONS
     function renderMaterials(items = materialsData) {
       const container = document.getElementById('materials-grid');
       if (!container) return;
 
       if (!items || items.length === 0) {
         container.innerHTML = `
-          <div class="col-span-full py-12 text-center bg-white rounded-xl border border-slate-200">
+          <div class="col-span-full py-12 text-center bg-white rounded-2xl border border-slate-200">
             <div class="w-10 h-10 text-slate-300 mx-auto mb-2 flex items-center justify-center">${ICONS.box}</div>
             <p class="text-sm font-semibold text-slate-700">No matching materials found</p>
             <p class="text-xs text-slate-400 mt-1">Try adjusting your search terms or category filter.</p>
@@ -1181,44 +1239,44 @@
       container.innerHTML = items.map(m => {
         let statusBadge = '';
         if (m.status === 'reorder' || m.currentStock <= m.safetyStock) {
-          statusBadge = '<span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>Reorder</span>';
+          statusBadge = '<span class="bg-rose-100 text-rose-800 border border-rose-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>Reorder</span>';
         } else if (m.status === 'low' || m.currentStock <= m.reorderPoint) {
-          statusBadge = '<span class="bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Low</span>';
+          statusBadge = '<span class="bg-amber-100 text-amber-800 border border-amber-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Low</span>';
         } else {
-          statusBadge = '<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-semibold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>In Stock</span>';
+          statusBadge = '<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full text-[10px] font-semibold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>In Stock</span>';
         }
 
         const pct = Math.min(100, Math.round((m.currentStock / (m.reorderPoint || 1)) * 100));
         const barColor = pct < 50 ? 'bg-rose-500' : (pct < 100 ? 'bg-amber-500' : 'bg-emerald-500');
 
         return `
-          <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-contain flex flex-col justify-between space-y-3 relative">
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 card-contain flex flex-col justify-between space-y-3.5 relative">
             <div>
               <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-2 min-w-0">
-                  <div class="w-8 h-8 rounded-lg bg-gradient-to-br ${m.imageBg || 'from-sky-700 to-slate-900'} text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br ${m.imageBg || 'from-sky-700 to-slate-900'} text-white flex items-center justify-center shrink-0 shadow-md">
                     ${getCardIcon(m.icon)}
                   </div>
                   <div class="min-w-0">
-                    <span class="mono text-[10px] font-bold text-sky-700 uppercase truncate block">${m.code}</span>
-                    <span class="block text-[10px] text-slate-400 capitalize truncate">${m.categoryLabel || m.category}</span>
+                    <span class="mono text-[10px] font-bold text-sky-700 uppercase truncate block tracking-wider">${m.code}</span>
+                    <span class="block text-[10px] text-slate-400 capitalize truncate font-medium">${m.categoryLabel || m.category}</span>
                   </div>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
                   ${statusBadge}
-                  <button onclick="promptDelete('material', '${m.code}')" aria-label="Delete SKU" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete SKU">
+                  <button onclick="promptDelete('material', '${m.code}')" aria-label="Delete SKU" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded-lg transition" title="Delete SKU">
                     ${ICONS.trash}
                   </button>
                 </div>
               </div>
 
               <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 line-clamp-1" title="${m.name}">${m.name}</h3>
-              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2" title="${m.specs}">${m.specs}</p>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed" title="${m.specs}">${m.specs}</p>
             </div>
 
-            <div class="space-y-1.5 bg-slate-50 border border-slate-100 rounded-lg p-2.5">
+            <div class="space-y-1.5 bg-slate-50 border border-slate-100 rounded-xl p-3">
               <div class="flex justify-between items-center text-xs">
-                <span class="text-slate-500 text-[11px]">Stock Balance:</span>
+                <span class="text-slate-500 text-[11px] font-medium">Stock Balance:</span>
                 <span class="mono font-bold text-slate-800">${m.currentStock} <span class="font-normal text-slate-400 text-[10px]">${m.uom}</span></span>
               </div>
               <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
@@ -1232,10 +1290,10 @@
 
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <div>
-                <span class="text-[10px] text-slate-400 uppercase block">Std Cost</span>
+                <span class="text-[9px] text-slate-400 uppercase block font-bold tracking-wider">Std Cost</span>
                 <span class="mono font-bold text-emerald-700 text-xs sm:text-sm">$${Number(m.stdCost).toFixed(2)}</span>
               </div>
-              <button onclick="viewMaterialDetail('${m.code}')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 rounded-lg font-medium text-[11px] transition flex items-center gap-1 border border-slate-200/60 active:scale-95">
+              <button onclick="viewMaterialDetail('${m.code}')" class="px-3 py-1.5 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 rounded-xl font-semibold text-[11px] transition flex items-center gap-1 border border-slate-200/60 active:scale-95 shadow-xs">
                 ${ICONS.eye}
                 <span>Docket</span>
               </button>
@@ -1250,43 +1308,43 @@
       if (!container) return;
 
       container.innerHTML = suppliersData.map(sup => `
-        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-4 sm:p-5 card-contain flex flex-col justify-between space-y-3.5 relative">
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-5 card-contain flex flex-col justify-between space-y-3.5 relative">
           <div>
             <div class="flex items-start justify-between gap-2">
               <div class="min-w-0">
                 <span class="mono text-[10px] text-slate-400 uppercase font-semibold block">${sup.id}</span>
                 <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-0.5 truncate">${sup.name}</h3>
-                <span class="text-xs text-sky-700 font-medium truncate block">${sup.category}</span>
+                <span class="text-xs text-sky-700 font-semibold truncate block">${sup.category}</span>
               </div>
               <div class="flex items-center gap-1 shrink-0">
-                <span class="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full border ${sup.tierColor}">${sup.tier}</span>
-                <button onclick="promptDelete('supplier', '${sup.id}')" aria-label="Delete Vendor" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete Supplier">
+                <span class="text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${sup.tierColor}">${sup.tier}</span>
+                <button onclick="promptDelete('supplier', '${sup.id}')" aria-label="Delete Vendor" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded-lg transition" title="Delete Supplier">
                   ${ICONS.trash}
                 </button>
               </div>
             </div>
 
-            <div class="mt-3.5 grid grid-cols-3 gap-1.5 sm:gap-2 text-center bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5">
+            <div class="mt-3.5 grid grid-cols-3 gap-1.5 sm:gap-2 text-center bg-slate-50 border border-slate-100 rounded-xl p-2 sm:p-2.5">
               <div>
-                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">Score</span>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block font-bold">Score</span>
                 <span class="mono font-bold text-xs sm:text-base text-slate-900">${sup.score}<span class="text-[10px] font-normal text-slate-400">/100</span></span>
               </div>
               <div>
-                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">OTIF</span>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block font-bold">OTIF</span>
                 <span class="mono font-bold text-xs sm:text-base text-emerald-600">${sup.otif}</span>
               </div>
               <div>
-                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">QC Rate</span>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block font-bold">QC Rate</span>
                 <span class="mono font-bold text-xs sm:text-base text-sky-600">${sup.qcRate || '99.0%'}</span>
               </div>
             </div>
           </div>
 
           <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span class="flex items-center gap-1 truncate">
+            <span class="flex items-center gap-1 truncate font-medium">
               ${ICONS.creditCard} ${sup.paymentTerms}
             </span>
-            <span class="flex items-center gap-1 shrink-0">
+            <span class="flex items-center gap-1 shrink-0 font-medium">
               ${ICONS.clock} ${sup.leadTime}
             </span>
           </div>
@@ -1299,13 +1357,13 @@
       if (!container) return;
 
       container.innerHTML = pipelineData.map(po => `
-        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-contain flex flex-col justify-between space-y-3 relative">
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 card-contain flex flex-col justify-between space-y-3 relative">
           <div>
             <div class="flex items-center justify-between gap-2">
-              <span class="mono text-xs font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded shrink-0">${po.poNumber}</span>
+              <span class="mono text-xs font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2.5 py-0.5 rounded-lg shrink-0">${po.poNumber}</span>
               <div class="flex items-center gap-1 shrink-0">
-                <span class="text-[10px] px-2 py-0.5 rounded-full border ${po.alertBadge}">${po.alert}</span>
-                <button onclick="promptDelete('po', '${po.poNumber}')" aria-label="Delete PO" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete PO">
+                <span class="text-[10px] px-2.5 py-0.5 rounded-full border ${po.alertBadge}">${po.alert}</span>
+                <button onclick="promptDelete('po', '${po.poNumber}')" aria-label="Delete PO" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded-lg transition" title="Delete PO">
                   ${ICONS.trash}
                 </button>
               </div>
@@ -1315,23 +1373,23 @@
           </div>
 
           <div class="space-y-1">
-            <div class="flex justify-between text-[11px] text-slate-500">
+            <div class="flex justify-between text-[11px] text-slate-500 font-medium">
               <span>Status: <strong class="text-slate-800">${po.status}</strong></span>
-              <span class="mono font-semibold">${po.progressPct}%</span>
+              <span class="mono font-bold">${po.progressPct}%</span>
             </div>
             <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
               <div class="bg-sky-600 h-1.5 rounded-full transition-all duration-300" style="width: ${po.progressPct}%"></div>
             </div>
           </div>
 
-          <div class="bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5 text-xs text-slate-700">
-            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Expediting Action:</span>
-            <p class="text-[11px] line-clamp-2">${po.dockAction}</p>
+          <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-xs text-slate-700">
+            <span class="text-[9px] uppercase font-bold text-slate-400 block mb-0.5 tracking-wider">Expediting Action:</span>
+            <p class="text-[11px] line-clamp-2 leading-relaxed">${po.dockAction}</p>
           </div>
 
           <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
             <span class="mono font-bold text-slate-900 text-xs sm:text-sm">${po.amount}</span>
-            <span class="text-slate-500 flex items-center gap-1 text-[11px]">
+            <span class="text-slate-500 flex items-center gap-1 text-[11px] font-medium">
               ${ICONS.calendar} ${po.dueDate}
             </span>
           </div>
@@ -1344,28 +1402,28 @@
       if (!container) return;
 
       container.innerHTML = sopData.map(sop => `
-        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-contain flex flex-col justify-between space-y-3">
+        <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 card-contain flex flex-col justify-between space-y-3">
           <div>
             <div class="flex items-center justify-between">
-              <span class="mono text-[10px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded">${sop.id}</span>
-              <span class="text-[10px] text-slate-500 font-medium">${sop.type}</span>
+              <span class="mono text-[10px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-lg">${sop.id}</span>
+              <span class="text-[10px] text-slate-500 font-semibold">${sop.type}</span>
             </div>
             <h4 class="font-bold text-slate-900 text-xs sm:text-sm mt-2">${sop.title}</h4>
-            <p class="text-xs text-slate-600 mt-1">${sop.desc}</p>
+            <p class="text-xs text-slate-600 mt-1 leading-relaxed">${sop.desc}</p>
           </div>
-          <div class="bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-[11px] text-slate-500">
-            <span class="font-semibold text-slate-700 block mb-0.5">Required Fields:</span>
+          <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-[11px] text-slate-500">
+            <span class="font-bold text-slate-700 block mb-0.5">Required Fields:</span>
             <span>${sop.fields}</span>
           </div>
-          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-            <span>Custodian: <strong class="text-slate-600">${sop.role}</strong></span>
-            <span class="text-sky-600 font-medium">Standard Form</span>
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+            <span>Custodian: <strong class="text-slate-700">${sop.role}</strong></span>
+            <span class="text-sky-600 font-bold">Standard Form</span>
           </div>
         </div>
       `).join('');
     }
 
-    // FILTER & SEARCH
+    // SEARCH & FILTER
     let searchDebounce = null;
     function filterCards() {
       clearTimeout(searchDebounce);
@@ -1428,14 +1486,10 @@
       if (poSelect) poSelect.innerHTML = optionsHtml;
     }
 
+    // UI DIALOGS & FEEDBACK
     function openModal(id) {
       const el = document.getElementById(id);
       if (el) el.classList.remove('hidden');
-      if (id === 'cloud-config-modal') {
-        const stored = localStorage.getItem('alu_procurement_firebase_cfg');
-        const area = document.getElementById('cfg-firebase-json');
-        if (stored && area) area.value = stored;
-      }
     }
 
     function closeModal(id) {
@@ -1447,13 +1501,13 @@
       const container = document.getElementById('toast-container');
       if (!container) return;
       const toast = document.createElement('div');
-      const bg = type === 'success' ? 'bg-emerald-900 border-emerald-700 text-emerald-100' : 'bg-rose-900 border-rose-700 text-rose-100';
+      const bg = type === 'success' ? 'bg-slate-900 border-emerald-500/40 text-emerald-100' : 'bg-slate-900 border-rose-500/40 text-rose-100';
 
-      toast.className = `p-3 rounded-xl border shadow-xl flex items-start gap-2 text-xs transition transform translate-y-2 opacity-0 pointer-events-auto ${bg}`;
+      toast.className = `p-3.5 rounded-2xl border shadow-2xl flex items-start gap-2.5 text-xs transition transform translate-y-2 opacity-0 pointer-events-auto backdrop-blur-md ${bg}`;
       toast.innerHTML = `
         <div class="flex-1 min-w-0">
-          <strong class="block font-semibold text-white truncate">${title}</strong>
-          <span class="text-[11px] opacity-90 break-words">${message}</span>
+          <strong class="block font-bold text-white truncate">${title}</strong>
+          <span class="text-[11px] opacity-90 break-words leading-relaxed">${message}</span>
         </div>
       `;
 
@@ -1466,20 +1520,16 @@
       }, 4000);
     }
 
-    // FIREBASE REALTIME CLOUD BACKEND
-    let auth = null;
-    let db = null;
-    let activeUid = null;
-
+    // CLOUD DATABASE INTEGRATION WITH EXPLICIT "default" DATABASE ID
     function updateCloudStatus(status, label) {
       const pulseDot = document.getElementById('cloud-pulse-dot');
       const syncText = document.getElementById('cloud-sync-text');
       const userDisplay = document.getElementById('user-id-display');
 
       if (status === 'synced') {
-        if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+        if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400/50';
         if (syncText) syncText.innerText = 'Cloud Database: Synced';
-        if (userDisplay) userDisplay.innerText = label ? `ID: ${label.substring(0, 6)}` : 'Live';
+        if (userDisplay) userDisplay.innerText = label ? `ID: ${label.substring(0, 6)}` : 'default';
       } else if (status === 'local') {
         if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-amber-400';
         if (syncText) syncText.innerText = 'Local Storage';
@@ -1488,30 +1538,21 @@
     }
 
     async function initCloudBackend() {
-      let firebaseConfig = null;
       try {
-        const stored = localStorage.getItem('alu_procurement_firebase_cfg');
-        if (stored) firebaseConfig = JSON.parse(stored);
-      } catch (e) {
-        console.warn("Could not read stored Firebase config", e);
-      }
-
-      if (!firebaseConfig) {
-        updateCloudStatus('local');
-        return;
-      }
-
-      try {
-        const app = initializeApp(firebaseConfig);
+        const app = initializeApp(EMBEDDED_FIREBASE_CONFIG);
         auth = getAuth(app);
-        db = getFirestore(app, "default");
+        
+        // Connect explicitly to database ID "default" with long-polling transport
+        db = initializeFirestore(app, {
+          experimentalForceLongPolling: true
+        }, "default");
 
         signInAnonymously(auth).then(cred => {
           activeUid = cred.user.uid;
           updateCloudStatus('synced', activeUid);
-          checkAndAutoSeedFirestore();
-        }).catch((err) => {
-          console.warn("Auth notice:", err.message);
+          runDirectSeed();
+        }).catch(err => {
+          console.warn("Anonymous auth notice:", err.message);
           let guestUid = localStorage.getItem('alu_procurement_guest_uid');
           if (!guestUid) {
             guestUid = 'user_' + Math.random().toString(36).substring(2, 7);
@@ -1519,7 +1560,7 @@
           }
           activeUid = guestUid;
           updateCloudStatus('synced', activeUid);
-          checkAndAutoSeedFirestore();
+          runDirectSeed();
         });
 
         setupRealtimeSubscriptions();
@@ -1529,60 +1570,67 @@
       }
     }
 
-    async function checkAndAutoSeedFirestore() {
+    async function runDirectSeed() {
       if (!db) return;
       try {
+        console.log("Checking Firestore 'default' database collections...");
         const snap = await getDocs(collection(db, 'procurement_materials'));
         if (snap.empty) {
-          console.log("[Auto-Seed] Firestore collection is empty. Pushing master datasets...");
-          await forceSyncAllToCloud(true);
+          console.log("[Auto-Seed] Firestore collection is empty. Pushing master templates now to 'default'...");
+          await window.forceSyncAllToCloud();
+        } else {
+          console.log(`[Firestore] Remote 'default' already populated with ${snap.size} records.`);
         }
       } catch (err) {
-        if (err.message && err.message.includes('permission-denied')) {
-          showToast("Firestore Permission Notice", "Please open Firebase Console > Firestore > Security and change rules to 'allow read, write: if true;' then click Publish.", "error");
-        }
+        console.error("Auto-seed query error:", err);
       }
     }
 
-    async function forceSyncAllToCloud(silent = false) {
+    // DIRECT SEQUENTIAL WRITE ENGINE
+    window.forceSyncAllToCloud = async function() {
       if (!db) {
-        showToast("Cloud Not Configured", "Please paste your Firebase config in the modal first.", "error");
+        showToast("Cloud Not Ready", "Database is not connected yet.", "error");
         return;
       }
 
+      showToast("Syncing...", "Uploading records directly to Firestore database 'default'...", "success");
+
       try {
-        const batch = writeBatch(db);
+        let count = 0;
 
-        // Upload all current materials
-        materialsData.forEach(m => {
-          batch.set(doc(db, 'procurement_materials', m.code), m);
-        });
-
-        // Upload all current suppliers
-        suppliersData.forEach(s => {
-          batch.set(doc(db, 'procurement_suppliers', s.id), s);
-        });
-
-        // Upload all current POs
-        pipelineData.forEach(p => {
-          batch.set(doc(db, 'procurement_pipeline', p.poNumber), p);
-        });
-
-        await batch.commit();
-        if (!silent) {
-          showToast("Cloud Synchronized!", `Pushed ${materialsData.length} SKUs, ${suppliersData.length} vendors, and ${pipelineData.length} POs to Firestore.`);
-          closeModal('cloud-config-modal');
+        // 1. Upload Materials
+        for (const item of materialsData) {
+          const cleanItem = JSON.parse(JSON.stringify(item));
+          await setDoc(doc(db, 'procurement_materials', item.code), cleanItem);
+          count++;
+          console.log(`[Firestore Upload -> 'default'] Saved SKU: ${item.code}`);
         }
+
+        // 2. Upload Suppliers
+        for (const sup of suppliersData) {
+          const cleanSup = JSON.parse(JSON.stringify(sup));
+          await setDoc(doc(db, 'procurement_suppliers', sup.id), cleanSup);
+          count++;
+          console.log(`[Firestore Upload -> 'default'] Saved Vendor: ${sup.id}`);
+        }
+
+        // 3. Upload Pipeline POs
+        for (const po of pipelineData) {
+          const cleanPO = JSON.parse(JSON.stringify(po));
+          await setDoc(doc(db, 'procurement_pipeline', po.poNumber), cleanPO);
+          count++;
+          console.log(`[Firestore Upload -> 'default'] Saved PO: ${po.poNumber}`);
+        }
+
+        console.log(`[Firestore Complete] Stored ${count} total documents into database 'default'!`);
+        showToast("Cloud Synchronized!", `Uploaded ${materialsData.length} SKUs, ${suppliersData.length} vendors, and ${pipelineData.length} POs.`);
+        closeModal('cloud-config-modal');
       } catch (err) {
-        console.error("Batch push failed:", err);
-        if (err.message && err.message.includes('permission-denied')) {
-          showToast("Write Blocked by Rules", "Go to Firebase > Firestore > Security tab, change to 'allow read, write: if true;' and click Publish.", "error");
-        } else {
-          showToast("Sync Error", err.message || "Failed to push to cloud database.", "error");
-        }
+        console.error("Direct document upload failed:", err);
+        showToast("Upload Error", err.message || "Failed to write to Firestore.", "error");
       }
-    }
-`
+    };
+
     function setupRealtimeSubscriptions() {
       if (!db) return;
 
@@ -1594,9 +1642,7 @@
           scheduleKPIUpdate();
         }
       }, err => {
-        if (err.message.includes('permission-denied')) {
-          console.warn("Firestore rules blocking read:", err.message);
-        }
+        console.warn("Materials snapshot listener note:", err.message);
       });
 
       onSnapshot(collection(db, 'procurement_suppliers'), (snapshot) => {
@@ -1671,7 +1717,6 @@
         }
       };
 
-      // Optimistic Local UI Update
       materialsData.unshift(newMaterial);
       closeModal('new-entry-modal');
       e.target.reset();
@@ -1681,13 +1726,9 @@
       debouncedSaveLocalData();
       showToast("SKU Added", `${name} (${code}) created.`);
 
-      // Push to Cloud
       if (db) {
-        setDoc(doc(db, 'procurement_materials', code), newMaterial).catch(err => {
+        setDoc(doc(db, 'procurement_materials', code), JSON.parse(JSON.stringify(newMaterial))).catch(err => {
           console.warn("Background cloud sync note:", err);
-          if (err.message && err.message.includes('permission-denied')) {
-            showToast("Cloud Permission Notice", "Publish Firestore security rules to persist permanently.", "error");
-          }
         });
       }
     }
@@ -1741,7 +1782,9 @@
       showToast("Vendor Registered", `${name} added.`);
 
       if (db) {
-        setDoc(doc(db, 'procurement_suppliers', id), newSupplier).catch(err => console.warn("Cloud sync note:", err));
+        setDoc(doc(db, 'procurement_suppliers', id), JSON.parse(JSON.stringify(newSupplier))).catch(err => {
+          console.warn("Cloud sync note:", err);
+        });
       }
     }
 
@@ -1788,7 +1831,9 @@
       showToast("PO Issued", `Order ${poNum} created.`);
 
       if (db) {
-        setDoc(doc(db, 'procurement_pipeline', poNum), newPO).catch(err => console.warn("Cloud sync note:", err));
+        setDoc(doc(db, 'procurement_pipeline', poNum), JSON.parse(JSON.stringify(newPO))).catch(err => {
+          console.warn("Cloud sync note:", err);
+        });
       }
     }
 
@@ -1846,37 +1891,37 @@
       if (contentEl) {
         contentEl.innerHTML = `
           <div class="space-y-3.5 text-xs">
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2">
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2">
               <span class="font-bold text-slate-800 uppercase tracking-wider text-[10px] block">Technical Specification</span>
-              <p class="text-slate-700 font-medium">${item.specs}</p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px] text-slate-500 pt-1.5 border-t border-slate-200">
-                <span>Tolerance: <strong class="text-slate-700">${item.details?.tolerance || '± 0.05 mm'}</strong></span>
-                <span>Packaging: <strong class="text-slate-700">${item.details?.packaging || 'Standard Packaging'}</strong></span>
+              <p class="text-slate-700 font-medium leading-relaxed">${item.specs}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-500 pt-2 border-t border-slate-200">
+                <span>Tolerance: <strong class="text-slate-800">${item.details?.tolerance || '± 0.05 mm'}</strong></span>
+                <span>Packaging: <strong class="text-slate-800">${item.details?.packaging || 'Standard Packaging'}</strong></span>
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center">
-              <div class="bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5">
-                <span class="text-[9px] sm:text-[10px] text-slate-400 block uppercase">Stock</span>
-                <span class="mono font-bold text-xs sm:text-sm text-slate-800">${item.currentStock} ${item.uom}</span>
+            <div class="grid grid-cols-3 gap-2.5 sm:gap-3 text-center">
+              <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5">
+                <span class="text-[9px] sm:text-[10px] text-slate-400 block uppercase font-bold">Stock</span>
+                <span class="mono font-bold text-xs sm:text-sm text-slate-900">${item.currentStock} ${item.uom}</span>
               </div>
-              <div class="bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5">
-                <span class="text-[9px] sm:text-[10px] text-slate-400 block uppercase">ROP</span>
+              <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5">
+                <span class="text-[9px] sm:text-[10px] text-slate-400 block uppercase font-bold">ROP</span>
                 <span class="mono font-bold text-xs sm:text-sm text-amber-700">${item.reorderPoint} ${item.uom}</span>
               </div>
-              <div class="bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5">
-                <span class="text-[9px] sm:text-[10px] text-slate-400 block uppercase">Std Cost</span>
+              <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5">
+                <span class="text-[9px] sm:text-[10px] text-slate-400 block uppercase font-bold">Std Cost</span>
                 <span class="mono font-bold text-xs sm:text-sm text-emerald-700">$${Number(item.stdCost).toFixed(2)}</span>
               </div>
             </div>
 
-            <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 sm:p-3.5 space-y-1.5 text-slate-700 text-xs">
+            <div class="bg-sky-50 border border-sky-100 rounded-2xl p-4 space-y-2 text-slate-700 text-xs">
               <div class="flex justify-between items-center gap-2">
-                <span class="shrink-0">Vendor:</span>
+                <span class="shrink-0 font-medium">Approved Vendor:</span>
                 <strong class="text-sky-900 truncate">${item.supplier}</strong>
               </div>
               <div class="flex justify-between items-center gap-2">
-                <span class="shrink-0">BOM Link:</span>
+                <span class="shrink-0 font-medium">BOM Link:</span>
                 <strong class="text-slate-800 truncate">${item.details?.productionLink || 'General System'}</strong>
               </div>
             </div>
@@ -1894,15 +1939,15 @@
         const btn = document.getElementById('tab-' + t);
         if (btn) {
           btn.className = t === tabName 
-            ? 'tab-btn active-tab px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 bg-white text-slate-900 shadow-xs shrink-0 transition whitespace-nowrap'
-            : 'tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap';
+            ? 'tab-btn active-tab px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 bg-white text-slate-900 shadow-sm shrink-0 transition whitespace-nowrap font-bold'
+            : 'tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap font-medium';
         }
 
         const mNav = document.getElementById('m-nav-' + t);
         if (mNav) {
           mNav.className = t === tabName 
-            ? 'flex flex-col items-center justify-center py-1 rounded-lg text-sky-700 bg-sky-50 font-bold'
-            : 'flex flex-col items-center justify-center py-1 rounded-lg text-slate-500 hover:text-slate-900';
+            ? 'flex flex-col items-center justify-center py-1 rounded-xl text-sky-700 bg-sky-50 font-bold'
+            : 'flex flex-col items-center justify-center py-1 rounded-xl text-slate-500 hover:text-slate-900';
         }
       });
 
@@ -1920,8 +1965,8 @@
         const btn = document.getElementById('entry-tab-' + t);
         if (btn) {
           btn.className = t === type 
-            ? 'px-3 sm:px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap'
-            : 'px-3 sm:px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap';
+            ? 'px-3 sm:px-4 py-3 border-b-2 border-sky-600 text-sky-700 font-bold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap'
+            : 'px-3 sm:px-4 py-3 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap';
         }
       });
     }
@@ -1952,35 +1997,7 @@
       if (resLanded) resLanded.innerText = `$${trueLandedCost.toFixed(3)} / unit`;
     }
 
-    function saveCloudConfig() {
-      const text = document.getElementById('cfg-firebase-json')?.value.trim();
-      if (!text) {
-        showToast("Missing Config", "Please paste your Firebase configuration object.", "error");
-        return;
-      }
-      try {
-        let cleaned = text;
-        if (text.includes('{') && text.includes('}')) {
-          cleaned = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
-        }
-        const jsonLike = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
-        const parsed = JSON.parse(jsonLike);
-        localStorage.setItem('alu_procurement_firebase_cfg', JSON.stringify(parsed));
-        showToast("Config Saved", "Connecting to cloud database...");
-        setTimeout(() => window.location.reload(), 300);
-      } catch (e) {
-        showToast("Format Error", "Ensure the configuration is a valid JSON object.", "error");
-      }
-    }
-
-    function clearCloudConfig() {
-      localStorage.removeItem('alu_procurement_firebase_cfg');
-      closeModal('cloud-config-modal');
-      showToast("Config Cleared", "Reset back to local storage mode.");
-      setTimeout(() => window.location.reload(), 300);
-    }
-
-    // EXPOSE GLOBALS
+    // EXPOSE GLOBALS TO WINDOW
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.switchGallery = switchGallery;
@@ -1993,10 +2010,8 @@
     window.submitPO = submitPO;
     window.promptDelete = promptDelete;
     window.viewMaterialDetail = viewMaterialDetail;
-    window.saveCloudConfig = saveCloudConfig;
-    window.clearCloudConfig = clearCloudConfig;
-    window.forceSyncAllToCloud = forceSyncAllToCloud;
 
+    // BOOT SEQUENCE
     window.addEventListener('DOMContentLoaded', () => {
       runCalculator();
 
@@ -2011,7 +2026,9 @@
       renderSOP();
       updateHeaderKPIs();
 
-      lucide.createIcons();
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
       initCloudBackend();
     });
   </script>
