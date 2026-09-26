@@ -728,7 +728,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // =========================================================================
     // OPTIONAL: PASTE YOUR FIREBASE CONFIG HERE TO HARDCODE FOR GITHUB PAGES
@@ -1117,8 +1117,6 @@
     ];
 
     // --- 2. BACKEND CLOUD & LOCAL DATA PERSISTENCE ---
-    const appId = 'procurement-hub-default';
-    
     function getResolvedFirebaseConfig() {
       try {
         const stored = localStorage.getItem('alu_procurement_firebase_cfg');
@@ -1135,6 +1133,10 @@
     let auth = null;
     let db = null;
     let activeUid = null;
+
+    let materialsData = [...defaultMaterials];
+    let suppliersData = [...defaultSuppliers];
+    let pipelineData = [...defaultPipeline];
 
     function loadLocalData() {
       try {
@@ -1159,11 +1161,33 @@
       }
     }
 
-    let materialsData = [...defaultMaterials];
-    let suppliersData = [...defaultSuppliers];
-    let pipelineData = [...defaultPipeline];
-
     loadLocalData();
+
+    // --- PERFORMANCE ENGINE: Debounce & Scoped Render helpers ---
+    let renderTimeout = null;
+    let saveTimeout = null;
+
+    function debouncedSaveLocalData() {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        saveLocalData();
+      }, 300);
+    }
+
+    function safeCreateIcons(containerId = null) {
+      requestAnimationFrame(() => {
+        try {
+          if (containerId) {
+            const el = document.getElementById(containerId);
+            if (el) lucide.createIcons({ root: el });
+          } else {
+            lucide.createIcons();
+          }
+        } catch (e) {
+          console.warn("Lucide icon generation error:", e);
+        }
+      });
+    }
 
     function updateCloudStatus(status, label) {
       const badge = document.getElementById('cloud-status-badge');
@@ -1208,7 +1232,7 @@
         auth = getAuth(app);
         db = getFirestore(app);
 
-        // Attempt anonymous sign-in, but do not crash if provider is disabled in Firebase console
+        // Attempt anonymous sign-in with fallback
         try {
           if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
             await signInWithCustomToken(auth, __initial_auth_token);
@@ -1217,7 +1241,7 @@
           }
           activeUid = auth.currentUser?.uid;
         } catch (authErr) {
-          console.warn("Firebase Anonymous Auth not enabled. Operating unauthenticated (requires test mode rules):", authErr);
+          console.warn("Firebase Anonymous Auth not enabled. Operating unauthenticated:", authErr);
           let guestUid = localStorage.getItem('alu_procurement_guest_uid');
           if (!guestUid) {
             guestUid = 'user_' + Math.random().toString(36).substring(2, 8);
@@ -1250,14 +1274,16 @@
       onSnapshot(materialsCol, async (snapshot) => {
         if (snapshot.empty && !seededMaterials) {
           seededMaterials = true;
+          const batch = writeBatch(db);
           for (const item of defaultMaterials) {
-            await setDoc(doc(db, 'procurement_materials', item.code), item);
+            batch.set(doc(db, 'procurement_materials', item.code), item);
           }
+          await batch.commit();
           return;
         }
         materialsData = snapshot.docs.map(d => d.data());
-        saveLocalData();
-        filterCards();
+        debouncedSaveLocalData();
+        scheduleBatchRender();
         updateHeaderKPIs();
       }, (error) => {
         console.error("Materials listener error:", error);
@@ -1270,13 +1296,15 @@
       onSnapshot(suppliersCol, async (snapshot) => {
         if (snapshot.empty && !seededSuppliers) {
           seededSuppliers = true;
+          const batch = writeBatch(db);
           for (const sup of defaultSuppliers) {
-            await setDoc(doc(db, 'procurement_suppliers', sup.id), sup);
+            batch.set(doc(db, 'procurement_suppliers', sup.id), sup);
           }
+          await batch.commit();
           return;
         }
         suppliersData = snapshot.docs.map(d => d.data());
-        saveLocalData();
+        debouncedSaveLocalData();
         renderSuppliers();
         updateHeaderKPIs();
       }, (error) => {
@@ -1287,18 +1315,27 @@
       onSnapshot(pipelineCol, async (snapshot) => {
         if (snapshot.empty && !seededPipeline) {
           seededPipeline = true;
+          const batch = writeBatch(db);
           for (const po of defaultPipeline) {
-            await setDoc(doc(db, 'procurement_pipeline', po.poNumber), po);
+            batch.set(doc(db, 'procurement_pipeline', po.poNumber), po);
           }
+          await batch.commit();
           return;
         }
         pipelineData = snapshot.docs.map(d => d.data());
-        saveLocalData();
+        debouncedSaveLocalData();
         renderPipeline();
         updateHeaderKPIs();
       }, (error) => {
         console.error("Pipeline listener error:", error);
       });
+    }
+
+    function scheduleBatchRender() {
+      clearTimeout(renderTimeout);
+      renderTimeout = setTimeout(() => {
+        executeFilterCards();
+      }, 50);
     }
 
     // Modal Helpers
@@ -1334,7 +1371,7 @@
       `;
 
       container.appendChild(toast);
-      lucide.createIcons();
+      safeCreateIcons();
 
       requestAnimationFrame(() => {
         toast.classList.remove('translate-y-2', 'opacity-0');
@@ -1357,7 +1394,6 @@
         if (text.includes('{') && text.includes('}')) {
           cleaned = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
         }
-        // Normalize keys if user pasted JS object instead of pure JSON
         const jsonLike = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
         const parsed = JSON.parse(jsonLike);
         localStorage.setItem('alu_procurement_firebase_cfg', JSON.stringify(parsed));
@@ -1417,7 +1453,7 @@
             <p class="text-xs text-slate-400 mt-1">Try adjusting your search terms or category filter.</p>
           </div>
         `;
-        lucide.createIcons();
+        safeCreateIcons('materials-grid');
         return;
       }
 
@@ -1487,7 +1523,7 @@
         `;
       }).join('');
 
-      lucide.createIcons();
+      safeCreateIcons('materials-grid');
     }
 
     function viewMaterialDetail(code) {
@@ -1547,7 +1583,7 @@
       }
 
       openModal('spec-modal');
-      lucide.createIcons();
+      safeCreateIcons('spec-modal');
     }
 
     function renderSuppliers() {
@@ -1612,7 +1648,7 @@
           </div>
         </div>
       `).join('');
-      lucide.createIcons();
+      safeCreateIcons('suppliers-grid');
     }
 
     function renderPipeline() {
@@ -1658,7 +1694,7 @@
           </div>
         </div>
       `).join('');
-      lucide.createIcons();
+      safeCreateIcons('pipeline-grid');
     }
 
     function renderSOP() {
@@ -1677,14 +1713,26 @@
           </div>
           <div class="bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-[11px] text-slate-500">
             <span class="font-semibold text-slate-700 block mb-0.5">Required Fields:</span>
-            ${sop.fields}
+            <span>${sop.fields}</span>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Custodian: <strong class="text-slate-600">${sop.role}</strong></span>
+            <span class="text-sky-600 font-medium">Standard Form</span>
           </div>
         </div>
       `).join('');
-      lucide.createIcons();
+      safeCreateIcons('sop-grid');
     }
 
+    let searchDebounceTimer = null;
     function filterCards() {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        executeFilterCards();
+      }, 80);
+    }
+
+    function executeFilterCards() {
       const searchInput = document.getElementById('gallery-search');
       const catSelect = document.getElementById('category-filter');
 
@@ -1786,7 +1834,7 @@
       document.getElementById('form-add-' + type).classList.remove('hidden');
       const activeBtn = document.getElementById('entry-tab-' + type);
       if (activeBtn) activeBtn.className = 'px-3 sm:px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap';
-      lucide.createIcons();
+      safeCreateIcons();
     }
 
     async function submitMaterial(e) {
@@ -1862,14 +1910,14 @@
           console.error("Cloud save failed:", err);
           materialsData.unshift(newMaterial);
           saveLocalData();
-          filterCards();
+          executeFilterCards();
           updateHeaderKPIs();
           showToast("Saved Locally", "Saved to local storage (check Firestore rules).", "error");
         }
       } else {
         materialsData.unshift(newMaterial);
         saveLocalData();
-        filterCards();
+        executeFilterCards();
         updateHeaderKPIs();
         showToast("SKU Added", `${name} saved locally.`);
       }
@@ -2054,7 +2102,7 @@
       } else {
         if (type === 'material') {
           materialsData = materialsData.filter(m => m.code !== key);
-          filterCards();
+          executeFilterCards();
         } else if (type === 'supplier') {
           suppliersData = suppliersData.filter(s => s.id !== key);
           renderSuppliers();
@@ -2109,6 +2157,7 @@
       openModal('delete-modal');
     }
 
+    // Attach to global window
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.switchGallery = switchGallery;
