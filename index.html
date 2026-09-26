@@ -224,8 +224,8 @@
             <span class="inline">+ New Entry</span>
           </button>
 
-          <!-- Master Admin Access Control Button (Instantly Accessible for Master Admin) -->
-          <button onclick="openModal('user-management-modal')" id="header-admin-access-btn" class="hidden px-2.5 py-2 sm:px-3 sm:py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg items-center gap-1.5 transition shadow-sm active:scale-95" title="Master Admin Access & Permissions Control">
+          <!-- Master Admin Access Control Button (Instantly Accessible in Top Header) -->
+          <button onclick="openModal('user-management-modal')" id="header-admin-access-btn" class="flex px-2.5 py-2 sm:px-3 sm:py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg items-center gap-1.5 transition shadow-sm active:scale-95" title="Master Admin Access & Permissions Control">
             <i data-lucide="shield" class="w-4 h-4 text-indigo-200"></i>
             <span class="hidden sm:inline">Access Control</span>
           </button>
@@ -541,7 +541,7 @@
           </div>
           <p class="text-[11px] text-slate-600">Authorize team members, set roles, reset passwords, or revoke access instantly.</p>
           
-          <button onclick="closeSidebar('user-profile-sidebar'); openModal('user-management-modal');" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl text-xs shadow-sm flex items-center justify-center gap-1.5 transition">
+          <button onclick="closeSidebar('user-profile-sidebar'); openModal('user-management-modal');" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl text-xs shadow-sm flex items-center justify-center gap-1.5 transition active:scale-95">
             <i data-lucide="users" class="w-4 h-4"></i>
             <span>Open Access Control Center</span>
           </button>
@@ -551,6 +551,15 @@
         <div class="space-y-2">
           <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Workspace Utilities</span>
           
+          <!-- Master Admin Access in Utilities list as fallback -->
+          <button onclick="closeSidebar('user-profile-sidebar'); openModal('user-management-modal');" id="sidebar-util-access-btn" class="w-full p-2.5 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl flex items-center justify-between transition text-indigo-900 font-semibold">
+            <div class="flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-4 h-4 text-indigo-600"></i>
+              <span class="text-xs">Access &amp; Permissions Manager</span>
+            </div>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-indigo-400"></i>
+          </button>
+
           <!-- Landed Cost Tool -->
           <button onclick="closeSidebar('user-profile-sidebar'); openModal('quick-calc-modal');" class="w-full p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-between transition text-slate-700">
             <div class="flex items-center gap-2">
@@ -1926,6 +1935,23 @@
       }).join('');
     }
 
+    // UTILITY: ROBUST ROLE RESOLUTION (CASE-INSENSITIVE & BACKWARD-COMPATIBLE)
+    function isUserAdmin(user) {
+      if (!user) return false;
+      const r = String(user.role || '').toLowerCase();
+      const u = String(user.username || '').toLowerCase();
+      const l = String(user.roleLabel || '').toLowerCase();
+      return r.includes('admin') || u === 'admin' || l.includes('admin') || r.includes('gm');
+    }
+
+    function isUserFinanceOrAdmin(user) {
+      if (!user) return false;
+      if (isUserAdmin(user)) return true;
+      const r = String(user.role || '').toLowerCase();
+      const l = String(user.roleLabel || '').toLowerCase();
+      return r.includes('finance') || l.includes('finance');
+    }
+
     function renderPRs() {
       const container = document.getElementById('prs-grid');
       if (!container) return;
@@ -1943,7 +1969,7 @@
         return;
       }
 
-      const isStep2Authorized = currentUser && (currentUser.role === 'finance' || currentUser.role === 'admin');
+      const isStep2Authorized = isUserFinanceOrAdmin(currentUser);
 
       container.innerHTML = prsData.map(pr => {
         const step1Done = pr.step1 && pr.step1.approved;
@@ -2409,7 +2435,7 @@
 
       // Enforcement Gate: Step 2 requires Finance Head or Master Admin
       if (step === 2) {
-        const canApproveStep2 = currentUser && (currentUser.role === 'finance' || currentUser.role === 'admin');
+        const canApproveStep2 = isUserFinanceOrAdmin(currentUser);
         if (!canApproveStep2) {
           showToast("Authorization Restricted", "Step 2 Final Authorization strictly requires Finance Department Head or Master Admin authority.", "error");
           return;
@@ -2453,7 +2479,7 @@
             <option value="Production Head / Tech Lead">Production Head / Project Tech Lead</option>
             <option value="Master Admin / General Manager">Master Admin / General Manager</option>
           `;
-          roleSelect.value = currentUser?.role === 'admin' ? "Master Admin / General Manager" : "Production Head / Tech Lead";
+          roleSelect.value = isUserAdmin(currentUser) ? "Master Admin / General Manager" : "Production Head / Tech Lead";
         }
       } else {
         titleEl.innerText = "Step 2: Finance Head / Master Admin Final Authorization";
@@ -2465,7 +2491,7 @@
             <option value="Finance Department Head">Finance Department Head</option>
             <option value="Master Admin / General Manager">Master Admin / General Manager</option>
           `;
-          roleSelect.value = currentUser?.role === 'admin' ? "Master Admin / General Manager" : "Finance Department Head";
+          roleSelect.value = isUserAdmin(currentUser) ? "Master Admin / General Manager" : "Finance Department Head";
         }
       }
 
@@ -2487,7 +2513,7 @@
 
       // Guard check before processing
       if (step === 2) {
-        const canApproveStep2 = currentUser && (currentUser.role === 'finance' || currentUser.role === 'admin');
+        const canApproveStep2 = isUserFinanceOrAdmin(currentUser);
         if (!canApproveStep2) {
           showToast("Authorization Restricted", "Only Finance Department Head or Master Admin can authorize Step 2.", "error");
           closeModal('pr-approval-modal');
@@ -2800,10 +2826,12 @@
       if (sUname) sUname.innerText = `@${currentUser.username || 'user'}`;
       if (sBadge) sBadge.innerText = currentUser.roleLabel || currentUser.role || 'Staff';
 
+      const userIsAdmin = isUserAdmin(currentUser);
+
       // Master Admin Header button visibility
       const headerAdminBtn = document.getElementById('header-admin-access-btn');
       if (headerAdminBtn) {
-        if (currentUser.role === 'admin') {
+        if (userIsAdmin) {
           headerAdminBtn.classList.remove('hidden');
           headerAdminBtn.classList.add('flex');
         } else {
@@ -2815,7 +2843,13 @@
       // Admin Access card visibility in sidebar
       const accessCard = document.getElementById('sidebar-access-card');
       if (accessCard) {
-        accessCard.style.display = currentUser.role === 'admin' ? 'block' : 'none';
+        accessCard.style.display = userIsAdmin ? 'block' : 'none';
+      }
+
+      // Sidebar util fallback access button
+      const utilAccessBtn = document.getElementById('sidebar-util-access-btn');
+      if (utilAccessBtn) {
+        utilAccessBtn.style.display = userIsAdmin ? 'flex' : 'none';
       }
 
       renderUsersTable();
