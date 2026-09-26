@@ -97,6 +97,13 @@
         <!-- Controls: Desktop KPIs & Action Buttons -->
         <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
           
+          <!-- Live Cloud Sync & User Badge -->
+          <div id="cloud-status-badge" class="hidden sm:flex items-center gap-2 px-2.5 py-1 bg-slate-800/90 border border-slate-700 rounded-lg text-[11px] text-slate-300">
+            <span id="cloud-pulse-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="cloud-sync-text" class="font-medium text-slate-200">Cloud Sync: Active</span>
+            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-slate-700 pl-2">Connecting...</span>
+          </div>
+
           <!-- Large screen KPI telemetry -->
           <div class="hidden lg:flex items-center gap-5 border-l border-slate-800 pl-5 text-xs mr-1">
             <div>
@@ -126,7 +133,7 @@
           </button>
 
           <!-- Reset to master defaults button -->
-          <button onclick="resetSystemData()" title="Reset to Master Defaults" aria-label="Reset System Data" class="hidden sm:flex p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition">
+          <button onclick="promptReset()" title="Reset to Master Defaults" aria-label="Reset System Data" class="hidden sm:flex p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition">
             <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
           </button>
         </div>
@@ -672,9 +679,13 @@
   <!-- TOAST NOTIFICATION CONTAINER (Fixed bottom right on desktop, top center on mobile) -->
   <div id="toast-container" class="fixed top-4 left-3 right-3 sm:left-auto sm:top-auto sm:bottom-5 sm:right-5 z-50 space-y-2 pointer-events-none sm:max-w-sm"></div>
 
-  <!-- JAVASCRIPT SYSTEM DATA & RENDERING -->
-  <script>
-    // --- 1. DEFAULT DATASETS (Used as initial seed and fallback) ---
+  <!-- JAVASCRIPT SYSTEM DATA & CLOUD DATABASE PERSISTENCE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // --- 1. DEFAULT DATASETS (Seed data for initialization and offline fallback) ---
     const defaultMaterials = [
       {
         code: "AL-76-SLD-BLK",
@@ -1055,32 +1066,135 @@
       }
     ];
 
-    // --- 2. LOCALSTORAGE PERSISTENCE INITIALIZATION ---
-    let materialsData = JSON.parse(localStorage.getItem('alu_materials')) || defaultMaterials;
-    let suppliersData = JSON.parse(localStorage.getItem('alu_suppliers')) || defaultSuppliers;
-    let pipelineData = JSON.parse(localStorage.getItem('alu_pipeline')) || defaultPipeline;
+    // --- 2. BACKEND CLOUD DATABASE INITIALIZATION ---
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'procurement-hub-default';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
 
-    function saveState() {
-      localStorage.setItem('alu_materials', JSON.stringify(materialsData));
-      localStorage.setItem('alu_suppliers', JSON.stringify(suppliersData));
-      localStorage.setItem('alu_pipeline', JSON.stringify(pipelineData));
+    let auth = null;
+    let db = null;
+    let currentUser = null;
+
+    let materialsData = [...defaultMaterials];
+    let suppliersData = [...defaultSuppliers];
+    let pipelineData = [...defaultPipeline];
+
+    let seededMaterials = false;
+    let seededSuppliers = false;
+    let seededPipeline = false;
+
+    function updateCloudStatus(isConnected, userIdentifier) {
+      const badge = document.getElementById('cloud-status-badge');
+      const pulseDot = document.getElementById('cloud-pulse-dot');
+      const syncText = document.getElementById('cloud-sync-text');
+      const userDisplay = document.getElementById('user-id-display');
+
+      if (!badge) return;
+      if (isConnected) {
+        if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+        if (syncText) syncText.innerText = 'Cloud Database: Synced';
+        if (userDisplay) {
+          userDisplay.innerText = `UID: ${userIdentifier}`;
+          userDisplay.title = `Authenticated User ID: ${userIdentifier}`;
+        }
+      } else {
+        if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        if (syncText) syncText.innerText = 'Memory Mode';
+        if (userDisplay) userDisplay.innerText = userIdentifier || 'Local';
+      }
     }
 
-    function resetSystemData() {
-      if (confirm("Reset all procurement records back to the default master catalog?")) {
-        materialsData = [...defaultMaterials];
-        suppliersData = [...defaultSuppliers];
-        pipelineData = [...defaultPipeline];
-        saveState();
+    async function initCloudBackend() {
+      if (!firebaseConfig) {
+        updateCloudStatus(false, 'In-Memory Only');
         renderMaterials(materialsData);
         renderSuppliers();
         renderPipeline();
         updateHeaderKPIs();
-        showToast("System Reset", "Catalog restored to default datasets.");
+        return;
+      }
+
+      try {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        // Rule 3: Auth before any database queries
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        currentUser = auth.currentUser;
+        if (!currentUser) return;
+
+        updateCloudStatus(true, currentUser.uid);
+        setupRealtimeSubscriptions();
+      } catch (err) {
+        console.error("Cloud database init error:", err);
+        updateCloudStatus(false, 'Auth Offline');
+        renderMaterials(materialsData);
+        renderSuppliers();
+        renderPipeline();
+        updateHeaderKPIs();
       }
     }
 
-    // --- 3. UI UTILITIES & MODAL CONTROLLERS ---
+    function setupRealtimeSubscriptions() {
+      if (!db || !currentUser) return;
+
+      // 1. Materials Collection Listener (Rule 1 Strict Path: /artifacts/{appId}/public/data/{collection})
+      const materialsCol = collection(db, 'artifacts', appId, 'public', 'data', 'materials');
+      onSnapshot(materialsCol, async (snapshot) => {
+        if (snapshot.empty && !seededMaterials) {
+          seededMaterials = true;
+          // Seed defaults into database
+          for (const item of defaultMaterials) {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'materials', item.code), item);
+          }
+          return;
+        }
+        materialsData = snapshot.docs.map(d => d.data());
+        filterCards();
+        updateHeaderKPIs();
+      }, (error) => {
+        console.error("Materials listener error:", error);
+      });
+
+      // 2. Suppliers Collection Listener
+      const suppliersCol = collection(db, 'artifacts', appId, 'public', 'data', 'suppliers');
+      onSnapshot(suppliersCol, async (snapshot) => {
+        if (snapshot.empty && !seededSuppliers) {
+          seededSuppliers = true;
+          for (const sup of defaultSuppliers) {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suppliers', sup.id), sup);
+          }
+          return;
+        }
+        suppliersData = snapshot.docs.map(d => d.data());
+        renderSuppliers();
+        updateHeaderKPIs();
+      }, (error) => {
+        console.error("Suppliers listener error:", error);
+      });
+
+      // 3. Pipeline PO Collection Listener
+      const pipelineCol = collection(db, 'artifacts', appId, 'public', 'data', 'pipeline');
+      onSnapshot(pipelineCol, async (snapshot) => {
+        if (snapshot.empty && !seededPipeline) {
+          seededPipeline = true;
+          for (const po of defaultPipeline) {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pipeline', po.poNumber), po);
+          }
+          return;
+        }
+        pipelineData = snapshot.docs.map(d => d.data());
+        renderPipeline();
+        updateHeaderKPIs();
+      }, (error) => {
+        console.error("Pipeline listener error:", error);
+      });
+    }
 
     function openModal(id) {
       const el = document.getElementById(id);
@@ -1122,20 +1236,17 @@
     }
 
     function updateHeaderKPIs() {
-      // 1. SKU Count
       const skuHeader = document.getElementById('sku-count-header');
       if (skuHeader) skuHeader.innerText = materialsData.length;
       const matBadge = document.getElementById('mat-count-badge');
       if (matBadge) matBadge.innerText = materialsData.length;
 
-      // 2. Vendor Count
       const vendorHeader = document.getElementById('vendor-count-header');
       if (vendorHeader) vendorHeader.innerText = `${suppliersData.length} Active`;
       const supBadge = document.getElementById('sup-count-badge');
       if (supBadge) supBadge.innerText = suppliersData.length;
 
-      // 3. Open PO Value
-      const totalPO = pipelineData.reduce((sum, item) => sum + (item.rawAmount || 0), 0);
+      const totalPO = pipelineData.reduce((sum, item) => sum + (Number(item.rawAmount) || 0), 0);
       const poHeader = document.getElementById('po-value-header');
       if (poHeader) poHeader.innerText = `$${totalPO.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
       const poBadge = document.getElementById('po-count-badge');
@@ -1152,8 +1263,6 @@
       if (matSelect) matSelect.innerHTML = optionsHtml;
       if (poSelect) poSelect.innerHTML = optionsHtml;
     }
-
-    // --- 4. RENDERERS (OPTIMIZED FOR ALL SCREEN SIZES) ---
 
     function renderMaterials(items = materialsData) {
       const container = document.getElementById('materials-grid');
@@ -1187,7 +1296,6 @@
         return `
           <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-transition flex flex-col justify-between space-y-3 relative">
             <div>
-              <!-- Card Top Header -->
               <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-2 min-w-0">
                   <div class="w-8 h-8 rounded-lg bg-gradient-to-br ${m.imageBg || 'from-sky-700 to-slate-900'} text-white flex items-center justify-center shrink-0 shadow-xs">
@@ -1206,12 +1314,10 @@
                 </div>
               </div>
 
-              <!-- Title & Spec -->
               <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 line-clamp-1" title="${m.name}">${m.name}</h3>
               <p class="text-[11px] text-slate-500 mt-1 line-clamp-2" title="${m.specs}">${m.specs}</p>
             </div>
 
-            <!-- Stock vs ROP Indicator -->
             <div class="space-y-1.5 bg-slate-50 border border-slate-100 rounded-lg p-2.5">
               <div class="flex justify-between items-center text-xs">
                 <span class="text-slate-500 text-[11px]">Stock Balance:</span>
@@ -1226,11 +1332,10 @@
               </div>
             </div>
 
-            <!-- Pricing & Vendor Footer -->
             <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <div>
                 <span class="text-[10px] text-slate-400 uppercase block">Std Cost</span>
-                <span class="mono font-bold text-emerald-700 text-xs sm:text-sm">$${typeof m.stdCost === 'number' ? m.stdCost.toFixed(2) : m.stdCost}</span>
+                <span class="mono font-bold text-emerald-700 text-xs sm:text-sm">$${Number(m.stdCost).toFixed(2)}</span>
               </div>
               <button onclick="viewMaterialDetail('${m.code}')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 rounded-lg font-medium text-[11px] transition flex items-center gap-1 border border-slate-200/60 active:scale-95">
                 <i data-lucide="eye" class="w-3 h-3"></i>
@@ -1308,69 +1413,64 @@
       const container = document.getElementById('suppliers-grid');
       if (!container) return;
 
-      container.innerHTML = suppliersData.map(sup => {
-        return `
-          <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-4 sm:p-5 card-transition flex flex-col justify-between space-y-3.5 relative">
-            <div>
-              <div class="flex items-start justify-between gap-2">
-                <div class="min-w-0">
-                  <span class="mono text-[10px] text-slate-400 uppercase font-semibold block">${sup.id}</span>
-                  <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-0.5 truncate">${sup.name}</h3>
-                  <span class="text-xs text-sky-700 font-medium truncate block">${sup.category}</span>
-                </div>
-                <div class="flex items-center gap-1 shrink-0">
-                  <span class="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full border ${sup.tierColor}">${sup.tier}</span>
-                  <button onclick="promptDelete('supplier', '${sup.id}')" aria-label="Delete Vendor" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete Supplier">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                  </button>
-                </div>
+      container.innerHTML = suppliersData.map(sup => `
+        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-4 sm:p-5 card-transition flex flex-col justify-between space-y-3.5 relative">
+          <div>
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <span class="mono text-[10px] text-slate-400 uppercase font-semibold block">${sup.id}</span>
+                <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-0.5 truncate">${sup.name}</h3>
+                <span class="text-xs text-sky-700 font-medium truncate block">${sup.category}</span>
               </div>
-
-              <!-- Score Summary Grid -->
-              <div class="mt-3.5 grid grid-cols-3 gap-1.5 sm:gap-2 text-center bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5">
-                <div>
-                  <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">Score</span>
-                  <span class="mono font-bold text-xs sm:text-base text-slate-900">${sup.score}<span class="text-[10px] font-normal text-slate-400">/100</span></span>
-                </div>
-                <div>
-                  <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">OTIF</span>
-                  <span class="mono font-bold text-xs sm:text-base text-emerald-600">${sup.otif}</span>
-                </div>
-                <div>
-                  <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">QC Rate</span>
-                  <span class="mono font-bold text-xs sm:text-base text-sky-600">${sup.qcRate}</span>
-                </div>
-              </div>
-
-              <!-- Breakdown Weights -->
-              <div class="mt-3 space-y-1 text-[11px] text-slate-600">
-                <div class="flex justify-between">
-                  <span>Price Competitiveness:</span>
-                  <span class="mono font-semibold">${sup.metrics?.price ?? 22}/25</span>
-                </div>
-                <div class="flex justify-between">
-                  <span>Quality Conformance:</span>
-                  <span class="mono font-semibold">${sup.metrics?.quality ?? 24}/25</span>
-                </div>
-                <div class="flex justify-between">
-                  <span>On-Time Delivery:</span>
-                  <span class="mono font-semibold">${sup.metrics?.delivery ?? 18}/20</span>
-                </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full border ${sup.tierColor}">${sup.tier}</span>
+                <button onclick="promptDelete('supplier', '${sup.id}')" aria-label="Delete Vendor" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete Supplier">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
               </div>
             </div>
 
-            <!-- Commercial Terms Footer -->
-            <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-              <span class="flex items-center gap-1 truncate">
-                <i data-lucide="credit-card" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i> ${sup.paymentTerms}
-              </span>
-              <span class="flex items-center gap-1 shrink-0">
-                <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i> ${sup.leadTime}
-              </span>
+            <div class="mt-3.5 grid grid-cols-3 gap-1.5 sm:gap-2 text-center bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5">
+              <div>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">Score</span>
+                <span class="mono font-bold text-xs sm:text-base text-slate-900">${sup.score}<span class="text-[10px] font-normal text-slate-400">/100</span></span>
+              </div>
+              <div>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">OTIF</span>
+                <span class="mono font-bold text-xs sm:text-base text-emerald-600">${sup.otif}</span>
+              </div>
+              <div>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">QC Rate</span>
+                <span class="mono font-bold text-xs sm:text-base text-sky-600">${sup.qcRate || '99.0%'}</span>
+              </div>
+            </div>
+
+            <div class="mt-3 space-y-1 text-[11px] text-slate-600">
+              <div class="flex justify-between">
+                <span>Price Competitiveness:</span>
+                <span class="mono font-semibold">${sup.metrics?.price ?? 22}/25</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Quality Conformance:</span>
+                <span class="mono font-semibold">${sup.metrics?.quality ?? 24}/25</span>
+              </div>
+              <div class="flex justify-between">
+                <span>On-Time Delivery:</span>
+                <span class="mono font-semibold">${sup.metrics?.delivery ?? 18}/20</span>
+              </div>
             </div>
           </div>
-        `;
-      }).join('');
+
+          <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <span class="flex items-center gap-1 truncate">
+              <i data-lucide="credit-card" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i> ${sup.paymentTerms}
+            </span>
+            <span class="flex items-center gap-1 shrink-0">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i> ${sup.leadTime}
+            </span>
+          </div>
+        </div>
+      `).join('');
       lucide.createIcons();
     }
 
@@ -1378,50 +1478,45 @@
       const container = document.getElementById('pipeline-grid');
       if (!container) return;
 
-      container.innerHTML = pipelineData.map(po => {
-        return `
-          <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-transition flex flex-col justify-between space-y-3 relative">
-            <div>
-              <div class="flex items-center justify-between gap-2">
-                <span class="mono text-xs font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded shrink-0">${po.poNumber}</span>
-                <div class="flex items-center gap-1 shrink-0">
-                  <span class="text-[10px] px-2 py-0.5 rounded-full border ${po.alertBadge}">${po.alert}</span>
-                  <button onclick="promptDelete('po', '${po.poNumber}')" aria-label="Delete PO" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete PO">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                  </button>
-                </div>
-              </div>
-              <h4 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 truncate">${po.vendor}</h4>
-              <p class="text-xs text-slate-600 mt-0.5 font-medium line-clamp-1">${po.items}</p>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="space-y-1">
-              <div class="flex justify-between text-[11px] text-slate-500">
-                <span>Status: <strong class="text-slate-800">${po.status}</strong></span>
-                <span class="mono font-semibold">${po.progressPct}%</span>
-              </div>
-              <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                <div class="bg-sky-600 h-1.5 rounded-full" style="width: ${po.progressPct}%"></div>
+      container.innerHTML = pipelineData.map(po => `
+        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-transition flex flex-col justify-between space-y-3 relative">
+          <div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="mono text-xs font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded shrink-0">${po.poNumber}</span>
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="text-[10px] px-2 py-0.5 rounded-full border ${po.alertBadge}">${po.alert}</span>
+                <button onclick="promptDelete('po', '${po.poNumber}')" aria-label="Delete PO" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete PO">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
               </div>
             </div>
+            <h4 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 truncate">${po.vendor}</h4>
+            <p class="text-xs text-slate-600 mt-0.5 font-medium line-clamp-1">${po.items}</p>
+          </div>
 
-            <!-- Action Note -->
-            <div class="bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5 text-xs text-slate-700">
-              <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Expediting Action:</span>
-              <p class="text-[11px] line-clamp-2">${po.dockAction}</p>
+          <div class="space-y-1">
+            <div class="flex justify-between text-[11px] text-slate-500">
+              <span>Status: <strong class="text-slate-800">${po.status}</strong></span>
+              <span class="mono font-semibold">${po.progressPct}%</span>
             </div>
-
-            <!-- Footer Details -->
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span class="mono font-bold text-slate-900 text-xs sm:text-sm">${po.amount}</span>
-              <span class="text-slate-500 flex items-center gap-1 text-[11px]">
-                <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i> ${po.dueDate}
-              </span>
+            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-sky-600 h-1.5 rounded-full" style="width: ${po.progressPct}%"></div>
             </div>
           </div>
-        `;
-      }).join('');
+
+          <div class="bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5 text-xs text-slate-700">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Expediting Action:</span>
+            <p class="text-[11px] line-clamp-2">${po.dockAction}</p>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="mono font-bold text-slate-900 text-xs sm:text-sm">${po.amount}</span>
+            <span class="text-slate-500 flex items-center gap-1 text-[11px]">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i> ${po.dueDate}
+            </span>
+          </div>
+        </div>
+      `).join('');
       lucide.createIcons();
     }
 
@@ -1456,10 +1551,10 @@
       const category = catSelect ? catSelect.value : 'all';
 
       const filtered = materialsData.filter(m => {
-        const matchesTerm = m.name.toLowerCase().includes(term) || 
-                            m.code.toLowerCase().includes(term) || 
-                            m.specs.toLowerCase().includes(term) || 
-                            m.supplier.toLowerCase().includes(term);
+        const matchesTerm = (m.name || '').toLowerCase().includes(term) || 
+                            (m.code || '').toLowerCase().includes(term) || 
+                            (m.specs || '').toLowerCase().includes(term) || 
+                            (m.supplier || '').toLowerCase().includes(term);
         const matchesCategory = category === 'all' || m.category === category;
         return matchesTerm && matchesCategory;
       });
@@ -1493,15 +1588,12 @@
       if (resLanded) resLanded.innerText = `$${trueLandedCost.toFixed(3)} / unit`;
     }
 
-    // --- 5. NAVIGATION & TAB SWITCHING (DESKTOP + MOBILE SYNC) ---
-
     function switchGallery(tabName) {
       document.getElementById('gallery-materials').classList.add('hidden');
       document.getElementById('gallery-suppliers').classList.add('hidden');
       document.getElementById('gallery-pipeline').classList.add('hidden');
       document.getElementById('gallery-sop').classList.add('hidden');
 
-      // Sync Desktop & Tablet tabs
       document.querySelectorAll('.tab-btn').forEach(b => {
         b.classList.remove('bg-white', 'text-slate-900', 'shadow-xs');
         b.classList.add('text-slate-600');
@@ -1513,7 +1605,6 @@
         activeBtn.classList.remove('text-slate-600');
       }
 
-      // Sync Mobile Bottom Bar
       ['materials', 'suppliers', 'pipeline', 'sop'].forEach(t => {
         const mNav = document.getElementById('m-nav-' + t);
         if (mNav) {
@@ -1525,7 +1616,6 @@
         }
       });
 
-      // Show Section
       document.getElementById('gallery-' + tabName).classList.remove('hidden');
 
       if(tabName === 'materials') renderMaterials(materialsData);
@@ -1535,8 +1625,6 @@
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-
-    // --- 6. MODAL & FORM SWITCHER ---
 
     function openNewEntryModal(tab = 'material') {
       populateVendorDropdowns();
@@ -1560,9 +1648,7 @@
       lucide.createIcons();
     }
 
-    // --- 7. FORM SUBMISSIONS ---
-
-    function submitMaterial(e) {
+    async function submitMaterial(e) {
       e.preventDefault();
       const code = document.getElementById('mat-code').value.trim().toUpperCase();
       const category = document.getElementById('mat-category').value;
@@ -1626,17 +1712,29 @@
         }
       };
 
-      materialsData.unshift(newMaterial);
-      saveState();
-      renderMaterials(materialsData);
-      updateHeaderKPIs();
+      // Guarded cloud persistence
+      if (db && currentUser) {
+        try {
+          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'materials', code);
+          await setDoc(docRef, newMaterial);
+          showToast("Cloud Synced", `${name} (${code}) saved to shared database.`);
+        } catch (err) {
+          console.error("Cloud save failed:", err);
+          showToast("Sync Error", "Failed to persist to cloud database.", "error");
+        }
+      } else {
+        materialsData.unshift(newMaterial);
+        filterCards();
+        updateHeaderKPIs();
+        showToast("SKU Added", `${name} saved in memory.`);
+      }
+
       closeModal('new-entry-modal');
       e.target.reset();
-      showToast("SKU Added", `${name} (${code}) saved.`);
       switchGallery('materials');
     }
 
-    function submitSupplier(e) {
+    async function submitSupplier(e) {
       e.preventDefault();
       const id = document.getElementById('sup-id').value.trim().toUpperCase();
       const name = document.getElementById('sup-name').value.trim();
@@ -1677,17 +1775,28 @@
         qcRate: "99.0%"
       };
 
-      suppliersData.unshift(newSupplier);
-      saveState();
-      renderSuppliers();
-      updateHeaderKPIs();
+      if (db && currentUser) {
+        try {
+          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'suppliers', id);
+          await setDoc(docRef, newSupplier);
+          showToast("Vendor Synced", `${name} registered in cloud database.`);
+        } catch (err) {
+          console.error("Cloud save failed:", err);
+          showToast("Sync Error", "Could not register vendor online.", "error");
+        }
+      } else {
+        suppliersData.unshift(newSupplier);
+        renderSuppliers();
+        updateHeaderKPIs();
+        showToast("Vendor Registered", `${name} saved in memory.`);
+      }
+
       closeModal('new-entry-modal');
       e.target.reset();
-      showToast("Vendor Registered", `${name} registered in ASL.`);
       switchGallery('suppliers');
     }
 
-    function submitPO(e) {
+    async function submitPO(e) {
       e.preventDefault();
       const poNum = document.getElementById('po-num').value.trim().toUpperCase();
       const vendor = document.getElementById('po-vendor-select').value;
@@ -1728,17 +1837,27 @@
         dockAction: action
       };
 
-      pipelineData.unshift(newPO);
-      saveState();
-      renderPipeline();
-      updateHeaderKPIs();
+      if (db && currentUser) {
+        try {
+          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'pipeline', poNum);
+          await setDoc(docRef, newPO);
+          showToast("PO Issued", `Order ${poNum} synced to cloud.`);
+        } catch (err) {
+          console.error("Cloud PO save failed:", err);
+          showToast("Sync Error", "Could not issue PO online.", "error");
+        }
+      } else {
+        pipelineData.unshift(newPO);
+        renderPipeline();
+        updateHeaderKPIs();
+        showToast("PO Issued", `PO ${poNum} created in memory.`);
+      }
+
       closeModal('new-entry-modal');
       e.target.reset();
-      showToast("PO Issued", `PO ${poNum} created for ${vendor}.`);
       switchGallery('pipeline');
     }
 
-    // --- 8. DELETE CONTROLLER ---
     let pendingDelete = null;
 
     function promptDelete(type, key) {
@@ -1748,43 +1867,109 @@
       if (type === 'supplier') label = `Supplier: ${key}`;
       if (type === 'po') label = `Purchase Order: ${key}`;
 
-      document.getElementById('del-modal-title').innerText = `Delete ${key}`;
-      document.getElementById('del-modal-msg').innerText = `Are you sure you want to remove ${label}? This will update active inventory counts.`;
+      const titleEl = document.getElementById('del-modal-title');
+      const msgEl = document.getElementById('del-modal-msg');
+      if (titleEl) titleEl.innerText = `Delete ${key}`;
+      if (msgEl) msgEl.innerText = `Are you sure you want to remove ${label}? This will permanently update the cloud database.`;
       
       const confirmBtn = document.getElementById('del-confirm-btn');
-      confirmBtn.onclick = executeDelete;
+      if (confirmBtn) confirmBtn.onclick = executeDelete;
       
       openModal('delete-modal');
     }
 
-    function executeDelete() {
+    async function executeDelete() {
       if (!pendingDelete) return;
       const { type, key } = pendingDelete;
 
-      if (type === 'material') {
-        materialsData = materialsData.filter(m => m.code !== key);
-        renderMaterials(materialsData);
-        showToast("SKU Deleted", `Removed SKU ${key}`);
-      } else if (type === 'supplier') {
-        suppliersData = suppliersData.filter(s => s.id !== key);
-        renderSuppliers();
-        showToast("Vendor Deleted", `Removed Vendor ${key}`);
-      } else if (type === 'po') {
-        pipelineData = pipelineData.filter(p => p.poNumber !== key);
-        renderPipeline();
-        showToast("PO Deleted", `Removed Order ${key}`);
+      if (db && currentUser) {
+        try {
+          if (type === 'material') {
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'materials', key));
+          } else if (type === 'supplier') {
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suppliers', key));
+          } else if (type === 'po') {
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pipeline', key));
+          }
+          showToast("Deleted", `Removed ${key} from cloud database.`);
+        } catch (err) {
+          console.error("Cloud deletion failed:", err);
+          showToast("Delete Error", "Could not delete from cloud.", "error");
+        }
+      } else {
+        if (type === 'material') {
+          materialsData = materialsData.filter(m => m.code !== key);
+          filterCards();
+        } else if (type === 'supplier') {
+          suppliersData = suppliersData.filter(s => s.id !== key);
+          renderSuppliers();
+        } else if (type === 'po') {
+          pipelineData = pipelineData.filter(p => p.poNumber !== key);
+          renderPipeline();
+        }
+        updateHeaderKPIs();
+        showToast("Item Removed", `Removed ${key} from memory.`);
       }
 
-      saveState();
-      updateHeaderKPIs();
       closeModal('delete-modal');
       pendingDelete = null;
     }
 
-    // --- 9. INITIAL LIFECYCLE LOAD ---
+    function promptReset() {
+      // Uses custom modal interface without calling window.confirm()
+      pendingDelete = { type: 'system_reset', key: 'ALL' };
+      const titleEl = document.getElementById('del-modal-title');
+      const msgEl = document.getElementById('del-modal-msg');
+      if (titleEl) titleEl.innerText = "Reset Master Datasets?";
+      if (msgEl) msgEl.innerText = "This will restore the standard catalog, active vendors, and open POs back to default templates.";
+      
+      const confirmBtn = document.getElementById('del-confirm-btn');
+      if (confirmBtn) {
+        confirmBtn.onclick = async () => {
+          if (db && currentUser) {
+            for (const m of defaultMaterials) {
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'materials', m.code), m);
+            }
+            for (const s of defaultSuppliers) {
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suppliers', s.id), s);
+            }
+            for (const po of defaultPipeline) {
+              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pipeline', po.poNumber), po);
+            }
+            showToast("System Reset", "Cloud database re-seeded with master templates.");
+          } else {
+            materialsData = [...defaultMaterials];
+            suppliersData = [...defaultSuppliers];
+            pipelineData = [...defaultPipeline];
+            renderMaterials(materialsData);
+            renderSuppliers();
+            renderPipeline();
+            updateHeaderKPIs();
+            showToast("System Reset", "Master templates restored in memory.");
+          }
+          closeModal('delete-modal');
+        };
+      }
+      openModal('delete-modal');
+    }
+
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.switchGallery = switchGallery;
+    window.filterCards = filterCards;
+    window.runCalculator = runCalculator;
+    window.openNewEntryModal = openNewEntryModal;
+    window.switchEntryTab = switchEntryTab;
+    window.submitMaterial = submitMaterial;
+    window.submitSupplier = submitSupplier;
+    window.submitPO = submitPO;
+    window.promptDelete = promptDelete;
+    window.executeDelete = executeDelete;
+    window.promptReset = promptReset;
+    window.viewMaterialDetail = viewMaterialDetail;
+
+    // Initialization
     window.addEventListener('DOMContentLoaded', () => {
-      renderMaterials(materialsData);
-      updateHeaderKPIs();
       runCalculator();
 
       const nextWeek = new Date();
@@ -1792,6 +1977,8 @@
       const formatted = nextWeek.toISOString().split('T')[0];
       const dueInput = document.getElementById('po-due');
       if (dueInput) dueInput.value = formatted;
+
+      initCloudBackend();
     });
   </script>
 </body>
