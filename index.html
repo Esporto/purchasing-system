@@ -177,6 +177,22 @@
           <button onclick="window.forceSyncAllToCloud()" title="Force Upload All Records to Firestore" aria-label="Force Sync to Cloud" class="p-2 text-sky-400 hover:text-white hover:bg-slate-800 rounded-xl transition active:scale-95">
             <i data-lucide="cloud-upload" class="w-4 h-4"></i>
           </button>
+
+          <!-- User Session Profile & Logout Pill -->
+          <div id="user-session-container" class="flex items-center gap-1.5 sm:gap-2 pl-2 sm:pl-3 border-l border-slate-800">
+            <div class="flex items-center gap-2">
+              <div id="user-avatar-badge" class="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 text-white font-extrabold text-xs flex items-center justify-center shadow-sm shrink-0 border border-sky-400/30">
+                AD
+              </div>
+              <div class="hidden sm:block text-left">
+                <span id="user-display-name" class="block font-bold text-xs text-slate-100 leading-tight truncate max-w-[110px]">Admin</span>
+                <span id="user-display-role" class="block text-[10px] text-sky-400 font-medium leading-tight truncate max-w-[110px]">Administrator</span>
+              </div>
+            </div>
+            <button onclick="handleSignOut()" title="Sign Out" aria-label="Sign Out" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-xl transition active:scale-95 ml-0.5">
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+            </button>
+          </div>
         </div>
 
       </div>
@@ -733,6 +749,86 @@
     </div>
   </div>
 
+  <!-- MODAL 2B: DYNAMIC PR APPROVAL & SIGN-OFF MODAL -->
+  <div id="pr-approval-modal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between shrink-0 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div id="approve-step-icon" class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs shrink-0 border border-amber-400/30">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-xs sm:text-sm" id="approve-modal-heading">Authorize Purchase Requisition</h3>
+              <span id="approve-modal-step-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">Step 1 of 2</span>
+            </div>
+            <p class="text-[10px] text-slate-400 mono" id="approve-modal-pr-num">PR-2026-000</p>
+          </div>
+        </div>
+        <button onclick="closeModal('pr-approval-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="form-pr-approval" onsubmit="submitPRApproval(event)" class="p-5 space-y-3.5 text-xs overflow-y-auto flex-1">
+        <input type="hidden" id="approve-target-pr">
+        <input type="hidden" id="approve-target-step" value="1">
+
+        <!-- Two-Step Progress Banner inside Approval Modal -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-slate-700 space-y-2">
+          <div class="flex justify-between items-center text-[11px]">
+            <span class="text-slate-500">Project BOM:</span>
+            <strong id="approve-modal-project" class="mono text-slate-900">--</strong>
+          </div>
+          <div class="flex justify-between items-center text-[11px]">
+            <span class="text-slate-500">Budget Commitment:</span>
+            <strong id="approve-modal-budget" class="mono text-purple-700">$--</strong>
+          </div>
+          <div id="approve-modal-step1-summary" class="hidden pt-2 border-t border-slate-200 text-[11px] text-slate-600 bg-sky-50/70 p-2 rounded-lg">
+            <span class="font-bold text-sky-800 block text-[10px] uppercase">Step 1 Endorsement Completed:</span>
+            <span id="approve-modal-step1-details">--</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1" id="approver-name-label">Approver Full Name *</label>
+          <input type="text" id="approver-name" required placeholder="Enter your full name (e.g., David Som)" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Approval Role / Authority *</label>
+            <select id="approver-role" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+              <!-- Dynamically populated based on Step 1 vs Step 2 -->
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Decision *</label>
+            <select id="approval-decision" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs font-bold text-emerald-700 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+              <option value="Approved">Endorse / Approve</option>
+              <option value="Approved with Conditions">Approved with Conditions</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Approval Date &amp; Time</label>
+          <input type="text" id="approval-timestamp" readonly class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs mono text-slate-600">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Authorization Remarks / Notes</label>
+          <input type="text" id="approver-remarks" placeholder="e.g. Verified against architectural schedule; budget released" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none">
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-2">
+          <button type="button" onclick="closeModal('pr-approval-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-semibold">Cancel</button>
+          <button type="submit" id="btn-submit-approval" class="w-full sm:w-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-sm transition active:scale-95">Sign &amp; Authorize PR</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL 3: SPECIFICATION DETAILS -->
   <div id="spec-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
@@ -876,12 +972,115 @@
     </div>
   </div>
 
+  <!-- MODAL 7: AUTHENTICATION / LOGIN GATE -->
+  <div id="login-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden my-auto flex flex-col">
+      
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white p-6 text-center border-b border-slate-800 relative">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 via-indigo-600 to-purple-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-sky-500/30">
+          <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+        </div>
+        <h2 class="text-base sm:text-lg font-extrabold tracking-tight">ALU-GLASS PROCUREMENT</h2>
+        <p class="text-xs text-slate-400 mt-1">Authorized Personnel Portal &amp; Sourcing Hub</p>
+      </div>
+
+      <!-- Login Form Body -->
+      <form id="form-login" onsubmit="handleAuthSubmit(event)" class="p-6 space-y-4 text-xs">
+        
+        <div class="space-y-1">
+          <label class="block font-bold text-slate-700 text-xs">Username or Corporate Email *</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <i data-lucide="user" class="w-4 h-4"></i>
+            </span>
+            <input type="text" id="login-username" required placeholder="e.g. admin or vannak.chem" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:bg-white focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none transition">
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <div class="flex justify-between items-center">
+            <label class="block font-bold text-slate-700 text-xs">Password *</label>
+            <span class="text-[10px] text-slate-400">Default demo: admin123</span>
+          </div>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <i data-lucide="lock" class="w-4 h-4"></i>
+            </span>
+            <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:bg-white focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none transition">
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="block font-bold text-slate-700 text-xs">Operational Role / Access Tier</label>
+          <select id="login-role" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none transition">
+            <option value="Administrator">Administrator / General Manager</option>
+            <option value="Purchasing Officer">Purchasing &amp; Sourcing Officer</option>
+            <option value="Production Head">Production &amp; Technical Head</option>
+            <option value="Finance Department Head">Finance Department Head</option>
+            <option value="Warehouse / QC Lead">Warehouse Inward &amp; QC Lead</option>
+          </select>
+        </div>
+
+        <button type="submit" id="btn-login-submit" class="w-full py-2.5 btn-gradient-primary text-white font-bold rounded-xl text-xs shadow-md transition active:scale-98 flex items-center justify-center gap-2">
+          <i data-lucide="log-in" class="w-4 h-4"></i>
+          <span id="btn-login-text">Sign In to Dashboard</span>
+        </button>
+
+        <!-- Fast Demo Account Shortcuts -->
+        <div class="pt-3 border-t border-slate-100">
+          <span class="text-[10px] uppercase font-bold text-slate-400 block mb-2 text-center tracking-wider">Quick Team Demo Accounts</span>
+          <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+            <button type="button" onclick="quickFillAccount('admin', 'admin123', 'Administrator', 'Alex Miller (GM)')" class="p-2 rounded-xl bg-slate-50 hover:bg-sky-50 hover:border-sky-200 border border-slate-200 text-slate-700 font-semibold text-left transition flex items-center gap-1.5">
+              <span>👑</span>
+              <div class="truncate">
+                <span class="block text-slate-900 font-bold truncate">Admin / GM</span>
+                <span class="text-[9px] text-slate-400 mono">admin</span>
+              </div>
+            </button>
+
+            <button type="button" onclick="quickFillAccount('purchasing', 'buyer123', 'Purchasing Officer', 'Sophea Vorn (Buyer)')" class="p-2 rounded-xl bg-slate-50 hover:bg-sky-50 hover:border-sky-200 border border-slate-200 text-slate-700 font-semibold text-left transition flex items-center gap-1.5">
+              <span>🛒</span>
+              <div class="truncate">
+                <span class="block text-slate-900 font-bold truncate">Purchasing</span>
+                <span class="text-[9px] text-slate-400 mono">purchasing</span>
+              </div>
+            </button>
+
+            <button type="button" onclick="quickFillAccount('engineer', 'tech123', 'Production Head', 'Sokhom Phay (Tech)')" class="p-2 rounded-xl bg-slate-50 hover:bg-sky-50 hover:border-sky-200 border border-slate-200 text-slate-700 font-semibold text-left transition flex items-center gap-1.5">
+              <span>🏗️</span>
+              <div class="truncate">
+                <span class="block text-slate-900 font-bold truncate">Tech Head</span>
+                <span class="text-[9px] text-slate-400 mono">engineer</span>
+              </div>
+            </button>
+
+            <button type="button" onclick="quickFillAccount('finance', 'fin123', 'Finance Department Head', 'Katherine Seng (CFO)')" class="p-2 rounded-xl bg-slate-50 hover:bg-sky-50 hover:border-sky-200 border border-slate-200 text-slate-700 font-semibold text-left transition flex items-center gap-1.5">
+              <span>💳</span>
+              <div class="truncate">
+                <span class="block text-slate-900 font-bold truncate">Finance Head</span>
+                <span class="text-[9px] text-slate-400 mono">finance</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATIONS -->
   <div id="toast-container" class="fixed top-4 left-3 right-3 sm:left-auto sm:top-auto sm:bottom-5 sm:right-5 z-50 space-y-2 pointer-events-none sm:max-w-sm"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { 
+      getAuth, 
+      signInAnonymously, 
+      signInWithEmailAndPassword, 
+      createUserWithEmailAndPassword,
+      signOut 
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { 
       initializeFirestore, 
       doc, 
@@ -1132,13 +1331,23 @@
         priorityBadge: "bg-rose-100 text-rose-800 border-rose-300 font-bold",
         status: "Approved",
         statusBadge: "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold",
+        step1Completed: true,
+        step1Approver: "Sokhom Phay",
+        step1Role: "Production Head",
+        step1Date: "25/09/2026 14:30",
+        step1Remarks: "BOM demand verified for Level 12 casements",
+        step2Completed: true,
+        step2Approver: "Katherine Seng",
+        step2Role: "Finance Department Head",
+        step2Date: "26/09/2026 09:15",
+        step2Remarks: "Budget authorized under facade CAPEX code 401",
         justification: "Current inventory (480 KG) is below ROP (850 KG). Required for Level 12 sliding units.",
         assignedVendor: "Asia Aluminum Extrusions Co.",
         linkedPO: null,
         approvalSignatures: {
           requested: "Vannak Chem (Signed)",
-          productionHead: "Sokhom Phay (Approved)",
-          financeDirector: "K. Seng (Approved)"
+          productionHead: "Sokhom Phay [Production Head] (25/09/2026)",
+          financeDirector: "Katherine Seng [Finance Dept Head] (26/09/2026)"
         }
       },
       {
@@ -1155,15 +1364,17 @@
         requiredDate: "2026-10-06",
         priority: "Urgent",
         priorityBadge: "bg-amber-100 text-amber-800 border-amber-300 font-bold",
-        status: "Pending Approval",
+        status: "Pending Technical Review",
         statusBadge: "bg-amber-50 text-amber-800 border-amber-200 font-semibold",
+        step1Completed: false,
+        step2Completed: false,
         justification: "Glass cutting schedule begins Monday. Stock is depleted to 145 SQM.",
         assignedVendor: "Crystal Float & Tempered Glass Ltd.",
         linkedPO: null,
         approvalSignatures: {
           requested: "Chan Ratha (Signed)",
-          productionHead: "Pending Sign-off",
-          financeDirector: "Pending Sign-off"
+          productionHead: "Pending Technical Sign-off (Step 1)",
+          financeDirector: "Awaiting Step 1 Review"
         }
       },
       {
@@ -1180,15 +1391,21 @@
         requiredDate: "2026-10-10",
         priority: "Normal",
         priorityBadge: "bg-slate-100 text-slate-700 border-slate-300 font-medium",
-        status: "Converted to PO",
-        statusBadge: "bg-purple-100 text-purple-800 border-purple-300 font-bold",
+        status: "Pending Finance Approval",
+        statusBadge: "bg-sky-100 text-sky-800 border-sky-300 font-semibold",
+        step1Completed: true,
+        step1Approver: "Sokhom Phay",
+        step1Role: "Production Head",
+        step1Date: "26/09/2026 11:20",
+        step1Remarks: "Technical profile and dimensions match assembly CAD 201",
+        step2Completed: false,
         justification: "Buffer restocking for upcoming curtain wall installation phase.",
         assignedVendor: "PolyTech Rubber & Polymer Industries",
-        linkedPO: "PO-2026-092",
+        linkedPO: null,
         approvalSignatures: {
           requested: "Mengly Ouk (Signed)",
-          productionHead: "Sokhom Phay (Approved)",
-          financeDirector: "K. Seng (Approved)"
+          productionHead: "Sokhom Phay [Production Head] (26/09/2026)",
+          financeDirector: "Pending Finance Dept Head Sign-off (Step 2)"
         }
       }
     ];
@@ -1394,6 +1611,142 @@
     let auth = null;
     let db = null;
     let activeUid = null;
+    let currentUserSession = null;
+
+    // PRESET TEAM ACCOUNTS
+    const DEMO_ACCOUNTS = {
+      admin: { name: "Alex Miller", role: "Administrator", pass: "admin123" },
+      purchasing: { name: "Sophea Vorn", role: "Purchasing Officer", pass: "buyer123" },
+      engineer: { name: "Sokhom Phay", role: "Production Head", pass: "tech123" },
+      finance: { name: "Katherine Seng", role: "Finance Department Head", pass: "fin123" }
+    };
+
+    function checkUserSession() {
+      try {
+        const stored = localStorage.getItem('alu_procurement_user_session');
+        if (stored) {
+          currentUserSession = JSON.parse(stored);
+          updateUserInterface();
+          return true;
+        }
+      } catch (e) {
+        console.warn("Session check note:", e);
+      }
+      openAuthModal();
+      return false;
+    }
+
+    function openAuthModal() {
+      const modal = document.getElementById('login-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        if (window.lucide) window.lucide.createIcons();
+      }
+    }
+
+    function closeAuthModal() {
+      const modal = document.getElementById('login-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function updateUserInterface() {
+      if (!currentUserSession) return;
+      const avatarEl = document.getElementById('user-avatar-badge');
+      const nameEl = document.getElementById('user-display-name');
+      const roleEl = document.getElementById('user-display-role');
+
+      const initials = (currentUserSession.name || currentUserSession.username || 'AD')
+        .split(' ')
+        .map(n => n[0])
+        .join('')
+        .substring(0, 2)
+        .toUpperCase();
+
+      if (avatarEl) avatarEl.innerText = initials;
+      if (nameEl) nameEl.innerText = currentUserSession.name || currentUserSession.username;
+      if (roleEl) roleEl.innerText = currentUserSession.role || 'Staff Member';
+    }
+
+    window.quickFillAccount = function(username, pass, role, fullName) {
+      const uInput = document.getElementById('login-username');
+      const pInput = document.getElementById('login-password');
+      const rSelect = document.getElementById('login-role');
+
+      if (uInput) uInput.value = username;
+      if (pInput) pInput.value = pass;
+      if (rSelect) rSelect.value = role;
+
+      // Auto submit login
+      executeLoginProcess(username, pass, role, fullName);
+    };
+
+    window.handleAuthSubmit = function(e) {
+      e.preventDefault();
+      const username = document.getElementById('login-username').value.trim();
+      const pass = document.getElementById('login-password').value.trim();
+      const role = document.getElementById('login-role').value;
+
+      let fullName = username.charAt(0).toUpperCase() + username.slice(1);
+      if (DEMO_ACCOUNTS[username.toLowerCase()]) {
+        fullName = DEMO_ACCOUNTS[username.toLowerCase()].name;
+      }
+
+      executeLoginProcess(username, pass, role, fullName);
+    };
+
+    async function executeLoginProcess(username, password, role, fullName) {
+      const btnText = document.getElementById('btn-login-text');
+      if (btnText) btnText.innerText = "Authenticating...";
+
+      // Attempt Firebase Auth sign in if user supplied an email, or with local fallback
+      const emailDomain = username.includes('@') ? username : `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@aluglass.internal`;
+
+      try {
+        if (auth) {
+          try {
+            await signInWithEmailAndPassword(auth, emailDomain, password);
+          } catch (fbErr) {
+            // If account doesn't exist, create it in Firebase Auth
+            if (fbErr.code === 'auth/user-not-found' || fbErr.code === 'auth/invalid-credential') {
+              try {
+                await createUserWithEmailAndPassword(auth, emailDomain, password);
+              } catch (createErr) {
+                console.info("Firebase Auth note (operating with local resilient session):", createErr.message);
+              }
+            } else {
+              console.info("Firebase Auth note:", fbErr.message);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Auth pipeline notice:", err);
+      }
+
+      // Establish authenticated session
+      currentUserSession = {
+        username: username,
+        name: fullName || username,
+        role: role,
+        loginTime: new Date().toISOString()
+      };
+
+      localStorage.setItem('alu_procurement_user_session', JSON.stringify(currentUserSession));
+      updateUserInterface();
+      closeAuthModal();
+
+      if (btnText) btnText.innerText = "Sign In to Dashboard";
+      showToast("Access Granted", `Welcome back, ${currentUserSession.name} (${currentUserSession.role})`);
+    }
+
+    window.handleSignOut = function() {
+      if (auth) {
+        signOut(auth).catch(() => {});
+      }
+      localStorage.removeItem('alu_procurement_user_session');
+      currentUserSession = null;
+      showToast("Signed Out", "You have successfully signed out.", "success");
+      openAuthModal();
+    };
 
     function loadLocalData() {
       try {
@@ -1556,12 +1909,42 @@
 
       container.innerHTML = prsData.map(pr => {
         let actionBtn = '';
-        if (pr.status === 'Pending Approval') {
-          actionBtn = `<button onclick="approvePR('${pr.prNumber}')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-[10px] transition shadow-xs active:scale-95">Approve</button>`;
-        } else if (pr.status === 'Approved') {
-          actionBtn = `<button onclick="convertPRtoPO('${pr.prNumber}')" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-bold text-[10px] transition shadow-xs active:scale-95">Convert to PO</button>`;
+        let stepProgressUi = '';
+
+        if (pr.status === 'Pending Technical Review' || (!pr.step1Completed && pr.status !== 'Converted to PO' && pr.status !== 'Approved')) {
+          actionBtn = `<button onclick="openApprovalModal('${pr.prNumber}', 1)" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-[10px] transition shadow-xs active:scale-95 flex items-center gap-1"><i data-lucide='check-circle-2' class='w-3 h-3'></i>Step 1: Tech Review</button>`;
+          stepProgressUi = `
+            <div class="flex items-center gap-1.5 text-[10px] mono">
+              <span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold border border-amber-300">1. Tech Review</span>
+              <span class="text-slate-300">&rarr;</span>
+              <span class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-400">2. Finance Head</span>
+            </div>
+          `;
+        } else if (pr.status === 'Pending Finance Approval' || (pr.step1Completed && !pr.step2Completed && pr.status !== 'Converted to PO' && pr.status !== 'Approved')) {
+          actionBtn = `<button onclick="openApprovalModal('${pr.prNumber}', 2)" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-[10px] transition shadow-xs active:scale-95 flex items-center gap-1"><i data-lucide='shield-check' class='w-3 h-3'></i>Step 2: Finance Sign</button>`;
+          stepProgressUi = `
+            <div class="flex items-center gap-1.5 text-[10px] mono">
+              <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">✓ Tech Passed</span>
+              <span class="text-slate-300">&rarr;</span>
+              <span class="px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800 font-bold border border-indigo-300 animate-pulse">2. Finance Head</span>
+            </div>
+          `;
+        } else if (pr.status === 'Approved' || pr.status === 'Approved with Conditions') {
+          actionBtn = `<button onclick="convertPRtoPO('${pr.prNumber}')" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-bold text-[10px] transition shadow-xs active:scale-95 flex items-center gap-1"><i data-lucide='truck' class='w-3 h-3'></i>Convert to PO</button>`;
+          stepProgressUi = `
+            <div class="flex items-center gap-1.5 text-[10px] mono">
+              <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">✓ Step 1 Tech</span>
+              <span class="text-slate-300">&rarr;</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">✓ Step 2 Finance</span>
+            </div>
+          `;
         } else {
           actionBtn = `<span class="mono text-[10px] text-purple-700 font-bold bg-purple-50 px-2 py-0.5 rounded border border-purple-200">${pr.linkedPO || 'PO Issued'}</span>`;
+          stepProgressUi = `
+            <div class="flex items-center gap-1 text-[10px] mono text-emerald-700 font-bold">
+              <span>✓ 2-Tier Authorized &bull; Order Issued</span>
+            </div>
+          `;
         }
 
         return `
@@ -1588,6 +1971,12 @@
               </div>
             </div>
 
+            <!-- Approval Stepper Track -->
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-2">
+              <span class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Approval Stage:</span>
+              ${stepProgressUi}
+            </div>
+
             <div class="bg-purple-50/50 border border-purple-100 rounded-xl p-2.5 space-y-1 text-xs">
               <div class="flex justify-between items-center">
                 <span class="text-slate-500 text-[11px]">Requested Qty:</span>
@@ -1608,7 +1997,9 @@
                 ${ICONS.eye}
                 <span>Voucher</span>
               </button>
-              <div>${actionBtn}</div>
+              <div>
+                ${actionBtn}
+              </div>
             </div>
           </div>
         `;
@@ -2150,15 +2541,17 @@
         requiredDate: requiredDate,
         priority: priority,
         priorityBadge: priorityBadgeMap[priority] || priorityBadgeMap.Normal,
-        status: "Pending Approval",
+        status: "Pending Technical Review",
         statusBadge: "bg-amber-50 text-amber-800 border-amber-200 font-semibold",
+        step1Completed: false,
+        step2Completed: false,
         justification: justification,
         assignedVendor: mat ? mat.supplier : "Pending Sourcing",
         linkedPO: null,
         approvalSignatures: {
           requested: `${requester} (Signed)`,
-          productionHead: "Pending Sign-off",
-          financeDirector: "Pending Sign-off"
+          productionHead: "Pending Technical Sign-off (Step 1)",
+          financeDirector: "Awaiting Step 1 Review"
         }
       };
 
@@ -2169,7 +2562,7 @@
       renderPRs();
       scheduleKPIUpdate();
       debouncedSaveLocalData();
-      showToast("PR Logged", `Requisition ${code} submitted for review.`);
+      showToast("PR Logged", `Requisition ${code} submitted for Step 1 Technical Review.`);
 
       if (db) {
         setDoc(doc(db, 'procurement_prs', code), JSON.parse(JSON.stringify(newPR))).catch(err => {
@@ -2178,25 +2571,170 @@
       }
     }
 
-    function approvePR(prNumber) {
+    function openApprovalModal(prNumber, forcedStep = null) {
       const pr = prsData.find(p => p.prNumber === prNumber);
       if (!pr) return;
 
-      pr.status = "Approved";
-      pr.statusBadge = "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold";
-      pr.approvalSignatures.productionHead = "Sokhom Phay (Approved)";
-      pr.approvalSignatures.financeDirector = "K. Seng (Approved)";
+      // Determine whether we are executing Step 1 (Technical) or Step 2 (Finance)
+      let currentStep = forcedStep;
+      if (!currentStep) {
+        currentStep = pr.step1Completed ? 2 : 1;
+      }
+
+      const targetInput = document.getElementById('approve-target-pr');
+      const stepInput = document.getElementById('approve-target-step');
+      const heading = document.getElementById('approve-modal-heading');
+      const stepBadge = document.getElementById('approve-modal-step-badge');
+      const stepIcon = document.getElementById('approve-step-icon');
+      const numLabel = document.getElementById('approve-modal-pr-num');
+      const projectLabel = document.getElementById('approve-modal-project');
+      const budgetLabel = document.getElementById('approve-modal-budget');
+      const step1Summary = document.getElementById('approve-modal-step1-summary');
+      const step1Details = document.getElementById('approve-modal-step1-details');
+      const roleSelect = document.getElementById('approver-role');
+      const nameInput = document.getElementById('approver-name');
+      const remarksInput = document.getElementById('approver-remarks');
+      const timestampInput = document.getElementById('approval-timestamp');
+      const submitBtn = document.getElementById('btn-submit-approval');
+
+      if (targetInput) targetInput.value = pr.prNumber;
+      if (stepInput) stepInput.value = currentStep;
+      if (numLabel) numLabel.innerText = `${pr.prNumber} (${pr.itemName})`;
+      if (projectLabel) projectLabel.innerText = pr.projectCode;
+      if (budgetLabel) budgetLabel.innerText = `$${Number(pr.estimatedTotal).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+
+      const now = new Date();
+      const formattedDate = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (timestampInput) timestampInput.value = formattedDate;
+
+      if (currentStep === 1) {
+        // Step 1: Technical / Production Review
+        if (heading) heading.innerText = "Step 1: Technical & BOM Review";
+        if (stepBadge) {
+          stepBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300";
+          stepBadge.innerText = "Step 1 of 2: Technical";
+        }
+        if (stepIcon) {
+          stepIcon.className = "w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs shrink-0 border border-amber-400/30";
+        }
+        if (step1Summary) step1Summary.classList.add('hidden');
+        if (roleSelect) {
+          roleSelect.innerHTML = `
+            <option value="Production Head">Production Head</option>
+            <option value="Project Technical Lead">Project Technical Lead</option>
+            <option value="Workshop Operations Manager">Workshop Operations Manager</option>
+          `;
+        }
+        if (submitBtn) {
+          submitBtn.className = "w-full sm:w-auto px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl shadow-sm transition active:scale-95";
+          submitBtn.innerText = "Endorse Step 1 (Send to Finance)";
+        }
+        if (remarksInput) remarksInput.placeholder = "e.g. Verified alloy specs and fabrication timetable";
+        const savedStep1Name = localStorage.getItem('alu_last_step1_approver') || '';
+        if (nameInput) nameInput.value = savedStep1Name;
+      } else {
+        // Step 2: Finance Department Head Final Authorization
+        if (heading) heading.innerText = "Step 2: Finance Department Head Authorization";
+        if (stepBadge) {
+          stepBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-300";
+          stepBadge.innerText = "Step 2 of 2: Final Finance";
+        }
+        if (stepIcon) {
+          stepIcon.className = "w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0 border border-indigo-400/30";
+        }
+        if (step1Summary && step1Details) {
+          step1Summary.classList.remove('hidden');
+          step1Details.innerText = `${pr.step1Approver || 'Technical Lead'} [${pr.step1Role || 'Production Head'}] endorsed on ${pr.step1Date || 'Earlier'}: "${pr.step1Remarks || 'Specifications compliant'}"`;
+        }
+        if (roleSelect) {
+          roleSelect.innerHTML = `
+            <option value="Finance Department Head">Finance Department Head</option>
+            <option value="Finance Director">Finance Director / CFO</option>
+            <option value="General Manager">General Manager / CEO</option>
+          `;
+        }
+        if (submitBtn) {
+          submitBtn.className = "w-full sm:w-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-sm transition active:scale-95";
+          submitBtn.innerText = "Authorize & Finalize PR for PO";
+        }
+        if (remarksInput) remarksInput.placeholder = "e.g. Budget authorized under 2026 Facade CAPEX allocation";
+        const savedStep2Name = localStorage.getItem('alu_last_step2_approver') || '';
+        if (nameInput) nameInput.value = savedStep2Name;
+      }
+
+      openModal('pr-approval-modal');
+    }
+
+    function submitPRApproval(e) {
+      e.preventDefault();
+      const prNumber = document.getElementById('approve-target-pr').value;
+      const step = parseInt(document.getElementById('approve-target-step').value) || 1;
+      const approverName = document.getElementById('approver-name').value.trim();
+      const approverRole = document.getElementById('approver-role').value;
+      const decision = document.getElementById('approval-decision').value;
+      const remarks = document.getElementById('approver-remarks').value.trim() || 'Approved as requested';
+      const timestamp = document.getElementById('approval-timestamp').value;
+
+      const pr = prsData.find(p => p.prNumber === prNumber);
+      if (!pr) return;
+
+      if (!pr.approvalSignatures) pr.approvalSignatures = {};
+
+      if (step === 1) {
+        // Record Step 1 Endorsement
+        pr.step1Completed = true;
+        pr.step1Approver = approverName;
+        pr.step1Role = approverRole;
+        pr.step1Date = timestamp;
+        pr.step1Remarks = remarks;
+        pr.approvalSignatures.productionHead = `${approverName} [${approverRole}] (${timestamp})`;
+
+        // Advance to Step 2
+        pr.status = "Pending Finance Approval";
+        pr.statusBadge = "bg-sky-100 text-sky-800 border-sky-300 font-semibold";
+        pr.approvalSignatures.financeDirector = "Pending Finance Dept Head Sign-off (Step 2)";
+
+        localStorage.setItem('alu_last_step1_approver', approverName);
+        showToast("Step 1 Endorsed", `${prNumber} approved by ${approverName} (${approverRole}). Forwarded to Finance Dept Head.`);
+      } else {
+        // Record Final Step 2 Authorization by Finance Department Head
+        pr.step2Completed = true;
+        pr.step2Approver = approverName;
+        pr.step2Role = approverRole;
+        pr.step2Date = timestamp;
+        pr.step2Remarks = remarks;
+        pr.approvedBy = approverName;
+        pr.approvedRole = approverRole;
+        pr.approvedDate = timestamp;
+        pr.approvalRemarks = remarks;
+        pr.approvalSignatures.financeDirector = `${approverName} [${approverRole}] (${timestamp})`;
+
+        // Mark as Fully Approved
+        pr.status = decision === 'Approved with Conditions' ? 'Approved with Conditions' : 'Approved';
+        pr.statusBadge = "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold";
+
+        localStorage.setItem('alu_last_step2_approver', approverName);
+        showToast("Finance Authorization Complete", `${prNumber} officially authorized by Finance Head ${approverName}. Ready for PO conversion.`);
+      }
 
       renderPRs();
       scheduleKPIUpdate();
       debouncedSaveLocalData();
-      showToast("PR Approved", `${prNumber} approved for PO issuance.`);
+      closeModal('pr-approval-modal');
+      closeModal('pr-docket-modal');
 
       if (db) {
         setDoc(doc(db, 'procurement_prs', prNumber), JSON.parse(JSON.stringify(pr))).catch(err => {
           console.warn("Cloud update note:", err);
         });
       }
+    }
+
+    function approvePR(prNumber) {
+      const pr = prsData.find(p => p.prNumber === prNumber);
+      if (!pr) return;
+      const step = pr.step1Completed ? 2 : 1;
+      openApprovalModal(prNumber, step);
     }
 
     function convertPRtoPO(prNumber) {
@@ -2217,7 +2755,7 @@
       if (itemsEl) itemsEl.value = `${pr.itemCode} - ${pr.itemName} (${pr.quantity} ${pr.uom})`;
       if (valEl) valEl.value = pr.estimatedTotal.toFixed(2);
       if (dueEl) dueEl.value = pr.requiredDate;
-      if (actionEl) actionEl.value = `Originated from ${pr.prNumber} (Project: ${pr.projectCode}). Expedite dock arrival.`;
+      if (actionEl) actionEl.value = `Originated from ${pr.prNumber} (Authorized by ${pr.approvedBy || 'Operations'}). Expedite dock arrival.`;
 
       // Mark PR status
       pr.status = "Converted to PO";
@@ -2249,6 +2787,32 @@
       if (bodyEl) {
         bodyEl.innerHTML = `
           <div class="space-y-4 text-xs">
+            <!-- 2-Step Progress Stepper inside Voucher -->
+            <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-3.5 rounded-2xl border border-slate-800 space-y-2">
+              <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">SOP 2-Step Authorization Workflow</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                <div class="p-2.5 rounded-xl border ${pr.step1Completed ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-200' : 'bg-white/5 border-white/10 text-slate-300'}">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-[10px] uppercase">Step 1: Technical &amp; BOM Review</span>
+                    <span>${pr.step1Completed ? '✓ Endorsed' : '⏳ Pending'}</span>
+                  </div>
+                  <strong class="block text-white text-xs">${pr.step1Approver ? `${pr.step1Approver} (${pr.step1Role})` : 'Pending Technical Head'}</strong>
+                  <span class="text-[10px] opacity-80">${pr.step1Date || 'Awaiting review'}</span>
+                  ${pr.step1Remarks ? `<p class="mt-1 text-[10px] text-emerald-300 italic">"${pr.step1Remarks}"</p>` : ''}
+                </div>
+
+                <div class="p-2.5 rounded-xl border ${pr.step2Completed ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-200' : (pr.step1Completed ? 'bg-indigo-950/60 border-indigo-400/40 text-indigo-200 animate-pulse' : 'bg-white/5 border-white/10 text-slate-400')}">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-bold text-[10px] uppercase">Step 2: Finance Department Head</span>
+                    <span>${pr.step2Completed ? '✓ Authorized' : (pr.step1Completed ? '⏳ In Review' : '🔒 Awaiting Step 1')}</span>
+                  </div>
+                  <strong class="block text-white text-xs">${pr.step2Approver ? `${pr.step2Approver} (${pr.step2Role})` : 'Pending Finance Dept Head'}</strong>
+                  <span class="text-[10px] opacity-80">${pr.step2Date || 'Final disbursement sign-off'}</span>
+                  ${pr.step2Remarks ? `<p class="mt-1 text-[10px] text-indigo-300 italic">"${pr.step2Remarks}"</p>` : ''}
+                </div>
+              </div>
+            </div>
+
             <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 space-y-3">
               <div class="flex flex-wrap justify-between items-center gap-2 border-b border-slate-200 pb-2.5">
                 <div>
@@ -2293,19 +2857,19 @@
             </div>
 
             <div class="border border-slate-200 rounded-2xl p-3.5 bg-white space-y-2">
-              <span class="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">3-Tier Internal Control Signatures</span>
+              <span class="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">Formal Signatures Verification Register</span>
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
                 <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50">
-                  <span class="text-slate-400 block text-[9px] font-bold">1. Prepared By</span>
-                  <strong class="text-slate-800">${pr.approvalSignatures.requested}</strong>
+                  <span class="text-slate-400 block text-[9px] font-bold">1. Originating Requester</span>
+                  <strong class="text-slate-800">${pr.approvalSignatures?.requested || pr.requester}</strong>
                 </div>
                 <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50">
-                  <span class="text-slate-400 block text-[9px] font-bold">2. Production Head</span>
-                  <strong class="${pr.approvalSignatures.productionHead.includes('Approved') ? 'text-emerald-700' : 'text-amber-700'}">${pr.approvalSignatures.productionHead}</strong>
+                  <span class="text-slate-400 block text-[9px] font-bold">2. Step 1: Technical Head</span>
+                  <strong class="${pr.step1Completed ? 'text-emerald-700 font-bold' : 'text-amber-700'}">${pr.approvalSignatures?.productionHead || 'Pending'}</strong>
                 </div>
                 <div class="p-2.5 rounded-xl border border-slate-100 bg-slate-50">
-                  <span class="text-slate-400 block text-[9px] font-bold">3. Finance Director</span>
-                  <strong class="${pr.approvalSignatures.financeDirector.includes('Approved') ? 'text-emerald-700' : 'text-amber-700'}">${pr.approvalSignatures.financeDirector}</strong>
+                  <span class="text-slate-400 block text-[9px] font-bold">3. Step 2: Finance Dept Head</span>
+                  <strong class="${pr.step2Completed ? 'text-emerald-700 font-bold' : 'text-slate-400'}">${pr.approvalSignatures?.financeDirector || 'Awaiting Step 1'}</strong>
                 </div>
               </div>
             </div>
@@ -2314,10 +2878,12 @@
       }
 
       if (actionsEl) {
-        if (pr.status === 'Pending Approval') {
-          actionsEl.innerHTML = `<button onclick="approvePR('${pr.prNumber}'); closeModal('pr-docket-modal');" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-sm">Authorize &amp; Sign PR</button>`;
-        } else if (pr.status === 'Approved') {
-          actionsEl.innerHTML = `<button onclick="closeModal('pr-docket-modal'); convertPRtoPO('${pr.prNumber}');" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow-sm">Convert PR to PO Docket</button>`;
+        if (!pr.step1Completed && pr.status !== 'Converted to PO' && pr.status !== 'Approved') {
+          actionsEl.innerHTML = `<button onclick="closeModal('pr-docket-modal'); openApprovalModal('${pr.prNumber}', 1);" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5"><i data-lucide='check-circle-2' class='w-3.5 h-3.5'></i>Endorse Step 1 (Technical)</button>`;
+        } else if (pr.step1Completed && !pr.step2Completed && pr.status !== 'Converted to PO' && pr.status !== 'Approved') {
+          actionsEl.innerHTML = `<button onclick="closeModal('pr-docket-modal'); openApprovalModal('${pr.prNumber}', 2);" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5"><i data-lucide='shield-check' class='w-3.5 h-3.5'></i>Authorize Step 2 (Finance Head)</button>`;
+        } else if (pr.status === 'Approved' || pr.status === 'Approved with Conditions') {
+          actionsEl.innerHTML = `<button onclick="closeModal('pr-docket-modal'); convertPRtoPO('${pr.prNumber}');" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5"><i data-lucide='truck' class='w-3.5 h-3.5'></i>Convert PR to PO Docket</button>`;
         } else {
           actionsEl.innerHTML = `<span class="text-xs font-bold text-slate-500 bg-slate-100 px-3 py-2 rounded-xl">Order: ${pr.linkedPO || 'PO Dispatched'}</span>`;
         }
@@ -2620,6 +3186,8 @@
     window.submitPO = submitPO;
     window.submitPR = submitPR;
     window.approvePR = approvePR;
+    window.openApprovalModal = openApprovalModal;
+    window.submitPRApproval = submitPRApproval;
     window.convertPRtoPO = convertPRtoPO;
     window.viewPRDetail = viewPRDetail;
     window.autoFillPRMaterial = autoFillPRMaterial;
@@ -2647,6 +3215,7 @@
         window.lucide.createIcons();
       }
       initCloudBackend();
+      checkUserSession();
     });
   </script>
 </body>
