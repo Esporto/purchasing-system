@@ -1549,58 +1549,56 @@
         const snap = await getDocs(collection(db, 'procurement_materials'));
         if (snap.empty) {
           console.log("[Auto-Seed] Remote collections empty. Pushing master templates now...");
-          await forceSyncAllToCloud(false);
+          await forceSyncAllToCloud();
         } else {
           console.log(`[Firestore] Found ${snap.size} existing items in procurement_materials.`);
         }
       } catch (err) {
-        console.error("Auto-seed error:", err);
-        if (err.code === 'permission-denied' || (err.message && err.message.includes('permission-denied'))) {
-          showToast("Firestore Blocked by Rules", "Go to Firebase > Firestore > Security tab, set 'allow read, write: if true;' and click Publish.", "error");
-        }
+        console.error("Auto-seed read error:", err);
       }
     }
 
-    async function forceSyncAllToCloud(silent = false) {
+    async function forceSyncAllToCloud() {
       if (!db) {
         showToast("Cloud Not Connected", "Firebase is not initialized.", "error");
         return;
       }
 
-      showToast("Syncing...", "Uploading data to Firestore...", "success");
+      showToast("Syncing...", "Writing records to Firestore...", "success");
 
       try {
-        const batch = writeBatch(db);
+        let count = 0;
 
-        // Upload Materials
-        materialsData.forEach(m => {
-          const docRef = doc(db, 'procurement_materials', m.code);
-          batch.set(docRef, JSON.parse(JSON.stringify(m)));
-        });
+        // 1. Write Materials sequentially
+        for (const m of materialsData) {
+          const cleanMaterial = JSON.parse(JSON.stringify(m));
+          await setDoc(doc(db, 'procurement_materials', m.code), cleanMaterial);
+          count++;
+          console.log(`[Firestore Upload] Saved SKU: ${m.code}`);
+        }
 
-        // Upload Suppliers
-        suppliersData.forEach(s => {
-          const docRef = doc(db, 'procurement_suppliers', s.id);
-          batch.set(docRef, JSON.parse(JSON.stringify(s)));
-        });
+        // 2. Write Suppliers
+        for (const s of suppliersData) {
+          const cleanSupplier = JSON.parse(JSON.stringify(s));
+          await setDoc(doc(db, 'procurement_suppliers', s.id), cleanSupplier);
+          count++;
+          console.log(`[Firestore Upload] Saved Vendor: ${s.id}`);
+        }
 
-        // Upload Pipeline
-        pipelineData.forEach(p => {
-          const docRef = doc(db, 'procurement_pipeline', p.poNumber);
-          batch.set(docRef, JSON.parse(JSON.stringify(p)));
-        });
+        // 3. Write Pipeline POs
+        for (const p of pipelineData) {
+          const cleanPO = JSON.parse(JSON.stringify(p));
+          await setDoc(doc(db, 'procurement_pipeline', p.poNumber), cleanPO);
+          count++;
+          console.log(`[Firestore Upload] Saved PO: ${p.poNumber}`);
+        }
 
-        await batch.commit();
-        console.log("Firestore batch commit succeeded!");
+        console.log(`[Firestore Upload Complete] Successfully stored ${count} total documents.`);
         showToast("Cloud Synchronized!", `Uploaded ${materialsData.length} SKUs, ${suppliersData.length} vendors, and ${pipelineData.length} POs.`);
         closeModal('cloud-config-modal');
       } catch (err) {
-        console.error("Batch write failed:", err);
-        if (err.code === 'permission-denied' || (err.message && err.message.includes('permission-denied'))) {
-          showToast("Permission Denied", "Update your Firestore Security Rules to 'allow read, write: if true;' in Firebase console.", "error");
-        } else {
-          showToast("Upload Error", err.message || "Failed to commit batch to Firestore.", "error");
-        }
+        console.error("Direct document upload failed:", err);
+        showToast("Upload Error", err.message || "Failed to write to Firestore.", "error");
       }
     }
 
