@@ -1,364 +1,2019 @@
-"""
-Purchasing & Procurement System — Standalone REST API Backend
-============================================================
-A complete, lightweight, production-ready backend service providing 
-persistent storage for materials, suppliers, purchase orders, and TCO calculations.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Purchasing & Procurement System — High Performance Visual Hub</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          screens: {
+            'xs': '420px',
+            '3xl': '1600px'
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#082f49',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    
+    :root {
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
 
-Features:
-- Built with Python standard library (http.server / sqlite3) for zero external dependencies.
-- Can be run instantly with `python backend_server.py`.
-- Includes full CORS support for browser frontends and intranet access.
-- SQLite database persistence with automatic table initialization and seed data.
-"""
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      text-rendering: optimizeLegibility;
+    }
 
-import http.server
-import socketserver
-import json
-import sqlite3
-import urllib.parse
-from datetime import datetime
+    .mono { font-family: 'JetBrains Mono', monospace; }
 
-DATABASE_FILE = "procurement_data.db"
-PORT = 8000
+    .card-contain {
+      contain: layout style paint;
+      transform: translateZ(0);
+      will-change: transform, box-shadow;
+      transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+    }
+    
+    @media (hover: hover) and (pointer: fine) {
+      .card-contain:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -6px rgba(15, 23, 42, 0.12);
+      }
+    }
 
-def init_database():
-    """Initializes SQLite database schemas for procurement operations."""
-    conn = sqlite3.connect(DATABASE_FILE)
-    cursor = conn.cursor()
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
 
-    # 1. Materials Master Table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS materials (
-        code TEXT PRIMARY KEY,
-        category TEXT NOT NULL,
-        name TEXT NOT NULL,
-        specs TEXT NOT NULL,
-        uom TEXT NOT NULL,
-        current_stock REAL DEFAULT 0,
-        safety_stock REAL DEFAULT 0,
-        reorder_point REAL DEFAULT 0,
-        std_cost REAL DEFAULT 0.0,
-        supplier TEXT NOT NULL,
-        status TEXT NOT NULL,
-        tolerance TEXT,
-        packaging TEXT,
-        lead_time TEXT,
-        bom_link TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
+    .pb-safe {
+      padding-bottom: calc(4.5rem + var(--safe-bottom));
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col pb-safe md:pb-6">
 
-    # 2. Suppliers Directory Table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS suppliers (
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        category TEXT NOT NULL,
-        tier TEXT NOT NULL,
-        score INTEGER DEFAULT 80,
-        price_metric INTEGER DEFAULT 20,
-        quality_metric INTEGER DEFAULT 20,
-        delivery_metric INTEGER DEFAULT 18,
-        spec_metric INTEGER DEFAULT 12,
-        terms_metric INTEGER DEFAULT 6,
-        service_metric INTEGER DEFAULT 4,
-        payment_terms TEXT NOT NULL,
-        lead_time TEXT NOT NULL,
-        contact TEXT NOT NULL,
-        otif TEXT DEFAULT '95%',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
+  <!-- TOP APP NAV -->
+  <header class="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40 shadow-xs">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
+        
+        <!-- Logo & Branding -->
+        <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20 shrink-0">
+            <i data-lucide="layers" class="w-4 h-4 sm:w-5 sm:h-5 text-white"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <span class="font-bold tracking-tight text-white text-xs sm:text-sm lg:text-base truncate">ALU-GLASS PROCUREMENT</span>
+              <span class="hidden xs:inline-flex text-[9px] sm:text-[10px] uppercase font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30 px-1.5 py-0.5 rounded-full shrink-0">Live Hub</span>
+            </div>
+            <p class="text-[10px] sm:text-xs text-slate-400 truncate hidden xs:block">Architectural Fenestration &amp; Material Operations</p>
+          </div>
+        </div>
 
-    # 3. Purchase Orders Pipeline Table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS purchase_orders (
-        po_number TEXT PRIMARY KEY,
-        vendor TEXT NOT NULL,
-        items TEXT NOT NULL,
-        amount_usd REAL NOT NULL,
-        due_date TEXT NOT NULL,
-        status TEXT NOT NULL,
-        alert TEXT NOT NULL,
-        progress_pct INTEGER DEFAULT 25,
-        dock_action TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
+        <!-- Controls: Telemetry & Actions -->
+        <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          
+          <!-- Cloud Sync Badge -->
+          <button onclick="openModal('cloud-config-modal')" id="cloud-status-badge" title="Click to Configure Cloud Database Sync" class="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[11px] text-slate-300 transition cursor-pointer active:scale-95">
+            <span id="cloud-pulse-dot" class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+            <span id="cloud-sync-text" class="font-medium text-slate-200">Local Storage</span>
+            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-slate-700 pl-2">Offline</span>
+          </button>
 
-    # Seed initial datasets if empty
-    cursor.execute("SELECT COUNT(*) FROM materials")
-    if cursor.fetchone()[0] == 0:
-        seed_sample_records(cursor)
+          <!-- Large screen KPI telemetry -->
+          <div class="hidden lg:flex items-center gap-5 border-l border-slate-800 pl-5 text-xs mr-1">
+            <div>
+              <span class="text-slate-400 block text-[10px] uppercase">Active SKUs</span>
+              <span class="font-semibold text-slate-100 mono" id="sku-count-header">8</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[10px] uppercase">Vendors</span>
+              <span class="font-semibold text-emerald-400 mono" id="vendor-count-header">6 Active</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block text-[10px] uppercase">Open PO Value</span>
+              <span class="font-semibold text-sky-400 mono" id="po-value-header">$11,302.50</span>
+            </div>
+          </div>
+          
+          <!-- Landed Cost Tool -->
+          <button onclick="openModal('quick-calc-modal')" aria-label="Open Landed Cost Calculator" class="p-2 sm:px-3 sm:py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 flex items-center gap-1.5 transition active:scale-95">
+            <i data-lucide="calculator" class="w-4 h-4 text-sky-400"></i>
+            <span class="hidden sm:inline">Landed Cost</span>
+          </button>
 
-    conn.commit()
-    conn.close()
-    print("[DB] SQLite database initialized and verified.")
+          <!-- Primary + New Entry Action -->
+          <button onclick="openNewEntryModal('material')" aria-label="Create New Entry" class="px-2.5 py-2 sm:px-3.5 sm:py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition shadow-xs active:scale-95">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span class="inline">+ New Entry</span>
+          </button>
 
-def seed_sample_records(cursor):
-    """Seeds master items, initial suppliers, and pipeline POs."""
-    materials = [
-        ("AL-76-SLD-BLK", "aluminum", "Sliding Frame Outer 76 Series", "Alloy 6063-T5 | 1.4mm | Powder Coated Matte Black RAL9005", "KG", 480, 300, 850, 2.65, "Asia Aluminum Extrusions Co.", "reorder", "± 0.05 mm", "Craft paper bundles of 4 pcs", "7 days", "SD-100 Sliding Window"),
-        ("AL-50-CSM-SLV", "aluminum", "Casement Window Sash 50 Series", "Alloy 6063-T5 | 1.4mm | Anodized Natural Silver AA15", "KG", 1200, 400, 900, 2.75, "Asia Aluminum Extrusions Co.", "safe", "± 0.04 mm", "Master bundles with plastic separation", "7 days", "CW-50 Outward Casement"),
-        ("GL-TMP-08-CLR", "glass", "8mm Clear Fully Tempered Glass", "Nominal 8mm | Flat polished edge | Arrissed corners", "SQM", 145, 100, 220, 15.50, "Crystal Float & Tempered Glass Ltd.", "low", "± 0.2 mm", "A-frame timber crates with cork pads", "5 days", "Sliding Patio Doors"),
-        ("GL-IGU-24-LOWE", "glass", "Double Glazed Unit (6+12A+6)", "6mm Clear Low-E + 12mm Argon + 6mm Clear Tempered", "SQM", 210, 80, 160, 38.00, "Crystal Float & Tempered Glass Ltd.", "safe", "Dual sealed polyisobutylene", "Export wooden crates", "10 days", "Thermal Facades"),
-        ("HD-ROL-TDM-120", "hardware", "Heavy Duty Tandem Roller 120KG", "SUS304 Stainless Steel Housing | Dual POM Wheels", "PAIR", 240, 200, 450, 4.80, "Kinlong Fenestration Hardware Co.", "low", "120KG rating / 100,000 cycles", "50 Pairs per carton", "10 days", "SD-100 Patio Door"),
-        ("SL-EPDM-GSK-01", "sealant", "EPDM Wedge Gasket Strip", "Peroxide cured EPDM rubber | UV resistant | Shore A 65", "METER", 850, 1000, 2500, 0.32, "PolyTech Rubber & Polymer Industries", "reorder", "-40°C to +120°C", "Spools of 250 Meters", "6 days", "Glazing bead retention")
-    ]
-    cursor.executemany("""
-    INSERT INTO materials (code, category, name, specs, uom, current_stock, safety_stock, reorder_point, std_cost, supplier, status, tolerance, packaging, lead_time, bom_link)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, materials)
+          <!-- Force Push to Cloud / Reset Button -->
+          <button onclick="forceSyncAllToCloud()" title="Upload / Sync All Records to Firebase Cloud" aria-label="Push All to Cloud" class="p-2 text-sky-400 hover:text-white hover:bg-slate-800 rounded-lg transition active:scale-95">
+            <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+          </button>
+        </div>
 
-    suppliers = [
-        ("VND-ALU-01", "Asia Aluminum Extrusions Co.", "Aluminum Profiles", "Tier 1: Preferred", 92, 23, 24, 19, 14, 8, 4, "Net 45 Days", "7 Days", "Chen Wei (+855 12 889 001)", "97.4%"),
-        ("VND-GLS-02", "Crystal Float & Tempered Glass Ltd.", "Architectural Glass", "Tier 1: Preferred", 89, 21, 25, 18, 14, 7, 4, "Net 30 Days", "5 Days", "Sokha Mean (+855 16 445 221)", "95.8%"),
-        ("VND-HDW-03", "Kinlong Fenestration Hardware Co.", "Hardware & Accessories", "Tier 1: Preferred", 88, 22, 24, 18, 14, 6, 4, "Net 30 Days", "10 Days", "Li Qiang (+855 92 110 998)", "96.2%")
-    ]
-    cursor.executemany("""
-    INSERT INTO suppliers (id, name, category, tier, score, price_metric, quality_metric, delivery_metric, spec_metric, terms_metric, service_metric, payment_terms, lead_time, contact, otif)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, suppliers)
+      </div>
+    </div>
+  </header>
 
-    orders = [
-        ("PO-2026-089", "Asia Aluminum Extrusions Co.", "AL-76 Sliding Frame Outer (2,500 KG)", 6625.00, "2026-09-24", "In Transit", "On Track", 75, "ETA in 2 days. Coordinate crane with Warehouse."),
-        ("PO-2026-092", "PolyTech Rubber & Polymer Industries", "SL-EPDM Wedge Gaskets (3,000 M)", 960.00, "2026-09-20", "Delayed", "🔴 2 Days Overdue", 40, "Urgent Expediting required."),
-        ("PO-2026-094", "Crystal Float & Tempered Glass Ltd.", "GL-TMP-08 8mm Tempered Glass (85 SQM)", 1317.50, "2026-09-22", "Arrived at Dock", "Inspection Today", 90, "Truck unloading at Bay 2.")
-    ]
-    cursor.executemany("""
-    INSERT INTO purchase_orders (po_number, vendor, items, amount_usd, due_date, status, alert, progress_pct, dock_action)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, orders)
+  <!-- VIEW NAV & SEARCH FILTER BAR -->
+  <div class="bg-white border-b border-slate-200 shadow-xs sticky top-14 sm:top-16 z-30">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
+        
+        <!-- Gallery Mode Navigation Tabs -->
+        <nav class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full md:w-auto overflow-x-auto no-scrollbar text-xs font-medium touch-pan-x" aria-label="Gallery Views">
+          <button onclick="switchGallery('materials')" id="tab-materials" class="tab-btn active-tab px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 bg-white text-slate-900 shadow-xs shrink-0 transition whitespace-nowrap">
+            <i data-lucide="box" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600"></i>
+            <span>Materials</span>
+            <span class="bg-sky-100 text-sky-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="mat-count-badge">8</span>
+          </button>
+          
+          <button onclick="switchGallery('suppliers')" id="tab-suppliers" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
+            <i data-lucide="building-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500"></i>
+            <span>Vendors</span>
+            <span class="bg-slate-200 text-slate-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="sup-count-badge">6</span>
+          </button>
+          
+          <button onclick="switchGallery('pipeline')" id="tab-pipeline" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
+            <i data-lucide="truck" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500"></i>
+            <span>Logistics &amp; POs</span>
+            <span class="bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="po-count-badge">4</span>
+          </button>
 
-class ProcurementAPIHandler(http.server.BaseHTTPRequestHandler):
-    """Handles RESTful HTTP requests for the procurement system."""
+          <button onclick="switchGallery('sop')" id="tab-sop" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500"></i>
+            <span>SOP Rules</span>
+          </button>
+        </nav>
 
-    def _set_headers(self, status_code=200, content_type="application/json"):
-        self.send_response(status_code)
-        self.send_header("Content-Type", content_type)
-        # Enable CORS for browser integration
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        self.end_headers()
+        <!-- Search & Filter Controls -->
+        <div class="flex items-center gap-2 w-full md:w-auto">
+          <div class="relative flex-1 md:w-60 lg:w-72">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
+            <input type="text" id="gallery-search" oninput="filterCards()" placeholder="Search code, specs, vendors..." class="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 bg-slate-50 hover:bg-slate-100 focus:bg-white text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition">
+          </div>
 
-    def do_OPTIONS(self):
-        """Pre-flight CORS options handler."""
-        self._set_headers(204)
+          <div class="relative shrink-0">
+            <select id="category-filter" onchange="filterCards()" aria-label="Filter by material category" class="bg-slate-50 border border-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 sm:py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
+              <option value="all">All Categories</option>
+              <option value="aluminum">Aluminum</option>
+              <option value="glass">Glass</option>
+              <option value="hardware">Hardware</option>
+              <option value="sealant">Sealants</option>
+            </select>
+          </div>
+        </div>
 
-    def do_GET(self):
-        """Dispatches GET requests for materials, suppliers, POs, and KPIs."""
-        parsed_url = urllib.parse.urlparse(self.path)
-        path = parsed_url.path
+      </div>
+    </div>
+  </div>
 
-        conn = sqlite3.connect(DATABASE_FILE)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
+  <!-- MAIN GALLERY CONTENT AREA -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full">
 
-        try:
-            if path == "/api/health":
-                self._set_headers(200)
-                self.wfile.write(json.dumps({"status": "healthy", "service": "Procurement API", "timestamp": str(datetime.now())}).encode())
+    <!-- 1. MATERIALS CATALOG GALLERY -->
+    <section id="gallery-materials" class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div>
+          <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+            <span>Material Inventory &amp; Specification Cards</span>
+            <span class="text-[11px] font-normal text-slate-500 hidden sm:inline">(BOM Driven Items)</span>
+          </h2>
+          <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Real-time balances against Reorder Point (ROP), packaging profiles, and standard unit costs.</p>
+        </div>
+        
+        <div class="flex items-center justify-between sm:justify-end gap-2">
+          <div class="flex items-center gap-1.5 text-[10px] sm:text-xs">
+            <span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> In Stock
+            </span>
+            <span class="inline-flex items-center gap-1 text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Low
+            </span>
+            <span class="inline-flex items-center gap-1 text-rose-800 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Reorder
+            </span>
+          </div>
 
-            elif path == "/api/materials":
-                cursor.execute("SELECT * FROM materials ORDER BY code ASC")
-                rows = [dict(row) for row in cursor.fetchall()]
-                self._set_headers(200)
-                self.wfile.write(json.dumps(rows).encode())
+          <button onclick="openNewEntryModal('material')" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition shadow-xs shrink-0">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span class="hidden xs:inline">Add SKU</span>
+          </button>
+        </div>
+      </div>
 
-            elif path == "/api/suppliers":
-                cursor.execute("SELECT * FROM suppliers ORDER BY score DESC")
-                rows = [dict(row) for row in cursor.fetchall()]
-                self._set_headers(200)
-                self.wfile.write(json.dumps(rows).encode())
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4" id="materials-grid"></div>
+    </section>
 
-            elif path == "/api/orders":
-                cursor.execute("SELECT * FROM purchase_orders ORDER BY due_date ASC")
-                rows = [dict(row) for row in cursor.fetchall()]
-                self._set_headers(200)
-                self.wfile.write(json.dumps(rows).encode())
+    <!-- 2. VENDOR DIRECTORY GALLERY -->
+    <section id="gallery-suppliers" class="space-y-4 hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div>
+          <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+            <span>Approved Supplier List (ASL) Gallery</span>
+            <span class="text-[11px] font-normal text-slate-500 hidden sm:inline">(100-Point Scorecard)</span>
+          </h2>
+          <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Weighted across Price (25%), Quality (25%), OTIF Delivery (20%), Specs (15%), Credit (10%), and Service (5%).</p>
+        </div>
+        <button onclick="openNewEntryModal('supplier')" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shadow-xs self-start sm:self-auto">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+          <span>Register Vendor</span>
+        </button>
+      </div>
 
-            elif path == "/api/kpi-summary":
-                # Aggregate executive dashboard metrics
-                cursor.execute("SELECT COUNT(*) FROM materials")
-                sku_count = cursor.fetchone()[0]
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4" id="suppliers-grid"></div>
+    </section>
 
-                cursor.execute("SELECT COUNT(*) FROM suppliers")
-                vendor_count = cursor.fetchone()[0]
+    <!-- 3. OPEN PO & LOGISTICS PIPELINE GALLERY -->
+    <section id="gallery-pipeline" class="space-y-4 hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div>
+          <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+            <span>Open Purchase Orders &amp; Expediting Cards</span>
+          </h2>
+          <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Real-time status progression, overdue delivery flags, and factory dock checkpoints.</p>
+        </div>
+        <div class="flex items-center gap-2 self-start sm:self-auto">
+          <button onclick="openNewEntryModal('po')" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shadow-xs">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>Issue PO</span>
+          </button>
+          <div class="text-[11px] sm:text-xs mono font-semibold text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">
+            Dock: <span class="text-sky-600 font-bold" id="dock-today-count">2 Today</span>
+          </div>
+        </div>
+      </div>
 
-                cursor.execute("SELECT SUM(amount_usd), COUNT(*) FROM purchase_orders")
-                po_agg = cursor.fetchone()
-                po_val = po_agg[0] or 0.0
-                po_count = po_agg[1] or 0
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4" id="pipeline-grid"></div>
+    </section>
 
-                cursor.execute("SELECT COUNT(*) FROM purchase_orders WHERE status = 'Delayed'")
-                delayed_count = cursor.fetchone()[0]
+    <!-- 4. SOP & GOVERNANCE GALLERY -->
+    <section id="gallery-sop" class="space-y-5 hidden">
+      <div>
+        <h2 class="text-sm sm:text-base font-bold text-slate-900">Standard Operating Procedures &amp; Official Forms</h2>
+        <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Core internal controls, financial delegation thresholds, and 3-way matching rules.</p>
+      </div>
 
-                summary = {
-                    "active_skus": sku_count,
-                    "active_vendors": vendor_count,
-                    "open_po_value": po_val,
-                    "open_po_count": po_count,
-                    "delayed_shipments": delayed_count
-                }
-                self._set_headers(200)
-                self.wfile.write(json.dumps(summary).encode())
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-xl sm:rounded-2xl p-4 sm:p-5 text-white shadow-xs border border-slate-700">
+        <div class="flex items-center gap-2 mb-3 text-sky-400">
+          <i data-lucide="shield-check" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+          <h3 class="text-xs font-bold uppercase tracking-wider">The 10 Non-Negotiable Procurement Rules</h3>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-3 text-xs">
+          <div class="bg-white/5 border border-white/10 rounded-lg p-2.5">
+            <span class="text-sky-400 font-bold block mb-0.5">01. PR First</span>
+            No PR = Zero purchase. Demands must trace to BOM.
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-lg p-2.5">
+            <span class="text-sky-400 font-bold block mb-0.5">02. No Approval, No PO</span>
+            Orders must be authorized by approved financial tier.
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-lg p-2.5">
+            <span class="text-sky-400 font-bold block mb-0.5">03. Dual Sourcing</span>
+            Never single-source critical aluminum dies or float glass.
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-lg p-2.5">
+            <span class="text-sky-400 font-bold block mb-0.5">04. QC Gate</span>
+            Delivered cargo quarantined until QC passes inspection.
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-lg p-2.5">
+            <span class="text-sky-400 font-bold block mb-0.5">05. 3-Way Match</span>
+            PO Rate = GRN Qty = Invoice before payment release.
+          </div>
+        </div>
+      </div>
 
-            else:
-                self._set_headers(404)
-                self.wfile.write(json.dumps({"error": "Endpoint not found"}).encode())
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4" id="sop-grid"></div>
+    </section>
 
-        except Exception as e:
-            self._set_headers(500)
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
-        finally:
-            conn.close()
+  </main>
 
-    def do_POST(self):
-        """Handles record creation and Landed Cost engine calculations."""
-        parsed_url = urllib.parse.urlparse(self.path)
-        path = parsed_url.path
+  <!-- MOBILE BOTTOM APP NAVIGATION BAR -->
+  <aside class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 px-2 py-1.5 shadow-lg" aria-label="Mobile Navigation">
+    <div class="grid grid-cols-4 gap-1 text-[10px] text-center font-medium">
+      <button onclick="switchGallery('materials')" id="m-nav-materials" class="flex flex-col items-center justify-center py-1 rounded-lg text-sky-700 bg-sky-50 font-bold">
+        <i data-lucide="box" class="w-4 h-4 mb-0.5"></i>
+        <span>Materials</span>
+      </button>
+      <button onclick="switchGallery('suppliers')" id="m-nav-suppliers" class="flex flex-col items-center justify-center py-1 rounded-lg text-slate-500 hover:text-slate-900">
+        <i data-lucide="building-2" class="w-4 h-4 mb-0.5"></i>
+        <span>Vendors</span>
+      </button>
+      <button onclick="switchGallery('pipeline')" id="m-nav-pipeline" class="flex flex-col items-center justify-center py-1 rounded-lg text-slate-500 hover:text-slate-900">
+        <i data-lucide="truck" class="w-4 h-4 mb-0.5"></i>
+        <span>Orders</span>
+      </button>
+      <button onclick="switchGallery('sop')" id="m-nav-sop" class="flex flex-col items-center justify-center py-1 rounded-lg text-slate-500 hover:text-slate-900">
+        <i data-lucide="shield-check" class="w-4 h-4 mb-0.5"></i>
+        <span>SOP</span>
+      </button>
+    </div>
+  </aside>
 
-        content_length = int(self.headers.get("Content-Length", 0))
-        post_data = self.rfile.read(content_length).decode("utf-8") if content_length > 0 else "{}"
-        body = json.loads(post_data) if post_data else {}
+  <!-- MODAL: CLOUD DATABASE SETUP -->
+  <div id="cloud-config-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <i data-lucide="cloud" class="w-5 h-5 text-sky-400"></i>
+          <div>
+            <h3 class="font-bold text-xs sm:text-sm">Cloud Database Configuration</h3>
+            <p class="text-[10px] sm:text-[11px] text-slate-400">Shared real-time persistence across team members</p>
+          </div>
+        </div>
+        <button onclick="closeModal('cloud-config-modal')" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
 
-        conn = sqlite3.connect(DATABASE_FILE)
-        cursor = conn.cursor()
+      <div class="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
+        <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 text-slate-700 space-y-2">
+          <span class="font-bold text-sky-900 flex items-center gap-1.5">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Required in Firebase Console:
+          </span>
+          <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-600">
+            <li>Open your Firestore tab: <strong>Security</strong> &rarr; ensure <code>allow read, write: if true;</code> and click <strong>Publish</strong>.</li>
+            <li>Click <strong>⚡ Push All to Cloud</strong> below to send all 8 materials, 6 vendors, and 4 POs to Firestore immediately!</li>
+          </ol>
+        </div>
 
-        try:
-            if path == "/api/materials":
-                cursor.execute("""
-                INSERT OR REPLACE INTO materials 
-                (code, category, name, specs, uom, current_stock, safety_stock, reorder_point, std_cost, supplier, status, tolerance, packaging, lead_time, bom_link)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    body.get("code"), body.get("category"), body.get("name"), body.get("specs"),
-                    body.get("uom"), body.get("current_stock", 0), body.get("safety_stock", 0),
-                    body.get("reorder_point", 0), body.get("std_cost", 0.0), body.get("supplier"),
-                    body.get("status", "safe"), body.get("tolerance"), body.get("packaging"),
-                    body.get("lead_time"), body.get("bom_link")
-                ))
-                conn.commit()
-                self._set_headers(201)
-                self.wfile.write(json.dumps({"success": True, "code": body.get("code")}).encode())
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Firebase Project Config (JSON)</label>
+          <textarea id="cfg-firebase-json" rows="6" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "your-app.firebaseapp.com",
+  "projectId": "your-app",
+  "storageBucket": "your-app.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "1:123456789:web:abcdef"
+}' class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono bg-slate-50 focus:bg-white"></textarea>
+        </div>
 
-            elif path == "/api/suppliers":
-                cursor.execute("""
-                INSERT OR REPLACE INTO suppliers 
-                (id, name, category, tier, score, payment_terms, lead_time, contact, otif)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    body.get("id"), body.get("name"), body.get("category"), body.get("tier"),
-                    body.get("score", 85), body.get("payment_terms"), body.get("lead_time"),
-                    body.get("contact"), body.get("otif", "95%")
-                ))
-                conn.commit()
-                self._set_headers(201)
-                self.wfile.write(json.dumps({"success": True, "id": body.get("id")}).encode())
+        <div class="pt-2 flex flex-col gap-2">
+          <button onclick="forceSyncAllToCloud()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg text-xs shadow-xs flex items-center justify-center gap-1.5">
+            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+            <span>⚡ Push All Local &amp; Master Data into Firestore</span>
+          </button>
+          <p class="text-[10px] text-slate-400 text-center">Click this to immediately create the 3 collections in your Firebase console.</p>
+        </div>
+      </div>
 
-            elif path == "/api/orders":
-                cursor.execute("""
-                INSERT OR REPLACE INTO purchase_orders 
-                (po_number, vendor, items, amount_usd, due_date, status, alert, progress_pct, dock_action)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    body.get("po_number"), body.get("vendor"), body.get("items"),
-                    body.get("amount_usd", 0.0), body.get("due_date"), body.get("status", "Order Confirmed"),
-                    body.get("alert", "On Track"), body.get("progress_pct", 25), body.get("dock_action")
-                ))
-                conn.commit()
-                self._set_headers(201)
-                self.wfile.write(json.dumps({"success": True, "po_number": body.get("po_number")}).encode())
+      <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 flex justify-between items-center shrink-0">
+        <button onclick="clearCloudConfig()" class="text-rose-600 hover:text-rose-700 text-xs font-semibold">Reset to Offline</button>
+        <div class="flex gap-2">
+          <button onclick="closeModal('cloud-config-modal')" class="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 text-xs">Cancel</button>
+          <button onclick="saveCloudConfig()" class="px-4 py-1.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg text-xs shadow-xs">Save &amp; Connect</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            elif path == "/api/calculate-landed-cost":
-                # TCO Engine calculation
-                qty = float(body.get("qty", 1))
-                price = float(body.get("unit_price", 0))
-                discount_pct = float(body.get("discount_pct", 0))
-                freight = float(body.get("freight_cost", 0))
-                other = float(body.get("other_cost", 0))
+  <!-- MODAL: SPECIFICATION DETAILS -->
+  <div id="spec-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-xl sm:rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-xs shrink-0">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+          </div>
+          <div class="min-w-0">
+            <h3 class="font-bold text-xs sm:text-sm truncate" id="modal-title">Item Specification Docket</h3>
+            <p class="text-[10px] sm:text-[11px] text-slate-400 mono truncate" id="modal-subtitle">SKU: AL-PROF-01</p>
+          </div>
+        </div>
+        <button onclick="closeModal('spec-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
 
-                net_price = price * (1.0 - (discount_pct / 100.0))
-                overhead_unit = (freight + other) / max(qty, 1.0)
-                true_landed_cost = round(net_price + overhead_unit, 4)
+      <div class="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1 text-xs" id="modal-content"></div>
 
-                res = {
-                    "base_unit_price": price,
-                    "discount_applied": discount_pct,
-                    "net_purchase_price": round(net_price, 4),
-                    "overhead_per_unit": round(overhead_unit, 4),
-                    "true_landed_cost_per_unit": true_landed_cost,
-                    "total_shipment_investment": round(true_landed_cost * qty, 2)
-                }
-                self._set_headers(200)
-                self.wfile.write(json.dumps(res).encode())
+      <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 shrink-0">
+        <span class="text-[10px] sm:text-xs text-slate-500 text-center sm:text-left">Technical Rule: Verify CAD profile before issuing PO.</span>
+        <button onclick="closeModal('spec-modal')" class="w-full sm:w-auto bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-slate-800 transition">
+          Close Docket
+        </button>
+      </div>
+    </div>
+  </div>
 
-            else:
-                self._set_headers(404)
-                self.wfile.write(json.dumps({"error": "Endpoint not found"}).encode())
+  <!-- MODAL: QUICK CALCULATOR -->
+  <div id="quick-calc-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <i data-lucide="calculator" class="w-5 h-5 text-sky-400"></i>
+          <div>
+            <h3 class="font-bold text-xs sm:text-sm">True Landed Cost Engine</h3>
+            <p class="text-[10px] sm:text-[11px] text-slate-400">Total Cost of Ownership (TCO) Calculator</p>
+          </div>
+        </div>
+        <button onclick="closeModal('quick-calc-modal')" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
 
-        except Exception as e:
-            self._set_headers(500)
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
-        finally:
-            conn.close()
+      <div class="p-4 sm:p-6 space-y-3.5 text-xs overflow-y-auto flex-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Order Quantity (Units/KG)</label>
+            <input type="number" id="calc-qty" value="1000" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Base Unit Price ($)</label>
+            <input type="number" step="0.01" id="calc-price" value="2.50" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+        </div>
 
-    def do_DELETE(self):
-        """Handles record deletions across collections."""
-        parsed_url = urllib.parse.urlparse(self.path)
-        path = parsed_url.path
-        query = urllib.parse.parse_qs(parsed_url.query)
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Discount %</label>
+            <input type="number" step="0.1" id="calc-discount" value="3.0" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Freight Total ($)</label>
+            <input type="number" id="calc-freight" value="150" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Handling / Duty ($)</label>
+            <input type="number" id="calc-other" value="50" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+        </div>
 
-        conn = sqlite3.connect(DATABASE_FILE)
-        cursor = conn.cursor()
+        <div class="bg-sky-50 border border-sky-100 rounded-xl p-3.5 sm:p-4 mt-2">
+          <div class="flex justify-between items-center mb-1 text-slate-600">
+            <span>Nominal Base Price:</span>
+            <span class="mono font-semibold" id="calc-res-base">$2.50 / unit</span>
+          </div>
+          <div class="flex justify-between items-center mb-2 text-slate-600">
+            <span>Freight &amp; Surcharge:</span>
+            <span class="mono font-semibold text-amber-700" id="calc-res-overhead">+$0.20 / unit</span>
+          </div>
+          <div class="border-t border-sky-200 pt-2 flex justify-between items-center">
+            <span class="font-bold text-sky-950 text-xs sm:text-sm">True Landed Cost:</span>
+            <span class="mono font-bold text-sky-700 text-sm sm:text-base" id="calc-res-landed">$2.625 / unit</span>
+          </div>
+        </div>
+      </div>
 
-        try:
-            if path == "/api/materials" and "code" in query:
-                code = query["code"][0]
-                cursor.execute("DELETE FROM materials WHERE code = ?", (code,))
-                conn.commit()
-                self._set_headers(200)
-                self.wfile.write(json.dumps({"deleted": True, "code": code}).encode())
+      <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 text-right shrink-0">
+        <button onclick="closeModal('quick-calc-modal')" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
 
-            elif path == "/api/suppliers" and "id" in query:
-                sup_id = query["id"][0]
-                cursor.execute("DELETE FROM suppliers WHERE id = ?", (sup_id,))
-                conn.commit()
-                self._set_headers(200)
-                self.wfile.write(json.dumps({"deleted": True, "id": sup_id}).encode())
+  <!-- MODAL: DIRECT DATA ENTRY -->
+  <div id="new-entry-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-xl sm:rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
+      <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-400"></i>
+          <div>
+            <h3 class="font-bold text-xs sm:text-sm">Direct Procurement Entry</h3>
+            <p class="text-[10px] sm:text-[11px] text-slate-400">Add materials, register vendors, or issue POs directly</p>
+          </div>
+        </div>
+        <button onclick="closeModal('new-entry-modal')" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
 
-            elif path == "/api/orders" and "po_number" in query:
-                po_num = query["po_number"][0]
-                cursor.execute("DELETE FROM purchase_orders WHERE po_number = ?", (po_num,))
-                conn.commit()
-                self._set_headers(200)
-                self.wfile.write(json.dumps({"deleted": True, "po_number": po_num}).encode())
+      <!-- Tab Switcher -->
+      <div class="flex border-b border-slate-200 px-4 sm:px-6 bg-slate-50 text-xs font-medium overflow-x-auto no-scrollbar shrink-0">
+        <button type="button" id="entry-tab-material" onclick="switchEntryTab('material')" class="px-3 sm:px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
+          <i data-lucide="box" class="w-3.5 h-3.5"></i> Material SKU
+        </button>
+        <button type="button" id="entry-tab-supplier" onclick="switchEntryTab('supplier')" class="px-3 sm:px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
+          <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Register Vendor
+        </button>
+        <button type="button" id="entry-tab-po" onclick="switchEntryTab('po')" class="px-3 sm:px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
+          <i data-lucide="truck" class="w-3.5 h-3.5"></i> Issue PO
+        </button>
+      </div>
 
-            else:
-                self._set_headers(400)
-                self.wfile.write(json.dumps({"error": "Missing key or invalid endpoint"}).encode())
+      <!-- Form 1: Add Material SKU -->
+      <form id="form-add-material" onsubmit="submitMaterial(event)" class="p-4 sm:p-6 space-y-3 sm:space-y-3.5 text-xs overflow-y-auto flex-1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">SKU / Item Code *</label>
+            <input type="text" id="mat-code" required placeholder="e.g. AL-80-CASEMENT" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Category *</label>
+            <select id="mat-category" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+              <option value="aluminum">Aluminum Profile</option>
+              <option value="glass">Architectural Glass</option>
+              <option value="hardware">Hardware Accessories</option>
+              <option value="sealant">Sealants &amp; Gaskets</option>
+            </select>
+          </div>
+        </div>
 
-        except Exception as e:
-            self._set_headers(500)
-            self.wfile.write(json.dumps({"error": str(e)}).encode())
-        finally:
-            conn.close()
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label class="block font-medium text-slate-700 mb-1">Material Name *</label>
+            <input type="text" id="mat-name" required placeholder="e.g. Sliding Outer Track Heavy" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Unit of Measure (UOM) *</label>
+            <input type="text" id="mat-uom" required placeholder="KG, SQM, PCS, M" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs uppercase mono">
+          </div>
+        </div>
 
-def run_server():
-    """Starts the procurement HTTP REST server."""
-    init_database()
-    with socketserver.TCPServer(("", PORT), ProcurementAPIHandler) as httpd:
-        print(f"============================================================")
-        print(f"  Procurement REST API Backend running on port {PORT}")
-        print(f"  Local URL:   http://localhost:{PORT}")
-        print(f"  Health Check: http://localhost:{PORT}/api/health")
-        print(f"  Database:    {DATABASE_FILE} (SQLite)")
-        print(f"============================================================")
-        try:
-            httpd.serve_forever()
-        except KeyboardInterrupt:
-            print("\n[SHUTDOWN] Stopping procurement server gracefully.")
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Technical Specification *</label>
+          <input type="text" id="mat-specs" required placeholder="Alloy 6063-T5 | 1.4mm | Powder Coated Matte Black RAL9005" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+        </div>
 
-if __name__ == "__main__":
-    run_server()
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1 truncate">Current Stock</label>
+            <input type="number" id="mat-stock" required value="100" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1 truncate">Safety Stock</label>
+            <input type="number" id="mat-safety" required value="50" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1 truncate">Reorder Point</label>
+            <input type="number" id="mat-rop" required value="150" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1 truncate">Std Cost ($)</label>
+            <input type="number" step="0.01" id="mat-cost" required value="2.80" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Approved Vendor</label>
+            <select id="mat-vendor-select" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></select>
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">BOM / Production Link</label>
+            <input type="text" id="mat-bom" placeholder="e.g. SD-100 Sliding Patio Series" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-2">
+          <button type="button" onclick="closeModal('new-entry-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg shadow-xs">Save Material SKU</button>
+        </div>
+      </form>
+
+      <!-- Form 2: Register Supplier -->
+      <form id="form-add-supplier" onsubmit="submitSupplier(event)" class="p-4 sm:p-6 space-y-3 sm:space-y-3.5 text-xs overflow-y-auto flex-1 hidden">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Supplier Code / ID *</label>
+            <input type="text" id="sup-id" required placeholder="VND-GLS-08" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block font-medium text-slate-700 mb-1">Company / Supplier Name *</label>
+            <input type="text" id="sup-name" required placeholder="e.g. Apex Tempered Glass Co., Ltd." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Category Provided *</label>
+            <input type="text" id="sup-cat" required placeholder="e.g. Architectural Glass" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">ASL Tier</label>
+            <select id="sup-tier" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+              <option value="Tier 1: Preferred">Tier 1: Preferred</option>
+              <option value="Tier 2: Conditional">Tier 2: Conditional</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Scorecard (0-100)</label>
+            <input type="number" id="sup-score" min="1" max="100" value="88" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Payment Terms</label>
+            <input type="text" id="sup-terms" required value="Net 30 Days" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Lead Time</label>
+            <input type="text" id="sup-lead" required value="7 Days" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Historical OTIF %</label>
+            <input type="text" id="sup-otif" required value="96.5%" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Sales Contact &amp; Phone</label>
+          <input type="text" id="sup-contact" required placeholder="e.g. John Doe (+855 12 345 678)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-2">
+          <button type="button" onclick="closeModal('new-entry-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg shadow-xs">Register Vendor</button>
+        </div>
+      </form>
+
+      <!-- Form 3: Issue PO -->
+      <form id="form-add-po" onsubmit="submitPO(event)" class="p-4 sm:p-6 space-y-3 sm:space-y-3.5 text-xs overflow-y-auto flex-1 hidden">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">PO Number *</label>
+            <input type="text" id="po-num" required placeholder="PO-2026-101" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Vendor *</label>
+            <select id="po-vendor-select" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Items Description &amp; Quantity *</label>
+          <input type="text" id="po-items" required placeholder="e.g. AL-76 Black Sliding Outer (1,500 KG)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Total PO Value ($) *</label>
+            <input type="number" step="0.01" id="po-val" required placeholder="3975.00" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Delivery Due Date *</label>
+            <input type="date" id="po-due" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Initial Status</label>
+            <select id="po-status" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+              <option value="Order Confirmed">Order Confirmed</option>
+              <option value="In Transit">In Transit</option>
+              <option value="Arrived at Dock">Arrived at Dock</option>
+              <option value="Delayed">Delayed</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Dock Expediting Action Note</label>
+          <input type="text" id="po-action" placeholder="e.g. Splicing inspection scheduled with QC on arrival" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-2">
+          <button type="button" onclick="closeModal('new-entry-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg shadow-xs">Issue PO Docket</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DELETE CONFIRMATION -->
+  <div id="delete-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-xl sm:rounded-2xl max-w-sm w-full p-4 sm:p-5 shadow-2xl border border-slate-100 text-center space-y-3">
+      <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+      </div>
+      <h3 class="font-bold text-slate-900 text-sm" id="del-modal-title">Confirm Deletion</h3>
+      <p class="text-xs text-slate-500" id="del-modal-msg">Are you sure you want to remove this record?</p>
+      <div class="flex items-center justify-center gap-2 pt-2">
+        <button onclick="closeModal('delete-modal')" class="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition">Cancel</button>
+        <button id="del-confirm-btn" class="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-lg shadow-xs transition">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toast-container" class="fixed top-4 left-3 right-3 sm:left-auto sm:top-auto sm:bottom-5 sm:right-5 z-50 space-y-2 pointer-events-none sm:max-w-sm"></div>
+
+  <!-- JAVASCRIPT SYSTEM & OPTIMIZED PERSISTENCE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // HARDWARE-ACCELERATED INLINED SVG ENGINE
+    const ICONS = {
+      box: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`,
+      shield: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>`,
+      settings: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+      key: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>`,
+      disc: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>`,
+      flask: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg>`,
+      trash: `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`,
+      eye: `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+      creditCard: `<svg class="w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>`,
+      clock: `<svg class="w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+      calendar: `<svg class="w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>`
+    };
+
+    function getCardIcon(name) {
+      if (name === 'shield') return ICONS.shield;
+      if (name === 'settings') return ICONS.settings;
+      if (name === 'key') return ICONS.key;
+      if (name === 'disc') return ICONS.disc;
+      if (name === 'flask-conical' || name === 'flask') return ICONS.flask;
+      return ICONS.box;
+    }
+
+    // DEFAULT MASTER DATASETS
+    const defaultMaterials = [
+      {
+        code: "AL-76-SLD-BLK",
+        category: "aluminum",
+        categoryLabel: "Aluminum Profile",
+        name: "Sliding Frame Outer 76 Series",
+        specs: "Alloy 6063-T5 | Wall: 1.4mm | L: 5.85m | Finish: Powder Coated Matte Black RAL9005",
+        uom: "KG",
+        currentStock: 480,
+        safetyStock: 300,
+        reorderPoint: 850,
+        stdCost: 2.65,
+        supplier: "Asia Aluminum Extrusions Co.",
+        imageBg: "from-slate-700 to-slate-900",
+        icon: "box",
+        status: "reorder",
+        details: {
+          tolerance: "± 0.05 mm thickness",
+          packaging: "Craft paper bundles of 4 pcs + PE protective film",
+          usageRate: "80 KG / day",
+          leadTime: "7 days",
+          productionLink: "SD-100 & SD-76 Sliding Window Systems"
+        }
+      },
+      {
+        code: "AL-50-CSM-SLV",
+        category: "aluminum",
+        categoryLabel: "Aluminum Profile",
+        name: "Casement Window Sash 50 Series",
+        specs: "Alloy 6063-T5 | Wall: 1.4mm | L: 5.85m | Finish: Anodized Natural Silver AA15",
+        uom: "KG",
+        currentStock: 1200,
+        safetyStock: 400,
+        reorderPoint: 900,
+        stdCost: 2.75,
+        supplier: "Asia Aluminum Extrusions Co.",
+        imageBg: "from-sky-700 to-slate-800",
+        icon: "box",
+        status: "safe",
+        details: {
+          tolerance: "± 0.04 mm thickness",
+          packaging: "Master bundles with plastic separation",
+          usageRate: "50 KG / day",
+          leadTime: "7 days",
+          productionLink: "CW-50 Outward Casement Systems"
+        }
+      },
+      {
+        code: "GL-TMP-08-CLR",
+        category: "glass",
+        categoryLabel: "Architectural Glass",
+        name: "8mm Clear Fully Tempered Glass",
+        specs: "Nominal 8mm | Flat polished edge | Arrissed corners | CNC handle notches",
+        uom: "SQM",
+        currentStock: 145,
+        safetyStock: 100,
+        reorderPoint: 220,
+        stdCost: 15.50,
+        supplier: "Crystal Float & Tempered Glass Ltd.",
+        imageBg: "from-teal-700 to-cyan-900",
+        icon: "shield",
+        status: "low",
+        details: {
+          tolerance: "+0.2 / -0.2 mm surface flatness",
+          packaging: "Timber A-frame wooden crates with cork pads",
+          usageRate: "20 SQM / day",
+          leadTime: "5 days",
+          productionLink: "Sliding Patio Doors & Shower Partitions"
+        }
+      },
+      {
+        code: "GL-IGU-24-LOWE",
+        category: "glass",
+        categoryLabel: "Architectural Glass",
+        name: "Double Glazed Unit (6+12A+6)",
+        specs: "6mm Clear Low-E + 12mm Argon spacer + 6mm Clear Tempered | Warm edge",
+        uom: "SQM",
+        currentStock: 210,
+        safetyStock: 80,
+        reorderPoint: 160,
+        stdCost: 38.00,
+        supplier: "Crystal Float & Tempered Glass Ltd.",
+        imageBg: "from-indigo-800 to-slate-900",
+        icon: "shield",
+        status: "safe",
+        details: {
+          tolerance: "Dual sealed with polyisobutylene & secondary silicone",
+          packaging: "Heavy export wooden crates, desiccant lined",
+          usageRate: "12 SQM / day",
+          leadTime: "10 days",
+          productionLink: "Acoustic & Thermal Performance Facades"
+        }
+      },
+      {
+        code: "HD-ROL-TDM-120",
+        category: "hardware",
+        categoryLabel: "Hardware Accessories",
+        name: "Heavy Duty Tandem Roller 120KG",
+        specs: "SUS304 Stainless Steel Housing | Dual POM Bearing Wheels | Height Adjustable",
+        uom: "PAIR",
+        currentStock: 240,
+        safetyStock: 200,
+        reorderPoint: 450,
+        stdCost: 4.80,
+        supplier: "Kinlong Fenestration Hardware Co.",
+        imageBg: "from-amber-700 to-stone-900",
+        icon: "settings",
+        status: "low",
+        details: {
+          tolerance: "Rated 120KG per pair | Tested to 100,000 cycles",
+          packaging: "50 Pairs per master carton",
+          usageRate: "25 Pairs / day",
+          leadTime: "10 days",
+          productionLink: "SD-100 Heavy Duty Sliding Door"
+        }
+      },
+      {
+        code: "HD-LCK-MLT-BLK",
+        category: "hardware",
+        categoryLabel: "Hardware Accessories",
+        name: "Multipoint Casement Lock Set",
+        specs: "Zinc alloy die-cast handle | Matte black finish | SUS304 transmission bar",
+        uom: "SET",
+        currentStock: 520,
+        safetyStock: 150,
+        reorderPoint: 300,
+        stdCost: 9.20,
+        supplier: "Kinlong Fenestration Hardware Co.",
+        imageBg: "from-slate-800 to-zinc-950",
+        icon: "key",
+        status: "safe",
+        details: {
+          tolerance: "Backset 22mm | Salt spray resistance 480 hours",
+          packaging: "Individually boxed with all strike plates and screws",
+          usageRate: "15 Sets / day",
+          leadTime: "10 days",
+          productionLink: "CW-50 Outward Windows"
+        }
+      },
+      {
+        code: "SL-EPDM-GSK-01",
+        category: "sealant",
+        categoryLabel: "Sealants & Gaskets",
+        name: "EPDM Wedge Gasket Strip",
+        specs: "Peroxide cured EPDM rubber | UV resistant | Shore A 65 hardness",
+        uom: "METER",
+        currentStock: 850,
+        safetyStock: 1000,
+        reorderPoint: 2500,
+        stdCost: 0.32,
+        supplier: "PolyTech Rubber & Polymer Industries",
+        imageBg: "from-emerald-800 to-slate-900",
+        icon: "disc",
+        status: "reorder",
+        details: {
+          tolerance: "Operating temp: -40°C to +120°C",
+          packaging: "Spools of 250 Meters in reinforced cartons",
+          usageRate: "200 Meters / day",
+          leadTime: "6 days",
+          productionLink: "Glass glazing bead retention on all doors/windows"
+        }
+      },
+      {
+        code: "SL-SIL-STR-BLK",
+        category: "sealant",
+        categoryLabel: "Sealants & Gaskets",
+        name: "Neutral Structural Silicone 590ml",
+        specs: "High tensile structural sealant | Matte Black | Shelf-life: 12 months",
+        uom: "SAUSAGE",
+        currentStock: 420,
+        safetyStock: 150,
+        reorderPoint: 320,
+        stdCost: 4.90,
+        supplier: "Sika Architectural Adhesives",
+        imageBg: "from-blue-900 to-indigo-950",
+        icon: "flask",
+        status: "safe",
+        details: {
+          tolerance: "ASTM C1184 compliant | Shore A 40",
+          packaging: "Box of 20 Sausages with nozzles",
+          usageRate: "18 Sausages / day",
+          leadTime: "4 days",
+          productionLink: "Structural curtain wall & window perimeter sealing"
+        }
+      }
+    ];
+
+    const defaultSuppliers = [
+      {
+        id: "VND-ALU-01",
+        name: "Asia Aluminum Extrusions Co.",
+        category: "Aluminum Profiles",
+        tier: "Tier 1: Preferred",
+        tierColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
+        score: 92,
+        metrics: { price: 23, quality: 24, delivery: 19, spec: 14, terms: 8, service: 4 },
+        paymentTerms: "Net 45 Days",
+        leadTime: "7 Days",
+        contact: "Chen Wei (+855 12 889 001)",
+        otif: "97.4%",
+        qcRate: "99.1%"
+      },
+      {
+        id: "VND-GLS-02",
+        name: "Crystal Float & Tempered Glass Ltd.",
+        category: "Architectural Glass",
+        tier: "Tier 1: Preferred",
+        tierColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
+        score: 89,
+        metrics: { price: 21, quality: 25, delivery: 18, spec: 14, terms: 7, service: 4 },
+        paymentTerms: "Net 30 Days",
+        leadTime: "5 Days",
+        contact: "Sokha Mean (+855 16 445 221)",
+        otif: "95.8%",
+        qcRate: "99.4%"
+      },
+      {
+        id: "VND-HDW-03",
+        name: "Kinlong Fenestration Hardware Co.",
+        category: "Hardware & Accessories",
+        tier: "Tier 1: Preferred",
+        tierColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
+        score: 88,
+        metrics: { price: 22, quality: 24, delivery: 18, spec: 14, terms: 6, service: 4 },
+        paymentTerms: "Net 30 Days",
+        leadTime: "10 Days",
+        contact: "Li Qiang (+855 92 110 998)",
+        otif: "96.2%",
+        qcRate: "98.8%"
+      },
+      {
+        id: "VND-RUB-04",
+        name: "PolyTech Rubber & Polymer Industries",
+        category: "EPDM Gaskets & Seals",
+        tier: "Tier 2: Conditional",
+        tierColor: "bg-amber-100 text-amber-800 border-amber-300",
+        score: 78,
+        metrics: { price: 24, quality: 20, delivery: 15, spec: 12, terms: 4, service: 3 },
+        paymentTerms: "Net 15 Days",
+        leadTime: "6 Days",
+        contact: "Rithy Heng (+855 11 332 990)",
+        otif: "88.5%",
+        qcRate: "96.2%"
+      },
+      {
+        id: "VND-ADH-05",
+        name: "Sika Architectural Adhesives",
+        category: "Silicones & Chemicals",
+        tier: "Tier 1: Preferred",
+        tierColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
+        score: 94,
+        metrics: { price: 20, quality: 25, delivery: 20, spec: 15, terms: 9, service: 5 },
+        paymentTerms: "Net 60 Days",
+        leadTime: "4 Days",
+        contact: "Technical Sourcing Desk (+855 23 881 772)",
+        otif: "99.0%",
+        qcRate: "99.8%"
+      },
+      {
+        id: "VND-GLS-06",
+        name: "Mekong Safety Glass Backup Ltd.",
+        category: "Secondary Glass Sourcing",
+        tier: "Tier 2: Conditional",
+        tierColor: "bg-amber-100 text-amber-800 border-amber-300",
+        score: 74,
+        metrics: { price: 22, quality: 21, delivery: 14, spec: 11, terms: 3, service: 3 },
+        paymentTerms: "Cash in Advance",
+        leadTime: "8 Days",
+        contact: "Bona Keo (+855 77 554 112)",
+        otif: "89.0%",
+        qcRate: "95.5%"
+      }
+    ];
+
+    const defaultPipeline = [
+      {
+        poNumber: "PO-2026-089",
+        vendor: "Asia Aluminum Extrusions Co.",
+        items: "AL-76 Sliding Frame Outer (2,500 KG)",
+        amount: "$6,625.00",
+        rawAmount: 6625.00,
+        dueDate: "2026-09-24",
+        status: "In Transit",
+        alert: "On Track",
+        alertBadge: "bg-emerald-100 text-emerald-800 border-emerald-300",
+        progressPct: 75,
+        dockAction: "ETA in 2 days. Coordinate crane with Warehouse."
+      },
+      {
+        poNumber: "PO-2026-092",
+        vendor: "PolyTech Rubber & Polymer Industries",
+        items: "SL-EPDM Wedge Gaskets (3,000 M)",
+        amount: "$960.00",
+        rawAmount: 960.00,
+        dueDate: "2026-09-20",
+        status: "Delayed",
+        alert: "🔴 2 Days Overdue",
+        alertBadge: "bg-rose-100 text-rose-800 border-rose-300 font-bold",
+        progressPct: 40,
+        dockAction: "Urgent Expediting: Factory needs stock for tomorrow."
+      },
+      {
+        poNumber: "PO-2026-094",
+        vendor: "Crystal Float & Tempered Glass Ltd.",
+        items: "GL-TMP-08 8mm Tempered Glass (85 SQM)",
+        amount: "$1,317.50",
+        rawAmount: 1317.50,
+        dueDate: "2026-09-22",
+        status: "Arrived at Dock",
+        alert: "Inspection Today",
+        alertBadge: "bg-sky-100 text-sky-800 border-sky-300",
+        progressPct: 90,
+        dockAction: "Truck #PP-3-4829 unloading at Bay 2. QC checking scratches."
+      },
+      {
+        poNumber: "PO-2026-095",
+        vendor: "Kinlong Fenestration Hardware Co.",
+        items: "HD-ROL-TDM Heavy Duty Rollers (500 Pairs)",
+        amount: "$2,400.00",
+        rawAmount: 2400.00,
+        dueDate: "2026-09-28",
+        status: "Order Confirmed",
+        alert: "On Track",
+        alertBadge: "bg-emerald-100 text-emerald-800 border-emerald-300",
+        progressPct: 30,
+        dockAction: "Vendor acknowledged PO. Lead time confirmed at 7 days."
+      }
+    ];
+
+    const sopData = [
+      {
+        id: "FORM-01",
+        title: "Purchase Requisition (PR)",
+        type: "Standard Form",
+        role: "Production / Sales",
+        desc: "Captures project BOM requirement, stock balance, and needed fabrication date before purchasing.",
+        fields: "PR No, Item Code, Detailed Spec, Quantity, Required Date, Approved Signatures"
+      },
+      {
+        id: "FORM-02",
+        title: "RFQ & Landed Cost Analysis",
+        type: "Evaluation Sheet",
+        role: "Purchasing Officer",
+        desc: "Compares 3 vendor bids calculating freight, discounts, handling, and Net Landed Cost per unit.",
+        fields: "Supplier IDs, Base Price, Discount %, Shipping Cost, Duties, Net Landed Unit Cost"
+      },
+      {
+        id: "FORM-03",
+        title: "Official Purchase Order (PO)",
+        type: "Legal Contract",
+        role: "Purchasing Manager",
+        desc: "Binding procurement order with precise tolerances, delivery dates, packing rules, and penalty terms.",
+        fields: "PO ID, Full Spec Codes, Unit Rate, Total Value, Payment Term, Financial Approval"
+      },
+      {
+        id: "FORM-04",
+        title: "Goods Receiving Note (GRN)",
+        type: "Warehouse Gate",
+        role: "Warehouse Inward",
+        desc: "Logs actual count, carton condition, and physical receipts at the dock prior to ERP entry.",
+        fields: "GRN No, PO No, Vendor Delivery Slip, Received Qty, Damaged Units, Receiver Sign"
+      },
+      {
+        id: "FORM-05",
+        title: "QC Non-Conformance & RMA",
+        type: "Quality Gate",
+        role: "QC Inspection",
+        desc: "Quarantines defective profiles or scratched glass and initiates vendor claims for credit notes.",
+        fields: "Defect Description, Photos, Discrepant Qty, Disposition (Scrap/Return/Credit)"
+      },
+      {
+        id: "SOP-MATCH",
+        title: "3-Way Match & Disbursement",
+        type: "Finance SOP",
+        role: "Accounts Payable",
+        desc: "Reconciles PO Rate = GRN Accepted Qty = Invoice Amount. Zero payments without verified match.",
+        fields: "Matched PO, Signed GRN, Verified Tax Invoice, Payment Voucher ID"
+      }
+    ];
+
+    // LOCAL DATA STORAGE
+    let materialsData = [...defaultMaterials];
+    let suppliersData = [...defaultSuppliers];
+    let pipelineData = [...defaultPipeline];
+
+    function loadLocalData() {
+      try {
+        const m = localStorage.getItem('alu_procurement_materials');
+        if (m) materialsData = JSON.parse(m);
+        const s = localStorage.getItem('alu_procurement_suppliers');
+        if (s) suppliersData = JSON.parse(s);
+        const p = localStorage.getItem('alu_procurement_pipeline');
+        if (p) pipelineData = JSON.parse(p);
+      } catch (e) {
+        console.warn("Local storage parse note:", e);
+      }
+    }
+
+    let saveLocalTimer = null;
+    function debouncedSaveLocalData() {
+      clearTimeout(saveLocalTimer);
+      saveLocalTimer = setTimeout(() => {
+        try {
+          localStorage.setItem('alu_procurement_materials', JSON.stringify(materialsData));
+          localStorage.setItem('alu_procurement_suppliers', JSON.stringify(suppliersData));
+          localStorage.setItem('alu_procurement_pipeline', JSON.stringify(pipelineData));
+        } catch (e) {
+          console.warn("Storage write error:", e);
+        }
+      }, 150);
+    }
+
+    loadLocalData();
+
+    // RENDER MATERIALS
+    function renderMaterials(items = materialsData) {
+      const container = document.getElementById('materials-grid');
+      if (!container) return;
+
+      if (!items || items.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center bg-white rounded-xl border border-slate-200">
+            <div class="w-10 h-10 text-slate-300 mx-auto mb-2 flex items-center justify-center">${ICONS.box}</div>
+            <p class="text-sm font-semibold text-slate-700">No matching materials found</p>
+            <p class="text-xs text-slate-400 mt-1">Try adjusting your search terms or category filter.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map(m => {
+        let statusBadge = '';
+        if (m.status === 'reorder' || m.currentStock <= m.safetyStock) {
+          statusBadge = '<span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>Reorder</span>';
+        } else if (m.status === 'low' || m.currentStock <= m.reorderPoint) {
+          statusBadge = '<span class="bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Low</span>';
+        } else {
+          statusBadge = '<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-semibold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>In Stock</span>';
+        }
+
+        const pct = Math.min(100, Math.round((m.currentStock / (m.reorderPoint || 1)) * 100));
+        const barColor = pct < 50 ? 'bg-rose-500' : (pct < 100 ? 'bg-amber-500' : 'bg-emerald-500');
+
+        return `
+          <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-contain flex flex-col justify-between space-y-3 relative">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <div class="w-8 h-8 rounded-lg bg-gradient-to-br ${m.imageBg || 'from-sky-700 to-slate-900'} text-white flex items-center justify-center shrink-0 shadow-xs">
+                    ${getCardIcon(m.icon)}
+                  </div>
+                  <div class="min-w-0">
+                    <span class="mono text-[10px] font-bold text-sky-700 uppercase truncate block">${m.code}</span>
+                    <span class="block text-[10px] text-slate-400 capitalize truncate">${m.categoryLabel || m.category}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  ${statusBadge}
+                  <button onclick="promptDelete('material', '${m.code}')" aria-label="Delete SKU" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete SKU">
+                    ${ICONS.trash}
+                  </button>
+                </div>
+              </div>
+
+              <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 line-clamp-1" title="${m.name}">${m.name}</h3>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2" title="${m.specs}">${m.specs}</p>
+            </div>
+
+            <div class="space-y-1.5 bg-slate-50 border border-slate-100 rounded-lg p-2.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-500 text-[11px]">Stock Balance:</span>
+                <span class="mono font-bold text-slate-800">${m.currentStock} <span class="font-normal text-slate-400 text-[10px]">${m.uom}</span></span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                <div class="${barColor} h-1.5 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px] text-slate-400 pt-0.5">
+                <span>ROP: <strong class="mono text-slate-600">${m.reorderPoint} ${m.uom}</strong></span>
+                <span>Safety: <strong class="mono text-slate-600">${m.safetyStock} ${m.uom}</strong></span>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+              <div>
+                <span class="text-[10px] text-slate-400 uppercase block">Std Cost</span>
+                <span class="mono font-bold text-emerald-700 text-xs sm:text-sm">$${Number(m.stdCost).toFixed(2)}</span>
+              </div>
+              <button onclick="viewMaterialDetail('${m.code}')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 rounded-lg font-medium text-[11px] transition flex items-center gap-1 border border-slate-200/60 active:scale-95">
+                ${ICONS.eye}
+                <span>Docket</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderSuppliers() {
+      const container = document.getElementById('suppliers-grid');
+      if (!container) return;
+
+      container.innerHTML = suppliersData.map(sup => `
+        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-4 sm:p-5 card-contain flex flex-col justify-between space-y-3.5 relative">
+          <div>
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <span class="mono text-[10px] text-slate-400 uppercase font-semibold block">${sup.id}</span>
+                <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-0.5 truncate">${sup.name}</h3>
+                <span class="text-xs text-sky-700 font-medium truncate block">${sup.category}</span>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full border ${sup.tierColor}">${sup.tier}</span>
+                <button onclick="promptDelete('supplier', '${sup.id}')" aria-label="Delete Vendor" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete Supplier">
+                  ${ICONS.trash}
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-3.5 grid grid-cols-3 gap-1.5 sm:gap-2 text-center bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5">
+              <div>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">Score</span>
+                <span class="mono font-bold text-xs sm:text-base text-slate-900">${sup.score}<span class="text-[10px] font-normal text-slate-400">/100</span></span>
+              </div>
+              <div>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">OTIF</span>
+                <span class="mono font-bold text-xs sm:text-base text-emerald-600">${sup.otif}</span>
+              </div>
+              <div>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">QC Rate</span>
+                <span class="mono font-bold text-xs sm:text-base text-sky-600">${sup.qcRate || '99.0%'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <span class="flex items-center gap-1 truncate">
+              ${ICONS.creditCard} ${sup.paymentTerms}
+            </span>
+            <span class="flex items-center gap-1 shrink-0">
+              ${ICONS.clock} ${sup.leadTime}
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderPipeline() {
+      const container = document.getElementById('pipeline-grid');
+      if (!container) return;
+
+      container.innerHTML = pipelineData.map(po => `
+        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-contain flex flex-col justify-between space-y-3 relative">
+          <div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="mono text-xs font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded shrink-0">${po.poNumber}</span>
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="text-[10px] px-2 py-0.5 rounded-full border ${po.alertBadge}">${po.alert}</span>
+                <button onclick="promptDelete('po', '${po.poNumber}')" aria-label="Delete PO" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete PO">
+                  ${ICONS.trash}
+                </button>
+              </div>
+            </div>
+            <h4 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 truncate">${po.vendor}</h4>
+            <p class="text-xs text-slate-600 mt-0.5 font-medium line-clamp-1">${po.items}</p>
+          </div>
+
+          <div class="space-y-1">
+            <div class="flex justify-between text-[11px] text-slate-500">
+              <span>Status: <strong class="text-slate-800">${po.status}</strong></span>
+              <span class="mono font-semibold">${po.progressPct}%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-sky-600 h-1.5 rounded-full transition-all duration-300" style="width: ${po.progressPct}%"></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5 text-xs text-slate-700">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Expediting Action:</span>
+            <p class="text-[11px] line-clamp-2">${po.dockAction}</p>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="mono font-bold text-slate-900 text-xs sm:text-sm">${po.amount}</span>
+            <span class="text-slate-500 flex items-center gap-1 text-[11px]">
+              ${ICONS.calendar} ${po.dueDate}
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderSOP() {
+      const container = document.getElementById('sop-grid');
+      if (!container) return;
+
+      container.innerHTML = sopData.map(sop => `
+        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-contain flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="mono text-[10px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded">${sop.id}</span>
+              <span class="text-[10px] text-slate-500 font-medium">${sop.type}</span>
+            </div>
+            <h4 class="font-bold text-slate-900 text-xs sm:text-sm mt-2">${sop.title}</h4>
+            <p class="text-xs text-slate-600 mt-1">${sop.desc}</p>
+          </div>
+          <div class="bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-[11px] text-slate-500">
+            <span class="font-semibold text-slate-700 block mb-0.5">Required Fields:</span>
+            <span>${sop.fields}</span>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Custodian: <strong class="text-slate-600">${sop.role}</strong></span>
+            <span class="text-sky-600 font-medium">Standard Form</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // FILTER & SEARCH
+    let searchDebounce = null;
+    function filterCards() {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(executeFilterCards, 50);
+    }
+
+    function executeFilterCards() {
+      const searchInput = document.getElementById('gallery-search');
+      const catSelect = document.getElementById('category-filter');
+
+      const term = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      const category = catSelect ? catSelect.value : 'all';
+
+      const filtered = materialsData.filter(m => {
+        const matchesTerm = !term || 
+                            (m.name || '').toLowerCase().includes(term) || 
+                            (m.code || '').toLowerCase().includes(term) || 
+                            (m.specs || '').toLowerCase().includes(term) || 
+                            (m.supplier || '').toLowerCase().includes(term);
+        const matchesCategory = category === 'all' || m.category === category;
+        return matchesTerm && matchesCategory;
+      });
+
+      renderMaterials(filtered);
+    }
+
+    // KPI TELEMETRY
+    let kpiTimer = null;
+    function scheduleKPIUpdate() {
+      clearTimeout(kpiTimer);
+      kpiTimer = setTimeout(updateHeaderKPIs, 30);
+    }
+
+    function updateHeaderKPIs() {
+      const skuHeader = document.getElementById('sku-count-header');
+      if (skuHeader) skuHeader.innerText = materialsData.length;
+      const matBadge = document.getElementById('mat-count-badge');
+      if (matBadge) matBadge.innerText = materialsData.length;
+
+      const vendorHeader = document.getElementById('vendor-count-header');
+      if (vendorHeader) vendorHeader.innerText = `${suppliersData.length} Active`;
+      const supBadge = document.getElementById('sup-count-badge');
+      if (supBadge) supBadge.innerText = suppliersData.length;
+
+      const totalPO = pipelineData.reduce((sum, item) => sum + (Number(item.rawAmount) || 0), 0);
+      const poHeader = document.getElementById('po-value-header');
+      if (poHeader) poHeader.innerText = `$${totalPO.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const poBadge = document.getElementById('po-count-badge');
+      if (poBadge) poBadge.innerText = pipelineData.length;
+
+      populateVendorDropdowns();
+    }
+
+    function populateVendorDropdowns() {
+      const matSelect = document.getElementById('mat-vendor-select');
+      const poSelect = document.getElementById('po-vendor-select');
+
+      const optionsHtml = suppliersData.map(s => `<option value="${s.name}">${s.name} (${s.category})</option>`).join('');
+      if (matSelect) matSelect.innerHTML = optionsHtml;
+      if (poSelect) poSelect.innerHTML = optionsHtml;
+    }
+
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+      if (id === 'cloud-config-modal') {
+        const stored = localStorage.getItem('alu_procurement_firebase_cfg');
+        const area = document.getElementById('cfg-firebase-json');
+        if (stored && area) area.value = stored;
+      }
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    }
+
+    function showToast(title, message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      const bg = type === 'success' ? 'bg-emerald-900 border-emerald-700 text-emerald-100' : 'bg-rose-900 border-rose-700 text-rose-100';
+
+      toast.className = `p-3 rounded-xl border shadow-xl flex items-start gap-2 text-xs transition transform translate-y-2 opacity-0 pointer-events-auto ${bg}`;
+      toast.innerHTML = `
+        <div class="flex-1 min-w-0">
+          <strong class="block font-semibold text-white truncate">${title}</strong>
+          <span class="text-[11px] opacity-90 break-words">${message}</span>
+        </div>
+      `;
+
+      container.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 250);
+      }, 4000);
+    }
+
+    // FIREBASE REALTIME CLOUD BACKEND
+    let auth = null;
+    let db = null;
+    let activeUid = null;
+
+    function updateCloudStatus(status, label) {
+      const pulseDot = document.getElementById('cloud-pulse-dot');
+      const syncText = document.getElementById('cloud-sync-text');
+      const userDisplay = document.getElementById('user-id-display');
+
+      if (status === 'synced') {
+        if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+        if (syncText) syncText.innerText = 'Cloud Database: Synced';
+        if (userDisplay) userDisplay.innerText = label ? `ID: ${label.substring(0, 6)}` : 'Live';
+      } else if (status === 'local') {
+        if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        if (syncText) syncText.innerText = 'Local Storage';
+        if (userDisplay) userDisplay.innerText = 'Offline';
+      }
+    }
+
+    async function initCloudBackend() {
+      let firebaseConfig = null;
+      try {
+        const stored = localStorage.getItem('alu_procurement_firebase_cfg');
+        if (stored) firebaseConfig = JSON.parse(stored);
+      } catch (e) {
+        console.warn("Could not read stored Firebase config", e);
+      }
+
+      if (!firebaseConfig) {
+        updateCloudStatus('local');
+        return;
+      }
+
+      try {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        signInAnonymously(auth).then(cred => {
+          activeUid = cred.user.uid;
+          updateCloudStatus('synced', activeUid);
+          checkAndAutoSeedFirestore();
+        }).catch((err) => {
+          console.warn("Auth notice:", err.message);
+          let guestUid = localStorage.getItem('alu_procurement_guest_uid');
+          if (!guestUid) {
+            guestUid = 'user_' + Math.random().toString(36).substring(2, 7);
+            localStorage.setItem('alu_procurement_guest_uid', guestUid);
+          }
+          activeUid = guestUid;
+          updateCloudStatus('synced', activeUid);
+          checkAndAutoSeedFirestore();
+        });
+
+        setupRealtimeSubscriptions();
+      } catch (err) {
+        console.error("Firebase init note:", err);
+        updateCloudStatus('local');
+      }
+    }
+
+    async function checkAndAutoSeedFirestore() {
+      if (!db) return;
+      try {
+        const snap = await getDocs(collection(db, 'procurement_materials'));
+        if (snap.empty) {
+          console.log("[Auto-Seed] Firestore collection is empty. Pushing master datasets...");
+          await forceSyncAllToCloud(true);
+        }
+      } catch (err) {
+        if (err.message && err.message.includes('permission-denied')) {
+          showToast("Firestore Permission Notice", "Please open Firebase Console > Firestore > Security and change rules to 'allow read, write: if true;' then click Publish.", "error");
+        }
+      }
+    }
+
+    async function forceSyncAllToCloud(silent = false) {
+      if (!db) {
+        showToast("Cloud Not Configured", "Please paste your Firebase config in the modal first.", "error");
+        return;
+      }
+
+      try {
+        const batch = writeBatch(db);
+
+        // Upload all current materials
+        materialsData.forEach(m => {
+          batch.set(doc(db, 'procurement_materials', m.code), m);
+        });
+
+        // Upload all current suppliers
+        suppliersData.forEach(s => {
+          batch.set(doc(db, 'procurement_suppliers', s.id), s);
+        });
+
+        // Upload all current POs
+        pipelineData.forEach(p => {
+          batch.set(doc(db, 'procurement_pipeline', p.poNumber), p);
+        });
+
+        await batch.commit();
+        if (!silent) {
+          showToast("Cloud Synchronized!", `Pushed ${materialsData.length} SKUs, ${suppliersData.length} vendors, and ${pipelineData.length} POs to Firestore.`);
+          closeModal('cloud-config-modal');
+        }
+      } catch (err) {
+        console.error("Batch push failed:", err);
+        if (err.message && err.message.includes('permission-denied')) {
+          showToast("Write Blocked by Rules", "Go to Firebase > Firestore > Security tab, change to 'allow read, write: if true;' and click Publish.", "error");
+        } else {
+          showToast("Sync Error", err.message || "Failed to push to cloud database.", "error");
+        }
+      }
+    }
+
+    function setupRealtimeSubscriptions() {
+      if (!db) return;
+
+      onSnapshot(collection(db, 'procurement_materials'), (snapshot) => {
+        if (!snapshot.empty) {
+          materialsData = snapshot.docs.map(d => d.data());
+          debouncedSaveLocalData();
+          executeFilterCards();
+          scheduleKPIUpdate();
+        }
+      }, err => {
+        if (err.message.includes('permission-denied')) {
+          console.warn("Firestore rules blocking read:", err.message);
+        }
+      });
+
+      onSnapshot(collection(db, 'procurement_suppliers'), (snapshot) => {
+        if (!snapshot.empty) {
+          suppliersData = snapshot.docs.map(d => d.data());
+          debouncedSaveLocalData();
+          renderSuppliers();
+          scheduleKPIUpdate();
+        }
+      });
+
+      onSnapshot(collection(db, 'procurement_pipeline'), (snapshot) => {
+        if (!snapshot.empty) {
+          pipelineData = snapshot.docs.map(d => d.data());
+          debouncedSaveLocalData();
+          renderPipeline();
+          scheduleKPIUpdate();
+        }
+      });
+    }
+
+    // FORM SUBMISSIONS
+    function submitMaterial(e) {
+      e.preventDefault();
+      const code = document.getElementById('mat-code').value.trim().toUpperCase();
+      const category = document.getElementById('mat-category').value;
+      const uom = document.getElementById('mat-uom').value.trim().toUpperCase();
+      const name = document.getElementById('mat-name').value.trim();
+      const specs = document.getElementById('mat-specs').value.trim();
+      const stock = parseFloat(document.getElementById('mat-stock').value) || 0;
+      const safety = parseFloat(document.getElementById('mat-safety').value) || 0;
+      const rop = parseFloat(document.getElementById('mat-rop').value) || 0;
+      const cost = parseFloat(document.getElementById('mat-cost').value) || 0;
+      const vendor = document.getElementById('mat-vendor-select').value;
+      const bom = document.getElementById('mat-bom').value.trim() || 'General Assembly';
+
+      if (materialsData.some(m => m.code === code)) {
+        showToast("SKU Exists", `Material code ${code} is already registered.`, "error");
+        return;
+      }
+
+      let status = stock <= safety ? 'reorder' : (stock <= rop ? 'low' : 'safe');
+
+      const colorMap = {
+        aluminum: 'from-slate-700 to-slate-900',
+        glass: 'from-teal-700 to-cyan-900',
+        hardware: 'from-amber-700 to-stone-900',
+        sealant: 'from-emerald-800 to-slate-900'
+      };
+
+      const newMaterial = {
+        code,
+        category,
+        categoryLabel: category.charAt(0).toUpperCase() + category.slice(1),
+        name,
+        specs,
+        uom,
+        currentStock: stock,
+        safetyStock: safety,
+        reorderPoint: rop,
+        stdCost: cost,
+        supplier: vendor,
+        imageBg: colorMap[category] || 'from-sky-700 to-slate-900',
+        icon: 'box',
+        status,
+        details: {
+          tolerance: "± 0.05 mm standard tolerance",
+          packaging: "Production export packaging",
+          usageRate: `${Math.round(rop / 10)} ${uom} / day`,
+          leadTime: "7 days",
+          productionLink: bom
+        }
+      };
+
+      // Optimistic Local UI Update
+      materialsData.unshift(newMaterial);
+      closeModal('new-entry-modal');
+      e.target.reset();
+      switchGallery('materials');
+      executeFilterCards();
+      scheduleKPIUpdate();
+      debouncedSaveLocalData();
+      showToast("SKU Added", `${name} (${code}) created.`);
+
+      // Push to Cloud
+      if (db) {
+        setDoc(doc(db, 'procurement_materials', code), newMaterial).catch(err => {
+          console.warn("Background cloud sync note:", err);
+          if (err.message && err.message.includes('permission-denied')) {
+            showToast("Cloud Permission Notice", "Publish Firestore security rules to persist permanently.", "error");
+          }
+        });
+      }
+    }
+
+    function submitSupplier(e) {
+      e.preventDefault();
+      const id = document.getElementById('sup-id').value.trim().toUpperCase();
+      const name = document.getElementById('sup-name').value.trim();
+      const category = document.getElementById('sup-cat').value.trim();
+      const tier = document.getElementById('sup-tier').value;
+      const score = parseInt(document.getElementById('sup-score').value) || 85;
+      const terms = document.getElementById('sup-terms').value.trim();
+      const lead = document.getElementById('sup-lead').value.trim();
+      const otif = document.getElementById('sup-otif').value.trim();
+      const contact = document.getElementById('sup-contact').value.trim();
+
+      if (suppliersData.some(s => s.id === id)) {
+        showToast("ID Exists", `Vendor ID ${id} already exists.`, "error");
+        return;
+      }
+
+      const newSupplier = {
+        id,
+        name,
+        category,
+        tier,
+        tierColor: score >= 85 ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-amber-100 text-amber-800 border-amber-300',
+        score,
+        metrics: {
+          price: Math.round(score * 0.25),
+          quality: Math.round(score * 0.25),
+          delivery: Math.round(score * 0.20),
+          spec: Math.round(score * 0.15),
+          terms: Math.round(score * 0.10),
+          service: Math.round(score * 0.05)
+        },
+        paymentTerms: terms,
+        leadTime: lead,
+        contact,
+        otif,
+        qcRate: "99.0%"
+      };
+
+      suppliersData.unshift(newSupplier);
+      closeModal('new-entry-modal');
+      e.target.reset();
+      switchGallery('suppliers');
+      renderSuppliers();
+      scheduleKPIUpdate();
+      debouncedSaveLocalData();
+      showToast("Vendor Registered", `${name} added.`);
+
+      if (db) {
+        setDoc(doc(db, 'procurement_suppliers', id), newSupplier).catch(err => console.warn("Cloud sync note:", err));
+      }
+    }
+
+    function submitPO(e) {
+      e.preventDefault();
+      const poNum = document.getElementById('po-num').value.trim().toUpperCase();
+      const vendor = document.getElementById('po-vendor-select').value;
+      const items = document.getElementById('po-items').value.trim();
+      const val = parseFloat(document.getElementById('po-val').value) || 0;
+      const due = document.getElementById('po-due').value;
+      const status = document.getElementById('po-status').value;
+      const action = document.getElementById('po-action').value.trim() || 'PO dispatched. Awaiting delivery confirmation.';
+
+      if (pipelineData.some(p => p.poNumber === poNum)) {
+        showToast("PO Exists", `PO ${poNum} is already logged.`, "error");
+        return;
+      }
+
+      let progressPct = status === 'In Transit' ? 70 : (status === 'Arrived at Dock' ? 90 : (status === 'Delayed' ? 40 : 25));
+      let alert = status === 'Delayed' ? "🔴 Expedite Required" : "On Track";
+      let alertBadge = status === 'Delayed' ? "bg-rose-100 text-rose-800 border-rose-300 font-bold" : "bg-emerald-100 text-emerald-800 border-emerald-300";
+
+      const newPO = {
+        poNumber: poNum,
+        vendor,
+        items,
+        amount: `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        rawAmount: val,
+        dueDate: due,
+        status,
+        alert,
+        alertBadge,
+        progressPct,
+        dockAction: action
+      };
+
+      pipelineData.unshift(newPO);
+      closeModal('new-entry-modal');
+      e.target.reset();
+      switchGallery('pipeline');
+      renderPipeline();
+      scheduleKPIUpdate();
+      debouncedSaveLocalData();
+      showToast("PO Issued", `Order ${poNum} created.`);
+
+      if (db) {
+        setDoc(doc(db, 'procurement_pipeline', poNum), newPO).catch(err => console.warn("Cloud sync note:", err));
+      }
+    }
+
+    let pendingDelete = null;
+    function promptDelete(type, key) {
+      pendingDelete = { type, key };
+      const titleEl = document.getElementById('del-modal-title');
+      const msgEl = document.getElementById('del-modal-msg');
+      if (titleEl) titleEl.innerText = `Delete ${key}`;
+      if (msgEl) msgEl.innerText = `Remove this ${type} record immediately?`;
+      
+      const confirmBtn = document.getElementById('del-confirm-btn');
+      if (confirmBtn) confirmBtn.onclick = executeDelete;
+      openModal('delete-modal');
+    }
+
+    function executeDelete() {
+      if (!pendingDelete) return;
+      const { type, key } = pendingDelete;
+
+      if (type === 'material') {
+        materialsData = materialsData.filter(m => m.code !== key);
+        executeFilterCards();
+      } else if (type === 'supplier') {
+        suppliersData = suppliersData.filter(s => s.id !== key);
+        renderSuppliers();
+      } else if (type === 'po') {
+        pipelineData = pipelineData.filter(p => p.poNumber !== key);
+        renderPipeline();
+      }
+
+      closeModal('delete-modal');
+      scheduleKPIUpdate();
+      debouncedSaveLocalData();
+      showToast("Removed", `Deleted ${key}.`);
+
+      if (db) {
+        const col = type === 'material' ? 'procurement_materials' : (type === 'supplier' ? 'procurement_suppliers' : 'procurement_pipeline');
+        deleteDoc(doc(db, col, key)).catch(err => console.warn("Cloud delete note:", err));
+      }
+      pendingDelete = null;
+    }
+
+    function viewMaterialDetail(code) {
+      const item = materialsData.find(m => m.code === code);
+      if (!item) return;
+
+      const titleEl = document.getElementById('modal-title');
+      const subEl = document.getElementById('modal-subtitle');
+      const contentEl = document.getElementById('modal-content');
+
+      if (titleEl) titleEl.innerText = item.name;
+      if (subEl) subEl.innerText = `SKU: ${item.code} | Category: ${item.categoryLabel || item.category}`;
+
+      if (contentEl) {
+        contentEl.innerHTML = `
+          <div class="space-y-3.5 text-xs">
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2">
+              <span class="font-bold text-slate-800 uppercase tracking-wider text-[10px] block">Technical Specification</span>
+              <p class="text-slate-700 font-medium">${item.specs}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px] text-slate-500 pt-1.5 border-t border-slate-200">
+                <span>Tolerance: <strong class="text-slate-700">${item.details?.tolerance || '± 0.05 mm'}</strong></span>
+                <span>Packaging: <strong class="text-slate-700">${item.details?.packaging || 'Standard Packaging'}</strong></span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center">
+              <div class="bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5">
+                <span class="text-[9px] sm:text-[10px] text-slate-400 block uppercase">Stock</span>
+                <span class="mono font-bold text-xs sm:text-sm text-slate-800">${item.currentStock} ${item.uom}</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5">
+                <span class="text-[9px] sm:text-[10px] text-slate-400 block uppercase">ROP</span>
+                <span class="mono font-bold text-xs sm:text-sm text-amber-700">${item.reorderPoint} ${item.uom}</span>
+              </div>
+              <div class="bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5">
+                <span class="text-[9px] sm:text-[10px] text-slate-400 block uppercase">Std Cost</span>
+                <span class="mono font-bold text-xs sm:text-sm text-emerald-700">$${Number(item.stdCost).toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 sm:p-3.5 space-y-1.5 text-slate-700 text-xs">
+              <div class="flex justify-between items-center gap-2">
+                <span class="shrink-0">Vendor:</span>
+                <strong class="text-sky-900 truncate">${item.supplier}</strong>
+              </div>
+              <div class="flex justify-between items-center gap-2">
+                <span class="shrink-0">BOM Link:</span>
+                <strong class="text-slate-800 truncate">${item.details?.productionLink || 'General System'}</strong>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      openModal('spec-modal');
+    }
+
+    function switchGallery(tabName) {
+      ['materials', 'suppliers', 'pipeline', 'sop'].forEach(t => {
+        const sec = document.getElementById('gallery-' + t);
+        if (sec) sec.classList.toggle('hidden', t !== tabName);
+
+        const btn = document.getElementById('tab-' + t);
+        if (btn) {
+          btn.className = t === tabName 
+            ? 'tab-btn active-tab px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 bg-white text-slate-900 shadow-xs shrink-0 transition whitespace-nowrap'
+            : 'tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap';
+        }
+
+        const mNav = document.getElementById('m-nav-' + t);
+        if (mNav) {
+          mNav.className = t === tabName 
+            ? 'flex flex-col items-center justify-center py-1 rounded-lg text-sky-700 bg-sky-50 font-bold'
+            : 'flex flex-col items-center justify-center py-1 rounded-lg text-slate-500 hover:text-slate-900';
+        }
+      });
+
+      if (tabName === 'materials') renderMaterials(materialsData);
+      if (tabName === 'suppliers') renderSuppliers();
+      if (tabName === 'pipeline') renderPipeline();
+      if (tabName === 'sop') renderSOP();
+    }
+
+    function switchEntryTab(type) {
+      ['material', 'supplier', 'po'].forEach(t => {
+        const form = document.getElementById('form-add-' + t);
+        if (form) form.classList.toggle('hidden', t !== type);
+
+        const btn = document.getElementById('entry-tab-' + t);
+        if (btn) {
+          btn.className = t === type 
+            ? 'px-3 sm:px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap'
+            : 'px-3 sm:px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap';
+        }
+      });
+    }
+
+    function openNewEntryModal(tab = 'material') {
+      populateVendorDropdowns();
+      switchEntryTab(tab);
+      openModal('new-entry-modal');
+    }
+
+    function runCalculator() {
+      const qty = parseFloat(document.getElementById('calc-qty')?.value) || 1;
+      const price = parseFloat(document.getElementById('calc-price')?.value) || 0;
+      const discPct = parseFloat(document.getElementById('calc-discount')?.value) || 0;
+      const freight = parseFloat(document.getElementById('calc-freight')?.value) || 0;
+      const other = parseFloat(document.getElementById('calc-other')?.value) || 0;
+
+      const netBasePrice = price * (1 - (discPct / 100));
+      const overheadPerUnit = (freight + other) / qty;
+      const trueLandedCost = netBasePrice + overheadPerUnit;
+
+      const resBase = document.getElementById('calc-res-base');
+      const resOverhead = document.getElementById('calc-res-overhead');
+      const resLanded = document.getElementById('calc-res-landed');
+
+      if (resBase) resBase.innerText = `$${price.toFixed(2)} (-${discPct}%)`;
+      if (resOverhead) resOverhead.innerText = `+$${overheadPerUnit.toFixed(3)} / unit`;
+      if (resLanded) resLanded.innerText = `$${trueLandedCost.toFixed(3)} / unit`;
+    }
+
+    function saveCloudConfig() {
+      const text = document.getElementById('cfg-firebase-json')?.value.trim();
+      if (!text) {
+        showToast("Missing Config", "Please paste your Firebase configuration object.", "error");
+        return;
+      }
+      try {
+        let cleaned = text;
+        if (text.includes('{') && text.includes('}')) {
+          cleaned = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+        }
+        const jsonLike = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+        const parsed = JSON.parse(jsonLike);
+        localStorage.setItem('alu_procurement_firebase_cfg', JSON.stringify(parsed));
+        showToast("Config Saved", "Connecting to cloud database...");
+        setTimeout(() => window.location.reload(), 300);
+      } catch (e) {
+        showToast("Format Error", "Ensure the configuration is a valid JSON object.", "error");
+      }
+    }
+
+    function clearCloudConfig() {
+      localStorage.removeItem('alu_procurement_firebase_cfg');
+      closeModal('cloud-config-modal');
+      showToast("Config Cleared", "Reset back to local storage mode.");
+      setTimeout(() => window.location.reload(), 300);
+    }
+
+    // EXPOSE GLOBALS
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.switchGallery = switchGallery;
+    window.filterCards = filterCards;
+    window.runCalculator = runCalculator;
+    window.openNewEntryModal = openNewEntryModal;
+    window.switchEntryTab = switchEntryTab;
+    window.submitMaterial = submitMaterial;
+    window.submitSupplier = submitSupplier;
+    window.submitPO = submitPO;
+    window.promptDelete = promptDelete;
+    window.viewMaterialDetail = viewMaterialDetail;
+    window.saveCloudConfig = saveCloudConfig;
+    window.clearCloudConfig = clearCloudConfig;
+    window.forceSyncAllToCloud = forceSyncAllToCloud;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      runCalculator();
+
+      const nextWeek = new Date();
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      const dueInput = document.getElementById('po-due');
+      if (dueInput) dueInput.value = nextWeek.toISOString().split('T')[0];
+
+      renderMaterials(materialsData);
+      renderSuppliers();
+      renderPipeline();
+      renderSOP();
+      updateHeaderKPIs();
+
+      lucide.createIcons();
+      initCloudBackend();
+    });
+  </script>
+</body>
+</html>
