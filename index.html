@@ -138,15 +138,8 @@
         <!-- Header Actions & Telemetry -->
         <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
           
-          <!-- Cloud Sync Status Pill -->
-          <button onclick="openModal('cloud-config-modal')" id="cloud-status-badge" title="Click to view Cloud connection status" class="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-[11px] text-slate-300 transition cursor-pointer active:scale-95">
-            <span id="cloud-pulse-dot" class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
-            <span id="cloud-sync-text" class="font-semibold text-slate-200">Connecting...</span>
-            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-slate-700 pl-2">Syncing</span>
-          </button>
-
           <!-- Large Screen KPI Telemetry -->
-          <div class="hidden lg:flex items-center gap-5 border-l border-slate-800 pl-5 text-xs mr-1">
+          <div class="hidden lg:flex items-center gap-5 text-xs mr-1">
             <div>
               <span class="text-slate-400 block text-[10px] uppercase font-semibold">Catalog SKUs</span>
               <span class="font-bold text-slate-100 mono text-sm" id="sku-count-header">--</span>
@@ -160,12 +153,6 @@
               <span class="font-bold text-sky-400 mono text-sm" id="po-value-header">$--</span>
             </div>
           </div>
-          
-          <!-- Landed Cost Tool -->
-          <button onclick="openModal('quick-calc-modal')" aria-label="Open Landed Cost Calculator" class="p-2 sm:px-3 sm:py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 flex items-center gap-1.5 transition active:scale-95">
-            <i data-lucide="calculator" class="w-4 h-4 text-sky-400"></i>
-            <span class="hidden sm:inline">Landed Cost</span>
-          </button>
 
           <!-- Primary New Entry Action -->
           <button onclick="openNewEntryModal('material')" aria-label="Create New Entry" class="px-2.5 py-2 sm:px-3.5 sm:py-2 btn-gradient-primary text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition shadow-sm active:scale-95">
@@ -468,6 +455,38 @@
             <span>Active Session</span>
           </span>
           <span id="sidebar-session-time" class="mono text-[10px] text-slate-400">Authenticated</span>
+        </div>
+      </div>
+
+      <!-- Cloud Connection Status Widget in Sidebar -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 space-y-2.5 text-white">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span id="sidebar-cloud-pulse-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <span id="sidebar-cloud-status-text" class="font-bold text-xs text-slate-200">Checking Cloud...</span>
+          </div>
+          <span id="sidebar-cloud-uid-pill" class="text-[10px] mono text-sky-400 bg-sky-950/80 px-2 py-0.5 rounded-full border border-sky-800/60">Offline</span>
+        </div>
+        
+        <div class="text-[11px] text-slate-400 space-y-1 pt-1 border-t border-slate-800">
+          <div class="flex justify-between items-center">
+            <span>Target DB:</span>
+            <span class="mono text-slate-300 font-semibold">default (asia-southeast1)</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span>Transport:</span>
+            <span class="mono text-emerald-400 font-semibold">Direct Long-Polling</span>
+          </div>
+        </div>
+
+        <div class="pt-1 flex gap-2">
+          <button onclick="window.forceSyncAllToCloud()" class="flex-1 py-1.5 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg text-[11px] flex items-center justify-center gap-1 transition active:scale-95 shadow-xs">
+            <i data-lucide="cloud-upload" class="w-3.5 h-3.5"></i>
+            <span>Sync Cloud Now</span>
+          </button>
+          <button onclick="closeUserSidebar(); openModal('cloud-config-modal');" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-[11px] font-semibold transition" title="Diagnostics">
+            <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+          </button>
         </div>
       </div>
 
@@ -1175,7 +1194,7 @@
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <span class="font-bold text-slate-900 text-xs">Registered Accounts Directory (<span id="user-count-badge">0</span> Users)</span>
-            <span class="text-[10px] text-slate-500">Click toggle button to permit or block user access immediately</span>
+            <span class="text-[10px] text-slate-500">Credentials and permissions are stored directly in Firestore (procurement_users)</span>
           </div>
 
           <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
@@ -1184,6 +1203,7 @@
                 <thead class="bg-slate-100/80 text-slate-600 font-bold uppercase text-[10px] border-b border-slate-200">
                   <tr>
                     <th class="py-2.5 px-3">User &amp; Username</th>
+                    <th class="py-2.5 px-3">Password in DB</th>
                     <th class="py-2.5 px-3">Role</th>
                     <th class="py-2.5 px-3 text-center">Access Status</th>
                     <th class="py-2.5 px-3 text-right">Access Controls</th>
@@ -1205,6 +1225,32 @@
         <button onclick="closeModal('user-management-modal')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-xs transition">Done</button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- MODAL 6C: EDIT USER PASSWORD IN DATABASE -->
+  <div id="edit-password-modal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-slate-100 space-y-3.5">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-xs">
+          <i data-lucide="key" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-900 text-xs sm:text-sm">Change User Password</h4>
+          <p class="text-[10px] text-slate-400" id="edit-pass-user-label">Updating user...</p>
+        </div>
+      </div>
+      <form id="form-edit-password" onsubmit="submitPasswordChange(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="edit-pass-username">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">New Database Password *</label>
+          <input type="text" id="edit-pass-new-password" required placeholder="Enter new password" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-1">
+          <button type="button" onclick="closeModal('edit-password-modal')" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold">Cancel</button>
+          <button type="submit" class="px-4 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-bold shadow-sm">Save to Database</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -1321,6 +1367,8 @@
       initializeFirestore, 
       doc, 
       setDoc, 
+      getDoc,
+      updateDoc,
       deleteDoc, 
       onSnapshot, 
       collection, 
@@ -1941,6 +1989,9 @@
 
     function openUserSidebar() {
       updateUserInterface();
+      if (activeUid) {
+        updateCloudStatus('synced', activeUid);
+      }
       const backdrop = document.getElementById('user-sidebar-backdrop');
       const sidebar = document.getElementById('user-profile-sidebar');
       if (backdrop && sidebar) {
@@ -2047,42 +2098,75 @@
 
     async function executeLoginProcess(username, password, role, fullName) {
       const btnText = document.getElementById('btn-login-text');
-      if (btnText) btnText.innerText = "Verifying Access...";
+      if (btnText) btnText.innerText = "Checking Database...";
 
-      // 1. Check account against Users Registry
-      const userRecord = usersData.find(u => u.username.toLowerCase() === username.toLowerCase());
+      const cleanUsername = (username || '').trim().toLowerCase();
+      let userRecord = usersData.find(u => u.username.toLowerCase() === cleanUsername);
 
-      if (userRecord) {
-        // Verify Password
-        if (userRecord.password && userRecord.password !== password) {
-          if (btnText) btnText.innerText = "Sign In to Dashboard";
-          showToast("Authentication Failed", "Incorrect password entered for this user.", "error");
-          return;
+      // 1. Direct real-time fetch from Firestore database "default"
+      if (db) {
+        try {
+          const userDocRef = doc(db, 'procurement_users', cleanUsername);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            userRecord = userDocSnap.data();
+            // Update local memory and cache with authoritative database record
+            const idx = usersData.findIndex(u => u.username.toLowerCase() === cleanUsername);
+            if (idx >= 0) {
+              usersData[idx] = userRecord;
+            } else {
+              usersData.unshift(userRecord);
+            }
+            debouncedSaveLocalData();
+          }
+        } catch (dbErr) {
+          console.warn("Firestore user lookup note:", dbErr);
         }
+      }
 
-        // CRITICAL ACCESS CONTROL CHECK: Allow vs Revoke
-        if (userRecord.status === 'revoked') {
-          if (btnText) btnText.innerText = "Sign In to Dashboard";
-          showToast(
-            "Access Denied", 
-            `Account [${username}] is currently REVOKED by management. Please contact an Administrator to restore access.`, 
-            "error"
-          );
-          return;
-        }
+      // 2. Validate user existence
+      if (!userRecord) {
+        if (btnText) btnText.innerText = "Sign In to Dashboard";
+        showToast("Account Not Found", `User '${cleanUsername}' does not exist in the database. Contact an Administrator.`, "error");
+        return;
+      }
 
-        // Keep official role from registry
-        role = userRecord.role;
-        fullName = userRecord.name;
-        userRecord.lastLogin = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        debouncedSaveLocalData();
+      // 3. Verify Password stored in database
+      if (userRecord.password && userRecord.password !== password) {
+        if (btnText) btnText.innerText = "Sign In to Dashboard";
+        showToast("Authentication Failed", "Incorrect password entered for this database account.", "error");
+        return;
+      }
+
+      // 4. CRITICAL ACCESS CONTROL CHECK: Allow vs Revoke state in database
+      if (userRecord.status === 'revoked') {
+        if (btnText) btnText.innerText = "Sign In to Dashboard";
+        showToast(
+          "Access Denied", 
+          `Account [${cleanUsername}] access has been REVOKED in the database. Please contact an Administrator.`, 
+          "error"
+        );
+        return;
+      }
+
+      // 5. Authoritative role & name from database
+      const verifiedRole = userRecord.role || role;
+      const verifiedName = userRecord.name || fullName || cleanUsername;
+      const loginTimestamp = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      userRecord.lastLogin = loginTimestamp;
+      debouncedSaveLocalData();
+
+      // Update lastLogin in Firestore database
+      if (db) {
+        setDoc(doc(db, 'procurement_users', cleanUsername), { lastLogin: loginTimestamp }, { merge: true }).catch(() => {});
       }
 
       // Establish authenticated session
       currentUserSession = {
-        username: username,
-        name: fullName || username,
-        role: role,
+        username: cleanUsername,
+        name: verifiedName,
+        role: verifiedRole,
         loginTime: new Date().toISOString()
       };
 
@@ -2137,23 +2221,30 @@
           toggleBtn = `<span class="text-[10px] font-semibold text-slate-400 italic">Current User</span>`;
         } else if (isAllowed) {
           toggleBtn = `
-            <button onclick="toggleUserAccess('${u.username}', 'revoked')" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold rounded-lg transition active:scale-95 flex items-center gap-1">
+            <button onclick="toggleUserAccess('${u.username}', 'revoked')" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold rounded-lg transition active:scale-95 flex items-center gap-1" title="Revoke access immediately">
               <i data-lucide="ban" class="w-3 h-3 text-rose-600"></i>
-              <span>Revoke Access</span>
+              <span>Revoke</span>
             </button>
           `;
         } else {
           toggleBtn = `
-            <button onclick="toggleUserAccess('${u.username}', 'allowed')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-bold rounded-lg transition active:scale-95 flex items-center gap-1">
+            <button onclick="toggleUserAccess('${u.username}', 'allowed')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-bold rounded-lg transition active:scale-95 flex items-center gap-1" title="Restore access">
               <i data-lucide="check-circle" class="w-3 h-3 text-emerald-600"></i>
-              <span>Allow Access</span>
+              <span>Allow</span>
             </button>
           `;
         }
 
+        const editPassBtn = `
+          <button onclick="openChangePasswordModal('${u.username}')" class="p-1 px-2 bg-slate-100 hover:bg-sky-50 text-slate-700 hover:text-sky-700 border border-slate-200 rounded-lg transition text-[10px] font-semibold flex items-center gap-1" title="Change password in database">
+            <i data-lucide="key" class="w-3 h-3 text-sky-600"></i>
+            <span>Password</span>
+          </button>
+        `;
+
         const deleteBtn = isSelf || u.username === 'admin'
           ? ''
-          : `<button onclick="deleteUserAccount('${u.username}')" class="p-1 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Delete Account">
+          : `<button onclick="deleteUserAccount('${u.username}')" class="p-1 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Delete Account from Database">
                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
              </button>`;
 
@@ -2161,7 +2252,10 @@
           <tr class="hover:bg-slate-50/80 transition">
             <td class="py-2.5 px-3">
               <span class="font-bold text-slate-900 block">${u.name}</span>
-              <span class="mono text-[10px] text-slate-400 block">${u.username}</span>
+              <span class="mono text-[10px] text-slate-400 block">@${u.username}</span>
+            </td>
+            <td class="py-2.5 px-3">
+              <span class="mono text-[11px] font-semibold bg-slate-100 border border-slate-200 px-2 py-0.5 rounded text-slate-700">${u.password || '••••••••'}</span>
             </td>
             <td class="py-2.5 px-3 font-medium text-slate-700">
               ${u.role}
@@ -2171,6 +2265,7 @@
             </td>
             <td class="py-2.5 px-3 text-right">
               <div class="flex items-center justify-end gap-1.5">
+                ${editPassBtn}
                 ${toggleBtn}
                 ${deleteBtn}
               </div>
@@ -2190,17 +2285,57 @@
       debouncedSaveLocalData();
       renderUserAccountsTable();
 
-      const actionText = newStatus === 'allowed' ? 'Access Restored & Allowed' : 'Access Revoked & Blocked';
-      showToast(actionText, `Account [${username}] is now ${newStatus.toUpperCase()}.`);
+      const actionText = newStatus === 'allowed' ? 'Access Allowed' : 'Access Revoked';
+      showToast(actionText, `Account [${username}] status updated to ${newStatus.toUpperCase()} in database.`);
 
       if (db) {
-        setDoc(doc(db, 'procurement_users', username), JSON.parse(JSON.stringify(user))).catch(err => {
+        setDoc(doc(db, 'procurement_users', username), { status: newStatus }, { merge: true }).catch(err => {
           console.warn("Cloud user sync note:", err);
         });
       }
     }
 
-    function submitNewUser(e) {
+    function openChangePasswordModal(username) {
+      const user = usersData.find(u => u.username.toLowerCase() === username.toLowerCase());
+      if (!user) return;
+
+      const userLabel = document.getElementById('edit-pass-user-label');
+      const userInput = document.getElementById('edit-pass-username');
+      const passInput = document.getElementById('edit-pass-new-password');
+
+      if (userLabel) userLabel.innerText = `${user.name} (@${user.username})`;
+      if (userInput) userInput.value = user.username;
+      if (passInput) passInput.value = user.password || '';
+
+      openModal('edit-password-modal');
+    }
+
+    async function submitPasswordChange(e) {
+      e.preventDefault();
+      const username = document.getElementById('edit-pass-username').value;
+      const newPassword = document.getElementById('edit-pass-new-password').value.trim();
+
+      const user = usersData.find(u => u.username.toLowerCase() === username.toLowerCase());
+      if (!user) return;
+
+      user.password = newPassword;
+      debouncedSaveLocalData();
+      renderUserAccountsTable();
+      closeModal('edit-password-modal');
+
+      showToast("Password Updated", `New password saved to database for @${username}.`);
+
+      if (db) {
+        try {
+          await setDoc(doc(db, 'procurement_users', username), { password: newPassword }, { merge: true });
+          console.log(`[Firestore] Updated password in database for @${username}`);
+        } catch (err) {
+          console.warn("Firestore password update note:", err);
+        }
+      }
+    }
+
+    async function submitNewUser(e) {
       e.preventDefault();
       const username = document.getElementById('new-user-username').value.trim().toLowerCase();
       const fullname = document.getElementById('new-user-fullname').value.trim();
@@ -2228,12 +2363,15 @@
       renderUserAccountsTable();
       e.target.reset();
 
-      showToast("Account Created", `User '${fullname}' (${username}) added with status: ${status.toUpperCase()}.`);
+      showToast("Account Saved to Database", `User '${fullname}' (@${username}) registered.`);
 
       if (db) {
-        setDoc(doc(db, 'procurement_users', username), JSON.parse(JSON.stringify(newUser))).catch(err => {
+        try {
+          await setDoc(doc(db, 'procurement_users', username), JSON.parse(JSON.stringify(newUser)));
+          console.log(`[Firestore] Successfully created user in 'procurement_users': ${username}`);
+        } catch (err) {
           console.warn("Cloud user upload note:", err);
-        });
+        }
       }
     }
 
@@ -2245,7 +2383,7 @@
       usersData = usersData.filter(u => u.username.toLowerCase() !== username.toLowerCase());
       debouncedSaveLocalData();
       renderUserAccountsTable();
-      showToast("Account Removed", `User '${username}' was deleted.`);
+      showToast("Account Removed", `User '${username}' deleted from database.`);
 
       if (db) {
         deleteDoc(doc(db, 'procurement_users', username)).catch(() => {});
@@ -2786,14 +2924,26 @@
       const syncText = document.getElementById('cloud-sync-text');
       const userDisplay = document.getElementById('user-id-display');
 
+      const sideDot = document.getElementById('sidebar-cloud-pulse-dot');
+      const sideText = document.getElementById('sidebar-cloud-status-text');
+      const sidePill = document.getElementById('sidebar-cloud-uid-pill');
+
       if (status === 'synced') {
         if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
         if (syncText) syncText.innerText = 'Cloud: Synced';
         if (userDisplay) userDisplay.innerText = label ? `ID: ${label.substring(0, 6)}` : 'Live';
+
+        if (sideDot) sideDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse';
+        if (sideText) sideText.innerText = 'Cloud: Connected & Synced';
+        if (sidePill) sidePill.innerText = label ? `UID: ${label.substring(0, 8)}` : 'Active';
       } else if (status === 'local') {
         if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-amber-400';
         if (syncText) syncText.innerText = 'Local Storage';
         if (userDisplay) userDisplay.innerText = 'Offline';
+
+        if (sideDot) sideDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400';
+        if (sideText) sideText.innerText = 'Local Storage Mode';
+        if (sidePill) sidePill.innerText = 'Offline';
       }
     }
 
@@ -2840,6 +2990,15 @@
           await window.forceSyncAllToCloud();
         } else {
           console.log(`[Firestore] Remote already populated with ${snap.size} records.`);
+        }
+
+        // Also check and seed procurement_users if remote collection is empty
+        const userSnap = await getDocs(collection(db, 'procurement_users'));
+        if (userSnap.empty) {
+          console.log("[Auto-Seed Users] Uploading default team accounts to Firestore...");
+          for (const u of usersData) {
+            await setDoc(doc(db, 'procurement_users', u.username), JSON.parse(JSON.stringify(u)));
+          }
         }
       } catch (err) {
         console.error("Auto-seed query error:", err);
@@ -3728,6 +3887,8 @@
     window.closeUserSidebar = closeUserSidebar;
     window.openUserManagementModal = openUserManagementModal;
     window.toggleUserAccess = toggleUserAccess;
+    window.openChangePasswordModal = openChangePasswordModal;
+    window.submitPasswordChange = submitPasswordChange;
     window.submitNewUser = submitNewUser;
     window.deleteUserAccount = deleteUserAccount;
 
