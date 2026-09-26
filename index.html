@@ -5,45 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>ALU-GLASS PROCUREMENT | Management Hub</title>
   
-  <!-- Tailwind CSS v3 Engine -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            brand: {
-              50: '#f0f9ff',
-              100: '#e0f2fe',
-              500: '#0ea5e9',
-              600: '#0284c7',
-              700: '#0369a1',
-              800: '#075985',
-              900: '#0c4a6e',
-            }
-          }
-        }
-      }
-    }
-  </script>
-  
-  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <!-- Pre-compiled Tailwind CSS (v2.2.19) for fast DOM rendering without JIT parsing lag -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Lucide Icons -->
+  <!-- Lucide Icons Library -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Complete Aesthetic & Resilience Styling Layer -->
   <style>
     :root {
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --primary: #0284c7;
       --primary-dark: #0369a1;
       --bg-dark: #0f172a;
-      --bg-darker: #020617;
     }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -55,7 +31,7 @@
     }
     .mono { font-family: 'JetBrains Mono', monospace; }
     
-    /* Hardware acceleration & layout containment to stop browser reflow lag */
+    /* Hardware acceleration & layout containment to eliminate reflow lag */
     .card-contain {
       contain: layout style paint;
       transform: translateZ(0);
@@ -64,25 +40,24 @@
     }
     @media (hover: hover) and (pointer: fine) {
       .card-contain:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.12), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.12), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
       }
     }
     
-    /* Dedicated aesthetic overrides for maximum visual polish */
+    /* Visual theme design tokens */
     .app-header {
       background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e293b 100%);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.25);
     }
     .glass-pill {
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
     .glass-pill:hover {
-      background: rgba(255, 255, 255, 0.10);
-      border-color: rgba(255, 255, 255, 0.20);
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.25);
     }
     .btn-gradient-primary {
       background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
@@ -90,7 +65,6 @@
     }
     .btn-gradient-primary:hover {
       background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.45);
     }
     .btn-gradient-success {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -98,7 +72,6 @@
     }
     .btn-gradient-success:hover {
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.45);
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -120,9 +93,9 @@
           <div class="min-w-0">
             <div class="flex items-center gap-1.5 sm:gap-2">
               <span class="font-extrabold tracking-tight text-white text-xs sm:text-sm lg:text-base truncate">ALU-GLASS PROCUREMENT</span>
-              <span class="hidden xs:inline-flex text-[9px] sm:text-[10px] uppercase font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2 py-0.5 rounded-full shrink-0 shadow-xs">Live Hub</span>
+              <span class="hidden sm:inline-flex text-[9px] uppercase font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30 px-2 py-0.5 rounded-full shrink-0">Live Hub</span>
             </div>
-            <p class="text-[10px] sm:text-xs text-slate-400 truncate hidden xs:block font-medium">Architectural Fenestration &amp; Material Operations</p>
+            <p class="text-[10px] sm:text-xs text-slate-400 truncate hidden sm:block font-medium">Architectural Fenestration &amp; Material Operations</p>
           </div>
         </div>
 
@@ -130,8 +103,8 @@
         <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
           
           <!-- Cloud Sync Badge -->
-          <button onclick="openModal('cloud-config-modal')" id="cloud-status-badge" title="View Cloud Database Instance Details" class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 glass-pill rounded-xl text-[11px] text-slate-200 transition cursor-pointer active:scale-95 shadow-xs">
-            <span id="cloud-pulse-dot" class="w-2 h-2 rounded-full bg-amber-400 shrink-0 shadow-xs"></span>
+          <button onclick="openModal('cloud-config-modal')" id="cloud-status-badge" title="View Cloud Database Instance Details" class="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 glass-pill rounded-xl text-[11px] text-slate-200 transition cursor-pointer active:scale-95 shadow-sm">
+            <span id="cloud-pulse-dot" class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
             <span id="cloud-sync-text" class="font-semibold text-slate-100">Connecting...</span>
             <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-white/10 pl-2">default</span>
           </button>
@@ -153,7 +126,7 @@
           </div>
           
           <!-- Landed Cost Tool -->
-          <button onclick="openModal('quick-calc-modal')" aria-label="Open Landed Cost Calculator" class="p-2 sm:px-3 sm:py-2 glass-pill text-slate-200 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition active:scale-95 shadow-xs">
+          <button onclick="openModal('quick-calc-modal')" aria-label="Open Landed Cost Calculator" class="p-2 sm:px-3 sm:py-2 glass-pill text-slate-200 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition active:scale-95 shadow-sm">
             <i data-lucide="calculator" class="w-4 h-4 text-sky-400"></i>
             <span class="hidden sm:inline">Landed Cost</span>
           </button>
@@ -165,7 +138,7 @@
           </button>
 
           <!-- Force Direct Push to Cloud -->
-          <button onclick="window.forceSyncAllToCloud()" title="Force Upload All Records to Firestore instance 'default'" aria-label="Force Sync to Cloud" class="p-2 text-sky-400 hover:text-white glass-pill rounded-xl transition active:scale-95">
+          <button onclick="window.forceSyncAllToCloud()" title="Force Upload All Records to Firestore" aria-label="Force Sync to Cloud" class="p-2 text-sky-400 hover:text-white glass-pill rounded-xl transition active:scale-95">
             <i data-lucide="cloud-upload" class="w-4 h-4"></i>
           </button>
         </div>
@@ -175,12 +148,12 @@
   </header>
 
   <!-- VIEW NAV & SEARCH FILTER BAR -->
-  <div class="bg-white border-b border-slate-200 sticky top-14 sm:top-16 z-30 shadow-xs">
+  <div class="bg-white border-b border-slate-200 sticky top-14 sm:top-16 z-30 shadow-sm">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
         
         <!-- Gallery Mode Navigation Tabs -->
-        <nav class="flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl w-full md:w-auto overflow-x-auto no-scrollbar text-xs font-medium touch-pan-x border border-slate-200/60" aria-label="Gallery Views">
+        <nav class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full md:w-auto overflow-x-auto no-scrollbar text-xs font-medium touch-pan-x border border-slate-200" aria-label="Gallery Views">
           <button onclick="switchGallery('materials')" id="tab-materials" class="tab-btn active-tab px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 bg-white text-slate-900 shadow-sm shrink-0 transition whitespace-nowrap font-bold">
             <i data-lucide="box" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600"></i>
             <span>Materials</span>
@@ -208,11 +181,11 @@
         <!-- Search & Filter Controls -->
         <div class="flex items-center gap-2 w-full md:w-auto">
           <div class="relative flex-1 md:w-64 lg:w-72">
-            <input type="text" id="gallery-search" oninput="filterCards()" placeholder="Search code, specs, vendors..." class="w-full pl-3 pr-3 py-1.5 sm:py-2 bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition shadow-inner">
+            <input type="text" id="gallery-search" oninput="filterCards()" placeholder="Search code, specs, vendors..." class="w-full pl-3 pr-3 py-1.5 sm:py-2 bg-slate-50 hover:bg-slate-100 focus:bg-white text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition shadow-inner">
           </div>
 
           <div class="relative shrink-0">
-            <select id="category-filter" onchange="filterCards()" aria-label="Filter by material category" class="bg-slate-50 border border-slate-200 text-xs font-semibold rounded-xl px-2.5 py-1.5 sm:py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500/20 shadow-xs">
+            <select id="category-filter" onchange="filterCards()" aria-label="Filter by material category" class="bg-slate-50 border border-slate-200 text-xs font-semibold rounded-xl px-2.5 py-1.5 sm:py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500/20 shadow-sm">
               <option value="all">All Categories</option>
               <option value="aluminum">Aluminum</option>
               <option value="glass">Glass</option>
@@ -231,7 +204,7 @@
 
     <!-- 1. MATERIALS CATALOG GALLERY -->
     <section id="gallery-materials" class="space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-sm">
         <div>
           <h2 class="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-2">
             <span>Material Inventory &amp; Specification Cards</span>
@@ -253,9 +226,9 @@
             </span>
           </div>
 
-          <button onclick="openNewEntryModal('material')" class="btn-gradient-primary text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 transition shadow-xs shrink-0 active:scale-95">
+          <button onclick="openNewEntryModal('material')" class="btn-gradient-primary text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 transition shadow-sm shrink-0 active:scale-95">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            <span class="hidden xs:inline">Add SKU</span>
+            <span class="hidden sm:inline">Add SKU</span>
           </button>
         </div>
       </div>
@@ -265,7 +238,7 @@
 
     <!-- 2. VENDOR DIRECTORY GALLERY -->
     <section id="gallery-suppliers" class="space-y-4 hidden">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-sm">
         <div>
           <h2 class="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-2">
             <span>Approved Supplier List (ASL) Gallery</span>
@@ -273,7 +246,7 @@
           </h2>
           <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Weighted across Price (25%), Quality (25%), OTIF Delivery (20%), Specs (15%), Credit (10%), and Service (5%).</p>
         </div>
-        <button onclick="openNewEntryModal('supplier')" class="btn-gradient-primary text-white text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-xs self-start sm:self-auto active:scale-95">
+        <button onclick="openNewEntryModal('supplier')" class="btn-gradient-primary text-white text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm self-start sm:self-auto active:scale-95">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i>
           <span>Register Vendor</span>
         </button>
@@ -284,7 +257,7 @@
 
     <!-- 3. OPEN PO & LOGISTICS PIPELINE GALLERY -->
     <section id="gallery-pipeline" class="space-y-4 hidden">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-sm">
         <div>
           <h2 class="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-2">
             <span>Open Purchase Orders &amp; Expediting Cards</span>
@@ -292,7 +265,7 @@
           <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Real-time status progression, overdue delivery flags, and factory dock checkpoints.</p>
         </div>
         <div class="flex items-center gap-2 self-start sm:self-auto">
-          <button onclick="openNewEntryModal('po')" class="btn-gradient-primary text-white text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-xs active:scale-95">
+          <button onclick="openNewEntryModal('po')" class="btn-gradient-primary text-white text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm active:scale-95">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
             <span>Issue PO</span>
           </button>
@@ -307,7 +280,7 @@
 
     <!-- 4. SOP & GOVERNANCE GALLERY -->
     <section id="gallery-sop" class="space-y-5 hidden">
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
         <h2 class="text-sm sm:text-base font-extrabold text-slate-900">Standard Operating Procedures &amp; Official Forms</h2>
         <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Core internal controls, financial delegation thresholds, and 3-way matching rules.</p>
       </div>
@@ -318,23 +291,23 @@
           <h3 class="text-xs font-extrabold uppercase tracking-wider">The 10 Non-Negotiable Procurement Rules</h3>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-xs">
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
             <span class="text-sky-400 font-bold block mb-1">01. PR First</span>
             No PR = Zero purchase. Demands must trace directly to approved BOM.
           </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-xs">
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
             <span class="text-sky-400 font-bold block mb-1">02. Approved PO</span>
             Orders must be signed off by designated financial authorization tier.
           </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-xs">
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
             <span class="text-sky-400 font-bold block mb-1">03. Dual Sourcing</span>
             Never single-source critical aluminum dies or architectural float glass.
           </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-xs">
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
             <span class="text-sky-400 font-bold block mb-1">04. QC Gate</span>
             All inward dock cargo quarantined until QC certifies dimensional tolerance.
           </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-xs">
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
             <span class="text-sky-400 font-bold block mb-1">05. 3-Way Match</span>
             PO Rate = GRN Accepted Qty = Commercial Invoice before payment release.
           </div>
@@ -396,7 +369,7 @@
 
         <button onclick="window.forceSyncAllToCloud()" class="w-full py-2.5 btn-gradient-success text-white font-bold rounded-xl text-xs shadow-sm flex items-center justify-center gap-2">
           <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-          <span>⚡ Force Upload All Records to Firestore</span>
+          <span>Force Upload All Records to Firestore</span>
         </button>
 
         <button onclick="window.resetLocalStorageToDefaults()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs flex items-center justify-center gap-1.5 transition">
@@ -406,7 +379,7 @@
       </div>
 
       <div class="bg-slate-50 px-5 py-3.5 border-t border-slate-200 flex justify-end items-center shrink-0">
-        <button onclick="closeModal('cloud-config-modal')" class="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-xs shadow-xs">Close</button>
+        <button onclick="closeModal('cloud-config-modal')" class="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-xs shadow-sm">Close</button>
       </div>
     </div>
   </div>
@@ -598,7 +571,7 @@
 
         <div class="pt-3 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-2">
           <button type="button" onclick="closeModal('new-entry-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-semibold">Cancel</button>
-          <button type="submit" class="w-full sm:w-auto px-5 py-2 btn-gradient-primary text-white font-bold rounded-xl shadow-xs">Save Material SKU</button>
+          <button type="submit" class="w-full sm:w-auto px-5 py-2 btn-gradient-primary text-white font-bold rounded-xl shadow-sm">Save Material SKU</button>
         </div>
       </form>
 
@@ -655,7 +628,7 @@
 
         <div class="pt-3 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-2">
           <button type="button" onclick="closeModal('new-entry-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-semibold">Cancel</button>
-          <button type="submit" class="w-full sm:w-auto px-5 py-2 btn-gradient-success text-white font-bold rounded-xl shadow-xs">Register Vendor</button>
+          <button type="submit" class="w-full sm:w-auto px-5 py-2 btn-gradient-success text-white font-bold rounded-xl shadow-sm">Register Vendor</button>
         </div>
       </form>
 
@@ -704,7 +677,7 @@
 
         <div class="pt-3 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-end gap-2">
           <button type="button" onclick="closeModal('new-entry-modal')" class="w-full sm:w-auto px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-semibold">Cancel</button>
-          <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-xs transition">Issue PO Docket</button>
+          <button type="submit" class="w-full sm:w-auto px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-sm transition">Issue PO Docket</button>
         </div>
       </form>
     </div>
@@ -720,7 +693,7 @@
       <p class="text-xs text-slate-500 leading-relaxed" id="del-modal-msg">Are you sure you want to remove this record?</p>
       <div class="flex items-center justify-center gap-2 pt-2">
         <button onclick="closeModal('delete-modal')" class="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">Cancel</button>
-        <button id="del-confirm-btn" class="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl shadow-xs transition">Delete</button>
+        <button id="del-confirm-btn" class="w-full sm:w-auto px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl shadow-sm transition">Delete</button>
       </div>
     </div>
   </div>
@@ -1074,7 +1047,7 @@
         rawAmount: 960.00,
         dueDate: "2026-09-20",
         status: "Delayed",
-        alert: "🔴 2 Days Overdue",
+        alert: "2 Days Overdue",
         alertBadge: "bg-rose-100 text-rose-800 border-rose-300 font-bold",
         progressPct: 40,
         dockAction: "Urgent Expediting: Factory needs stock for tomorrow."
@@ -1090,7 +1063,7 @@
         alert: "Inspection Today",
         alertBadge: "bg-sky-100 text-sky-800 border-sky-300",
         progressPct: 90,
-        dockAction: "Truck #PP-3-4829 unloading at Bay 2. QC checking scratches."
+        dockAction: "Truck unloading at Bay 2. QC checking scratches."
       },
       {
         poNumber: "PO-2026-095",
@@ -1293,7 +1266,7 @@
                 <span class="text-[9px] text-slate-400 uppercase block font-bold tracking-wider">Std Cost</span>
                 <span class="mono font-bold text-emerald-700 text-xs sm:text-sm">$${Number(m.stdCost).toFixed(2)}</span>
               </div>
-              <button onclick="viewMaterialDetail('${m.code}')" class="px-3 py-1.5 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 rounded-xl font-semibold text-[11px] transition flex items-center gap-1 border border-slate-200/60 active:scale-95 shadow-xs">
+              <button onclick="viewMaterialDetail('${m.code}')" class="px-3 py-1.5 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 rounded-xl font-semibold text-[11px] transition flex items-center gap-1 border border-slate-200/60 active:scale-95 shadow-sm">
                 ${ICONS.eye}
                 <span>Docket</span>
               </button>
@@ -1804,7 +1777,7 @@
       }
 
       let progressPct = status === 'In Transit' ? 70 : (status === 'Arrived at Dock' ? 90 : (status === 'Delayed' ? 40 : 25));
-      let alert = status === 'Delayed' ? "🔴 Expedite Required" : "On Track";
+      let alert = status === 'Delayed' ? "Expedite Required" : "On Track";
       let alertBadge = status === 'Delayed' ? "bg-rose-100 text-rose-800 border-rose-300 font-bold" : "bg-emerald-100 text-emerald-800 border-emerald-300";
 
       const newPO = {
@@ -1997,7 +1970,7 @@
       if (resLanded) resLanded.innerText = `$${trueLandedCost.toFixed(3)} / unit`;
     }
 
-    // EXPOSE GLOBALS TO WINDOW
+    // EXPOSE GLOBALS DIRECTLY TO WINDOW OBJECT
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.switchGallery = switchGallery;
@@ -2011,7 +1984,7 @@
     window.promptDelete = promptDelete;
     window.viewMaterialDetail = viewMaterialDetail;
 
-    // BOOT SEQUENCE
+    // APPLICATION BOOT SEQUENCE
     window.addEventListener('DOMContentLoaded', () => {
       runCalculator();
 
