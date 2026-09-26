@@ -46,7 +46,6 @@
 
     .mono { font-family: 'JetBrains Mono', monospace; }
 
-    /* Smooth responsive transitions */
     .card-transition {
       transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -58,7 +57,6 @@
       }
     }
 
-    /* Scrollbar styling for horizontal pill carousels on mobile */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -67,7 +65,6 @@
       scrollbar-width: none;
     }
 
-    /* Mobile safe-area padding */
     .pb-safe {
       padding-bottom: calc(4.5rem + var(--safe-bottom));
     }
@@ -97,12 +94,12 @@
         <!-- Controls: Desktop KPIs & Action Buttons -->
         <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
           
-          <!-- Live Cloud Sync & User Badge -->
-          <div id="cloud-status-badge" class="hidden sm:flex items-center gap-2 px-2.5 py-1 bg-slate-800/90 border border-slate-700 rounded-lg text-[11px] text-slate-300">
-            <span id="cloud-pulse-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="cloud-sync-text" class="font-medium text-slate-200">Cloud Sync: Active</span>
-            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-slate-700 pl-2">Connecting...</span>
-          </div>
+          <!-- Live Cloud Sync & User Badge (Clickable to open Cloud Setup modal) -->
+          <button onclick="openModal('cloud-config-modal')" id="cloud-status-badge" title="Click to Configure Cloud Database Sync" class="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700/80 border border-slate-700 rounded-lg text-[11px] text-slate-300 transition cursor-pointer active:scale-95">
+            <span id="cloud-pulse-dot" class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+            <span id="cloud-sync-text" class="font-medium text-slate-200">Connecting...</span>
+            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-slate-700 pl-2">Local</span>
+          </button>
 
           <!-- Large screen KPI telemetry -->
           <div class="hidden lg:flex items-center gap-5 border-l border-slate-800 pl-5 text-xs mr-1">
@@ -147,7 +144,7 @@
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
         
-        <!-- Gallery Mode Navigation Tabs (Horizontally scrollable with momentum on mobile) -->
+        <!-- Gallery Mode Navigation Tabs -->
         <nav class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full md:w-auto overflow-x-auto no-scrollbar text-xs font-medium touch-pan-x" aria-label="Gallery Views">
           <button onclick="switchGallery('materials')" id="tab-materials" class="tab-btn active-tab px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 bg-white text-slate-900 shadow-xs shrink-0 transition whitespace-nowrap">
             <i data-lucide="box" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600"></i>
@@ -173,7 +170,7 @@
           </button>
         </nav>
 
-        <!-- Search & Filter Controls (Responsive full-width on mobile, inline on desktop) -->
+        <!-- Search & Filter Controls -->
         <div class="flex items-center gap-2 w-full md:w-auto">
           <div class="relative flex-1 md:w-60 lg:w-72">
             <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
@@ -196,7 +193,7 @@
     </div>
   </div>
 
-  <!-- MAIN GALLERY CONTENT AREA (Fluid responsive container) -->
+  <!-- MAIN GALLERY CONTENT AREA -->
   <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 w-full">
 
     <!-- 1. MATERIALS CATALOG GALLERY -->
@@ -231,10 +228,8 @@
         </div>
       </div>
 
-      <!-- Responsive Material Cards Grid: 1 col on mobile, 2 col on tablet, 3-4 col on desktop -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4" id="materials-grid">
-        <!-- Rendered via JS -->
-      </div>
+      <!-- Responsive Material Cards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4" id="materials-grid"></div>
     </section>
 
     <!-- 2. VENDOR DIRECTORY GALLERY -->
@@ -253,10 +248,7 @@
         </button>
       </div>
 
-      <!-- Responsive Supplier Grid: 1 col on mobile, 2 on tablet, 3 on large screens -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4" id="suppliers-grid">
-        <!-- Rendered via JS -->
-      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4" id="suppliers-grid"></div>
     </section>
 
     <!-- 3. OPEN PO & LOGISTICS PIPELINE GALLERY -->
@@ -279,10 +271,7 @@
         </div>
       </div>
 
-      <!-- Responsive Pipeline Grid: 1 col on mobile, 2 on tablet, 3 on large screens -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4" id="pipeline-grid">
-        <!-- Rendered via JS -->
-      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4" id="pipeline-grid"></div>
     </section>
 
     <!-- 4. SOP & GOVERNANCE GALLERY -->
@@ -292,7 +281,7 @@
         <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Core internal controls, financial delegation thresholds, and 3-way matching rules.</p>
       </div>
 
-      <!-- 10 Golden Rules Banner (Fluid Grid on Mobile/Desktop) -->
+      <!-- 10 Golden Rules Banner -->
       <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-xl sm:rounded-2xl p-4 sm:p-5 text-white shadow-sm border border-slate-700">
         <div class="flex items-center gap-2 mb-3 text-sky-400">
           <i data-lucide="shield-check" class="w-4 h-4 sm:w-5 sm:h-5"></i>
@@ -322,18 +311,15 @@
         </div>
       </div>
 
-      <!-- SOP & Form Cards Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4" id="sop-grid">
-        <!-- Rendered via JS -->
-      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4" id="sop-grid"></div>
     </section>
 
   </main>
 
-  <!-- MOBILE BOTTOM APP NAVIGATION BAR (Always accessible on Phones/Tablets) -->
+  <!-- MOBILE BOTTOM APP NAVIGATION BAR -->
   <aside class="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 px-2 py-1.5 shadow-lg" aria-label="Mobile Navigation">
     <div class="grid grid-cols-4 gap-1 text-[10px] text-center font-medium">
-      <button onclick="switchGallery('materials')" id="m-nav-materials" class="flex flex-col items-center justify-center py-1 rounded-lg text-sky-700 bg-sky-50">
+      <button onclick="switchGallery('materials')" id="m-nav-materials" class="flex flex-col items-center justify-center py-1 rounded-lg text-sky-700 bg-sky-50 font-bold">
         <i data-lucide="box" class="w-4 h-4 mb-0.5"></i>
         <span>Materials</span>
       </button>
@@ -352,7 +338,67 @@
     </div>
   </aside>
 
-  <!-- MODAL 1: MATERIAL / SPEC DETAILS (Fully responsive popup) -->
+  <!-- MODAL: CLOUD DATABASE SETUP & SETTINGS -->
+  <div id="cloud-config-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <i data-lucide="cloud" class="w-5 h-5 text-sky-400"></i>
+          <div>
+            <h3 class="font-bold text-xs sm:text-sm">Cloud Database Configuration</h3>
+            <p class="text-[10px] sm:text-[11px] text-slate-400">Enable real-time shared persistence across team members</p>
+          </div>
+        </div>
+        <button onclick="closeModal('cloud-config-modal')" class="text-slate-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
+        <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 text-slate-700 space-y-1">
+          <span class="font-bold text-sky-900 flex items-center gap-1.5">
+            <i data-lucide="info" class="w-4 h-4"></i> How to get "Cloud Database: Synced" on GitHub Pages:
+          </span>
+          <p class="text-[11px]">
+            Paste your free Firebase web configuration below. Data will immediately sync live across all connected computers and phones.
+          </p>
+        </div>
+
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Firebase Project Config (JSON or JS Object)</label>
+          <textarea id="cfg-firebase-json" rows="6" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "your-app.firebaseapp.com",
+  "projectId": "your-app",
+  "storageBucket": "your-app.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "1:123456789:web:abcdef"
+}' class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono bg-slate-50 focus:bg-white"></textarea>
+          <p class="text-[10px] text-slate-400 mt-1">Get this in 2 min for free at <a href="https://console.firebase.google.com" target="_blank" class="text-sky-600 underline">console.firebase.google.com</a> &gt; Project Settings &gt; Web App.</p>
+        </div>
+
+        <div class="pt-2 border-t border-slate-100">
+          <label class="block font-medium text-slate-700 mb-1">Or Connect Self-Hosted Python API URL</label>
+          <input type="text" id="cfg-backend-url" placeholder="e.g. http://localhost:8000 or https://procurement-api.onrender.com" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+          <p class="text-[10px] text-slate-400 mt-1">Use this if you are running `python backend_server.py` on your intranet or cloud server.</p>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-100 rounded-lg p-2.5 text-[11px] text-amber-800">
+          <strong>Note:</strong> When running in Memory/Local mode without cloud keys, the app safely saves all data to your browser's persistent storage so you won't lose changes on refresh.
+        </div>
+      </div>
+
+      <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 flex justify-between items-center shrink-0">
+        <button onclick="clearCloudConfig()" class="text-rose-600 hover:text-rose-700 text-xs font-semibold">Reset to Offline</button>
+        <div class="flex gap-2">
+          <button onclick="closeModal('cloud-config-modal')" class="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 text-xs">Cancel</button>
+          <button onclick="saveCloudConfig()" class="px-4 py-1.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg text-xs shadow-xs">Save &amp; Connect</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MATERIAL / SPEC DETAILS -->
   <div id="spec-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-xl sm:rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
       <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
@@ -370,9 +416,7 @@
         </button>
       </div>
 
-      <div class="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1 text-xs" id="modal-content">
-        <!-- Injected via JS -->
-      </div>
+      <div class="p-4 sm:p-6 space-y-3.5 sm:space-y-4 overflow-y-auto flex-1 text-xs" id="modal-content"></div>
 
       <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 shrink-0">
         <span class="text-[10px] sm:text-xs text-slate-500 text-center sm:text-left">Technical Rule: Verify CAD profile before issuing PO.</span>
@@ -383,7 +427,7 @@
     </div>
   </div>
 
-  <!-- MODAL 2: LANDED COST QUICK CALCULATOR (Mobile Responsive) -->
+  <!-- MODAL: LANDED COST QUICK CALCULATOR -->
   <div id="quick-calc-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
       <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
@@ -432,7 +476,7 @@
             <span class="mono font-semibold" id="calc-res-base">$2.50 / unit</span>
           </div>
           <div class="flex justify-between items-center mb-2 text-slate-600">
-            <span>Freight & Surcharge:</span>
+            <span>Freight &amp; Surcharge:</span>
             <span class="mono font-semibold text-amber-700" id="calc-res-overhead">+$0.20 / unit</span>
           </div>
           <div class="border-t border-sky-200 pt-2 flex justify-between items-center">
@@ -454,7 +498,7 @@
     </div>
   </div>
 
-  <!-- MODAL 3: DIRECT DATA ENTRY MODAL (Responsive Stack on Mobile) -->
+  <!-- MODAL: DIRECT DATA ENTRY MODAL -->
   <div id="new-entry-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-xl sm:rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
       <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
@@ -470,7 +514,7 @@
         </button>
       </div>
 
-      <!-- Tab Switcher Inside Modal (Mobile Scrollable) -->
+      <!-- Tab Switcher Inside Modal -->
       <div class="flex border-b border-slate-200 px-4 sm:px-6 bg-slate-50 text-xs font-medium overflow-x-auto no-scrollbar shrink-0">
         <button type="button" id="entry-tab-material" onclick="switchEntryTab('material')" class="px-3 sm:px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
           <i data-lucide="box" class="w-3.5 h-3.5"></i> Material SKU
@@ -496,7 +540,7 @@
               <option value="aluminum">Aluminum Profile</option>
               <option value="glass">Architectural Glass</option>
               <option value="hardware">Hardware Accessories</option>
-              <option value="sealant">Sealants & Gaskets</option>
+              <option value="sealant">Sealants &amp; Gaskets</option>
             </select>
           </div>
         </div>
@@ -600,7 +644,7 @@
         </div>
 
         <div>
-          <label class="block font-medium text-slate-700 mb-1">Sales Contact & Phone</label>
+          <label class="block font-medium text-slate-700 mb-1">Sales Contact &amp; Phone</label>
           <input type="text" id="sup-contact" required placeholder="e.g. John Doe (+855 12 345 678)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
         </div>
 
@@ -624,7 +668,7 @@
         </div>
 
         <div>
-          <label class="block font-medium text-slate-700 mb-1">Items Description & Quantity *</label>
+          <label class="block font-medium text-slate-700 mb-1">Items Description &amp; Quantity *</label>
           <input type="text" id="po-items" required placeholder="e.g. AL-76 Black Sliding Outer (1,500 KG)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
         </div>
 
@@ -661,7 +705,7 @@
     </div>
   </div>
 
-  <!-- MODAL 4: DELETE CONFIRMATION DIALOG -->
+  <!-- MODAL: DELETE CONFIRMATION DIALOG -->
   <div id="delete-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white rounded-xl sm:rounded-2xl max-w-sm w-full p-4 sm:p-5 shadow-2xl border border-slate-100 text-center space-y-3">
       <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
@@ -676,27 +720,21 @@
     </div>
   </div>
 
-  <!-- TOAST NOTIFICATION CONTAINER (Fixed bottom right on desktop, top center on mobile) -->
+  <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toast-container" class="fixed top-4 left-3 right-3 sm:left-auto sm:top-auto sm:bottom-5 sm:right-5 z-50 space-y-2 pointer-events-none sm:max-w-sm"></div>
 
-  const firebaseConfig = {
-  apiKey: "AIzaSyCGRDupJViKmVZdY3ksD7tnW0KPY7Ap08I",
-  authDomain: "purchasing-system-b7ef2.firebaseapp.com",
-  databaseURL: "https://purchasing-system-b7ef2-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "purchasing-system-b7ef2",
-  storageBucket: "purchasing-system-b7ef2.firebasestorage.app",
-  messagingSenderId: "919815976468",
-  appId: "1:919815976468:web:02531a41484b50b1935901",
-  measurementId: "G-YJ169HX38L"
-};
-  
   <!-- JAVASCRIPT SYSTEM DATA & CLOUD DATABASE PERSISTENCE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // --- 1. DEFAULT DATASETS (Seed data for initialization and offline fallback) ---
+    // =========================================================================
+    // OPTIONAL: PASTE YOUR FIREBASE CONFIG HERE TO HARDCODE FOR GITHUB PAGES
+    // =========================================================================
+    const CUSTOM_FIREBASE_CONFIG = null; // e.g. { apiKey: "AIzaSy...", authDomain: "...", projectId: "..." }
+
+    // --- 1. DEFAULT DATASETS ---
     const defaultMaterials = [
       {
         code: "AL-76-SLD-BLK",
@@ -1077,46 +1115,96 @@
       }
     ];
 
-    // --- 2. BACKEND CLOUD DATABASE INITIALIZATION ---
+    // --- 2. BACKEND CLOUD & LOCAL DATA PERSISTENCE ---
     const appId = typeof __app_id !== 'undefined' ? __app_id : 'procurement-hub-default';
-    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+    
+    // Resolve Firebase configuration in order of priority:
+    // 1. Saved in localStorage by user via UI modal
+    // 2. Hardcoded in CUSTOM_FIREBASE_CONFIG above
+    // 3. Injected via sandbox environment __firebase_config
+    function getResolvedFirebaseConfig() {
+      try {
+        const stored = localStorage.getItem('alu_procurement_firebase_cfg');
+        if (stored) return JSON.parse(stored);
+      } catch (e) {
+        console.warn("Could not parse stored Firebase config", e);
+      }
+      if (CUSTOM_FIREBASE_CONFIG && typeof CUSTOM_FIREBASE_CONFIG === 'object') {
+        return CUSTOM_FIREBASE_CONFIG;
+      }
+      if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+        try {
+          return typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
+        } catch (e) {}
+      }
+      return null;
+    }
 
     let auth = null;
     let db = null;
     let currentUser = null;
 
+    // Load saved local data if available
+    function loadLocalData() {
+      try {
+        const m = localStorage.getItem('alu_procurement_materials');
+        if (m) materialsData = JSON.parse(m);
+        const s = localStorage.getItem('alu_procurement_suppliers');
+        if (s) suppliersData = JSON.parse(s);
+        const p = localStorage.getItem('alu_procurement_pipeline');
+        if (p) pipelineData = JSON.parse(p);
+      } catch (e) {
+        console.warn("Failed loading local storage data", e);
+      }
+    }
+
+    function saveLocalData() {
+      try {
+        localStorage.setItem('alu_procurement_materials', JSON.stringify(materialsData));
+        localStorage.setItem('alu_procurement_suppliers', JSON.stringify(suppliersData));
+        localStorage.setItem('alu_procurement_pipeline', JSON.stringify(pipelineData));
+      } catch (e) {
+        console.warn("Failed saving local storage data", e);
+      }
+    }
+
     let materialsData = [...defaultMaterials];
     let suppliersData = [...defaultSuppliers];
     let pipelineData = [...defaultPipeline];
 
-    let seededMaterials = false;
-    let seededSuppliers = false;
-    let seededPipeline = false;
+    loadLocalData();
 
-    function updateCloudStatus(isConnected, userIdentifier) {
+    function updateCloudStatus(status, label) {
       const badge = document.getElementById('cloud-status-badge');
       const pulseDot = document.getElementById('cloud-pulse-dot');
       const syncText = document.getElementById('cloud-sync-text');
       const userDisplay = document.getElementById('user-id-display');
 
       if (!badge) return;
-      if (isConnected) {
+      if (status === 'synced') {
         if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
         if (syncText) syncText.innerText = 'Cloud Database: Synced';
         if (userDisplay) {
-          userDisplay.innerText = `UID: ${userIdentifier}`;
-          userDisplay.title = `Authenticated User ID: ${userIdentifier}`;
+          userDisplay.innerText = label ? `UID: ${label.substring(0, 6)}...` : 'Connected';
+          userDisplay.title = `Connected to Cloud: ${label}`;
         }
-      } else {
+      } else if (status === 'local') {
         if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        if (syncText) syncText.innerText = 'Local Storage (Synced)';
+        if (userDisplay) userDisplay.innerText = 'Offline/Local';
+        badge.title = 'Saved to browser storage. Click to connect shared cloud database.';
+      } else {
+        if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-slate-400';
         if (syncText) syncText.innerText = 'Memory Mode';
-        if (userDisplay) userDisplay.innerText = userIdentifier || 'Local';
+        if (userDisplay) userDisplay.innerText = 'Local';
       }
     }
 
     async function initCloudBackend() {
+      const firebaseConfig = getResolvedFirebaseConfig();
+
       if (!firebaseConfig) {
-        updateCloudStatus(false, 'In-Memory Only');
+        updateCloudStatus('local', 'Local Device');
         renderMaterials(materialsData);
         renderSuppliers();
         renderPipeline();
@@ -1129,7 +1217,6 @@
         auth = getAuth(app);
         db = getFirestore(app);
 
-        // Rule 3: Auth before any database queries
         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
           await signInWithCustomToken(auth, __initial_auth_token);
         } else {
@@ -1137,13 +1224,16 @@
         }
 
         currentUser = auth.currentUser;
-        if (!currentUser) return;
+        if (!currentUser) {
+          updateCloudStatus('local', 'Auth Pending');
+          return;
+        }
 
-        updateCloudStatus(true, currentUser.uid);
+        updateCloudStatus('synced', currentUser.uid);
         setupRealtimeSubscriptions();
       } catch (err) {
         console.error("Cloud database init error:", err);
-        updateCloudStatus(false, 'Auth Offline');
+        updateCloudStatus('local', 'Offline');
         renderMaterials(materialsData);
         renderSuppliers();
         renderPipeline();
@@ -1151,28 +1241,30 @@
       }
     }
 
+    let seededMaterials = false;
+    let seededSuppliers = false;
+    let seededPipeline = false;
+
     function setupRealtimeSubscriptions() {
       if (!db || !currentUser) return;
 
-      // 1. Materials Collection Listener (Rule 1 Strict Path: /artifacts/{appId}/public/data/{collection})
       const materialsCol = collection(db, 'artifacts', appId, 'public', 'data', 'materials');
       onSnapshot(materialsCol, async (snapshot) => {
         if (snapshot.empty && !seededMaterials) {
           seededMaterials = true;
-          // Seed defaults into database
           for (const item of defaultMaterials) {
             await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'materials', item.code), item);
           }
           return;
         }
         materialsData = snapshot.docs.map(d => d.data());
+        saveLocalData();
         filterCards();
         updateHeaderKPIs();
       }, (error) => {
         console.error("Materials listener error:", error);
       });
 
-      // 2. Suppliers Collection Listener
       const suppliersCol = collection(db, 'artifacts', appId, 'public', 'data', 'suppliers');
       onSnapshot(suppliersCol, async (snapshot) => {
         if (snapshot.empty && !seededSuppliers) {
@@ -1183,13 +1275,13 @@
           return;
         }
         suppliersData = snapshot.docs.map(d => d.data());
+        saveLocalData();
         renderSuppliers();
         updateHeaderKPIs();
       }, (error) => {
         console.error("Suppliers listener error:", error);
       });
 
-      // 3. Pipeline PO Collection Listener
       const pipelineCol = collection(db, 'artifacts', appId, 'public', 'data', 'pipeline');
       onSnapshot(pipelineCol, async (snapshot) => {
         if (snapshot.empty && !seededPipeline) {
@@ -1200,6 +1292,7 @@
           return;
         }
         pipelineData = snapshot.docs.map(d => d.data());
+        saveLocalData();
         renderPipeline();
         updateHeaderKPIs();
       }, (error) => {
@@ -1207,9 +1300,15 @@
       });
     }
 
+    // Modal Helpers
     function openModal(id) {
       const el = document.getElementById(id);
       if (el) el.classList.remove('hidden');
+      if (id === 'cloud-config-modal') {
+        const stored = localStorage.getItem('alu_procurement_firebase_cfg');
+        const area = document.getElementById('cfg-firebase-json');
+        if (stored && area) area.value = stored;
+      }
     }
 
     function closeModal(id) {
@@ -1244,6 +1343,36 @@
         toast.classList.add('opacity-0', 'translate-y-2');
         setTimeout(() => toast.remove(), 300);
       }, 3500);
+    }
+
+    function saveCloudConfig() {
+      const text = document.getElementById('cfg-firebase-json')?.value.trim();
+      if (!text) {
+        showToast("Error", "Please paste your Firebase configuration object.", "error");
+        return;
+      }
+      try {
+        let cleaned = text;
+        if (text.includes('{') && text.includes('}')) {
+          cleaned = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+        }
+        // Normalize keys if user pasted JS object instead of pure JSON
+        const jsonLike = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+        const parsed = JSON.parse(jsonLike);
+        localStorage.setItem('alu_procurement_firebase_cfg', JSON.stringify(parsed));
+        closeModal('cloud-config-modal');
+        showToast("Configuration Saved", "Reconnecting to your Cloud Database...");
+        setTimeout(() => window.location.reload(), 1000);
+      } catch (e) {
+        showToast("JSON Parse Error", "Please ensure the configuration is a valid JSON object.", "error");
+      }
+    }
+
+    function clearCloudConfig() {
+      localStorage.removeItem('alu_procurement_firebase_cfg');
+      closeModal('cloud-config-modal');
+      showToast("Config Cleared", "Reset back to local storage mode.");
+      setTimeout(() => window.location.reload(), 800);
     }
 
     function updateHeaderKPIs() {
@@ -1723,7 +1852,6 @@
         }
       };
 
-      // Guarded cloud persistence
       if (db && currentUser) {
         try {
           const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'materials', code);
@@ -1731,13 +1859,14 @@
           showToast("Cloud Synced", `${name} (${code}) saved to shared database.`);
         } catch (err) {
           console.error("Cloud save failed:", err);
-          showToast("Sync Error", "Failed to persist to cloud database.", "error");
+          showToast("Sync Error", "Saved locally (cloud offline).", "error");
         }
       } else {
         materialsData.unshift(newMaterial);
+        saveLocalData();
         filterCards();
         updateHeaderKPIs();
-        showToast("SKU Added", `${name} saved in memory.`);
+        showToast("SKU Added", `${name} saved locally.`);
       }
 
       closeModal('new-entry-modal');
@@ -1793,13 +1922,14 @@
           showToast("Vendor Synced", `${name} registered in cloud database.`);
         } catch (err) {
           console.error("Cloud save failed:", err);
-          showToast("Sync Error", "Could not register vendor online.", "error");
+          showToast("Sync Error", "Saved locally.", "error");
         }
       } else {
         suppliersData.unshift(newSupplier);
+        saveLocalData();
         renderSuppliers();
         updateHeaderKPIs();
-        showToast("Vendor Registered", `${name} saved in memory.`);
+        showToast("Vendor Registered", `${name} saved locally.`);
       }
 
       closeModal('new-entry-modal');
@@ -1855,13 +1985,14 @@
           showToast("PO Issued", `Order ${poNum} synced to cloud.`);
         } catch (err) {
           console.error("Cloud PO save failed:", err);
-          showToast("Sync Error", "Could not issue PO online.", "error");
+          showToast("Sync Error", "Saved locally.", "error");
         }
       } else {
         pipelineData.unshift(newPO);
+        saveLocalData();
         renderPipeline();
         updateHeaderKPIs();
-        showToast("PO Issued", `PO ${poNum} created in memory.`);
+        showToast("PO Issued", `PO ${poNum} created.`);
       }
 
       closeModal('new-entry-modal');
@@ -1881,7 +2012,7 @@
       const titleEl = document.getElementById('del-modal-title');
       const msgEl = document.getElementById('del-modal-msg');
       if (titleEl) titleEl.innerText = `Delete ${key}`;
-      if (msgEl) msgEl.innerText = `Are you sure you want to remove ${label}? This will permanently update the cloud database.`;
+      if (msgEl) msgEl.innerText = `Are you sure you want to remove ${label}?`;
       
       const confirmBtn = document.getElementById('del-confirm-btn');
       if (confirmBtn) confirmBtn.onclick = executeDelete;
@@ -1918,8 +2049,9 @@
           pipelineData = pipelineData.filter(p => p.poNumber !== key);
           renderPipeline();
         }
+        saveLocalData();
         updateHeaderKPIs();
-        showToast("Item Removed", `Removed ${key} from memory.`);
+        showToast("Item Removed", `Removed ${key}.`);
       }
 
       closeModal('delete-modal');
@@ -1927,7 +2059,6 @@
     }
 
     function promptReset() {
-      // Uses custom modal interface without calling window.confirm()
       pendingDelete = { type: 'system_reset', key: 'ALL' };
       const titleEl = document.getElementById('del-modal-title');
       const msgEl = document.getElementById('del-modal-msg');
@@ -1952,11 +2083,12 @@
             materialsData = [...defaultMaterials];
             suppliersData = [...defaultSuppliers];
             pipelineData = [...defaultPipeline];
+            saveLocalData();
             renderMaterials(materialsData);
             renderSuppliers();
             renderPipeline();
             updateHeaderKPIs();
-            showToast("System Reset", "Master templates restored in memory.");
+            showToast("System Reset", "Master templates restored.");
           }
           closeModal('delete-modal');
         };
@@ -1978,6 +2110,8 @@
     window.executeDelete = executeDelete;
     window.promptReset = promptReset;
     window.viewMaterialDetail = viewMaterialDetail;
+    window.saveCloudConfig = saveCloudConfig;
+    window.clearCloudConfig = clearCloudConfig;
 
     // Initialization
     window.addEventListener('DOMContentLoaded', () => {
