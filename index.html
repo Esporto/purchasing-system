@@ -346,7 +346,7 @@
           <i data-lucide="cloud" class="w-5 h-5 text-sky-400"></i>
           <div>
             <h3 class="font-bold text-xs sm:text-sm">Cloud Database Configuration</h3>
-            <p class="text-[10px] sm:text-[11px] text-slate-400">Enable real-time shared persistence across team members</p>
+            <p class="text-[10px] sm:text-[11px] text-slate-400">Shared real-time persistence across team members</p>
           </div>
         </div>
         <button onclick="closeModal('cloud-config-modal')" class="text-slate-400 hover:text-white p-1">
@@ -355,13 +355,14 @@
       </div>
 
       <div class="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
-        <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 text-slate-700 space-y-1">
+        <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 text-slate-700 space-y-2">
           <span class="font-bold text-sky-900 flex items-center gap-1.5">
-            <i data-lucide="info" class="w-4 h-4"></i> How to get "Cloud Database: Synced" on GitHub Pages:
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Two Essential Firebase Steps:
           </span>
-          <p class="text-[11px]">
-            Paste your free Firebase web configuration below. Data will immediately sync live across all connected computers and phones.
-          </p>
+          <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-600">
+            <li><strong>Create Firestore:</strong> In Firebase console &rarr; <em>Build &rarr; Firestore Database</em> &rarr; <em>Create database</em> in <strong>Test mode</strong>.</li>
+            <li><strong>Enable Anonymous Auth:</strong> Go to <em>Build &rarr; Authentication &rarr; Sign-in method &rarr; Anonymous &rarr; Enable &rarr; Save</em>.</li>
+          </ol>
         </div>
 
         <div>
@@ -374,7 +375,7 @@
   "messagingSenderId": "123456789",
   "appId": "1:123456789:web:abcdef"
 }' class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono bg-slate-50 focus:bg-white"></textarea>
-          <p class="text-[10px] text-slate-400 mt-1">Get this in 2 min for free at <a href="https://console.firebase.google.com" target="_blank" class="text-sky-600 underline">console.firebase.google.com</a> &gt; Project Settings &gt; Web App.</p>
+          <p class="text-[10px] text-slate-400 mt-1">Get this at <a href="https://console.firebase.google.com" target="_blank" class="text-sky-600 underline">console.firebase.google.com</a> &gt; Project Settings &gt; General &gt; Your apps.</p>
         </div>
 
         <div class="pt-2 border-t border-slate-100">
@@ -384,7 +385,7 @@
         </div>
 
         <div class="bg-amber-50 border border-amber-100 rounded-lg p-2.5 text-[11px] text-amber-800">
-          <strong>Note:</strong> When running in Memory/Local mode without cloud keys, the app safely saves all data to your browser's persistent storage so you won't lose changes on refresh.
+          <strong>Persistent Fallback:</strong> If cloud keys are absent or temporarily offline, all data stays safely preserved in your browser's persistent storage.
         </div>
       </div>
 
@@ -726,13 +727,13 @@
   <!-- JAVASCRIPT SYSTEM DATA & CLOUD DATABASE PERSISTENCE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // =========================================================================
     // OPTIONAL: PASTE YOUR FIREBASE CONFIG HERE TO HARDCODE FOR GITHUB PAGES
     // =========================================================================
-    const CUSTOM_FIREBASE_CONFIG = null; // e.g. { apiKey: "AIzaSy...", authDomain: "...", projectId: "..." }
+    const CUSTOM_FIREBASE_CONFIG = null;
 
     // --- 1. DEFAULT DATASETS ---
     const defaultMaterials = [
@@ -1116,12 +1117,8 @@
     ];
 
     // --- 2. BACKEND CLOUD & LOCAL DATA PERSISTENCE ---
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'procurement-hub-default';
+    const appId = 'procurement-hub-default';
     
-    // Resolve Firebase configuration in order of priority:
-    // 1. Saved in localStorage by user via UI modal
-    // 2. Hardcoded in CUSTOM_FIREBASE_CONFIG above
-    // 3. Injected via sandbox environment __firebase_config
     function getResolvedFirebaseConfig() {
       try {
         const stored = localStorage.getItem('alu_procurement_firebase_cfg');
@@ -1132,19 +1129,13 @@
       if (CUSTOM_FIREBASE_CONFIG && typeof CUSTOM_FIREBASE_CONFIG === 'object') {
         return CUSTOM_FIREBASE_CONFIG;
       }
-      if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-        try {
-          return typeof __firebase_config === 'string' ? JSON.parse(__firebase_config) : __firebase_config;
-        } catch (e) {}
-      }
       return null;
     }
 
     let auth = null;
     let db = null;
-    let currentUser = null;
+    let activeUid = null;
 
-    // Load saved local data if available
     function loadLocalData() {
       try {
         const m = localStorage.getItem('alu_procurement_materials');
@@ -1191,11 +1182,11 @@
       } else if (status === 'local') {
         if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-amber-400';
         if (syncText) syncText.innerText = 'Local Storage (Synced)';
-        if (userDisplay) userDisplay.innerText = 'Offline/Local';
+        if (userDisplay) userDisplay.innerText = label || 'Offline/Local';
         badge.title = 'Saved to browser storage. Click to connect shared cloud database.';
       } else {
         if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-slate-400';
-        if (syncText) syncText.innerText = 'Memory Mode';
+        if (syncText) syncText.innerText = 'Connecting...';
         if (userDisplay) userDisplay.innerText = 'Local';
       }
     }
@@ -1204,7 +1195,7 @@
       const firebaseConfig = getResolvedFirebaseConfig();
 
       if (!firebaseConfig) {
-        updateCloudStatus('local', 'Local Device');
+        updateCloudStatus('local', 'Local Storage');
         renderMaterials(materialsData);
         renderSuppliers();
         renderPipeline();
@@ -1217,23 +1208,30 @@
         auth = getAuth(app);
         db = getFirestore(app);
 
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-          await signInWithCustomToken(auth, __initial_auth_token);
-        } else {
-          await signInAnonymously(auth);
+        // Attempt anonymous sign-in, but do not crash if provider is disabled in Firebase console
+        try {
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+          } else {
+            await signInAnonymously(auth);
+          }
+          activeUid = auth.currentUser?.uid;
+        } catch (authErr) {
+          console.warn("Firebase Anonymous Auth not enabled. Operating unauthenticated (requires test mode rules):", authErr);
+          let guestUid = localStorage.getItem('alu_procurement_guest_uid');
+          if (!guestUid) {
+            guestUid = 'user_' + Math.random().toString(36).substring(2, 8);
+            localStorage.setItem('alu_procurement_guest_uid', guestUid);
+          }
+          activeUid = guestUid;
         }
 
-        currentUser = auth.currentUser;
-        if (!currentUser) {
-          updateCloudStatus('local', 'Auth Pending');
-          return;
-        }
-
-        updateCloudStatus('synced', currentUser.uid);
+        updateCloudStatus('synced', activeUid || 'Online');
         setupRealtimeSubscriptions();
       } catch (err) {
         console.error("Cloud database init error:", err);
-        updateCloudStatus('local', 'Offline');
+        updateCloudStatus('local', 'Offline/Local');
+        showToast("Cloud Connection Notice", "Using persistent local storage. Check console or cloud setup.", "error");
         renderMaterials(materialsData);
         renderSuppliers();
         renderPipeline();
@@ -1246,14 +1244,14 @@
     let seededPipeline = false;
 
     function setupRealtimeSubscriptions() {
-      if (!db || !currentUser) return;
+      if (!db) return;
 
-      const materialsCol = collection(db, 'artifacts', appId, 'public', 'data', 'materials');
+      const materialsCol = collection(db, 'procurement_materials');
       onSnapshot(materialsCol, async (snapshot) => {
         if (snapshot.empty && !seededMaterials) {
           seededMaterials = true;
           for (const item of defaultMaterials) {
-            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'materials', item.code), item);
+            await setDoc(doc(db, 'procurement_materials', item.code), item);
           }
           return;
         }
@@ -1263,14 +1261,17 @@
         updateHeaderKPIs();
       }, (error) => {
         console.error("Materials listener error:", error);
+        if (error.code === 'permission-denied') {
+          showToast("Firestore Rules Notice", "Firestore in Test Mode required (allow read, write: if true;)", "error");
+        }
       });
 
-      const suppliersCol = collection(db, 'artifacts', appId, 'public', 'data', 'suppliers');
+      const suppliersCol = collection(db, 'procurement_suppliers');
       onSnapshot(suppliersCol, async (snapshot) => {
         if (snapshot.empty && !seededSuppliers) {
           seededSuppliers = true;
           for (const sup of defaultSuppliers) {
-            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suppliers', sup.id), sup);
+            await setDoc(doc(db, 'procurement_suppliers', sup.id), sup);
           }
           return;
         }
@@ -1282,12 +1283,12 @@
         console.error("Suppliers listener error:", error);
       });
 
-      const pipelineCol = collection(db, 'artifacts', appId, 'public', 'data', 'pipeline');
+      const pipelineCol = collection(db, 'procurement_pipeline');
       onSnapshot(pipelineCol, async (snapshot) => {
         if (snapshot.empty && !seededPipeline) {
           seededPipeline = true;
           for (const po of defaultPipeline) {
-            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pipeline', po.poNumber), po);
+            await setDoc(doc(db, 'procurement_pipeline', po.poNumber), po);
           }
           return;
         }
@@ -1342,7 +1343,7 @@
       setTimeout(() => {
         toast.classList.add('opacity-0', 'translate-y-2');
         setTimeout(() => toast.remove(), 300);
-      }, 3500);
+      }, 4000);
     }
 
     function saveCloudConfig() {
@@ -1361,8 +1362,8 @@
         const parsed = JSON.parse(jsonLike);
         localStorage.setItem('alu_procurement_firebase_cfg', JSON.stringify(parsed));
         closeModal('cloud-config-modal');
-        showToast("Configuration Saved", "Reconnecting to your Cloud Database...");
-        setTimeout(() => window.location.reload(), 1000);
+        showToast("Config Saved", "Connecting to your cloud database...");
+        setTimeout(() => window.location.reload(), 800);
       } catch (e) {
         showToast("JSON Parse Error", "Please ensure the configuration is a valid JSON object.", "error");
       }
@@ -1852,14 +1853,18 @@
         }
       };
 
-      if (db && currentUser) {
+      if (db) {
         try {
-          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'materials', code);
+          const docRef = doc(db, 'procurement_materials', code);
           await setDoc(docRef, newMaterial);
           showToast("Cloud Synced", `${name} (${code}) saved to shared database.`);
         } catch (err) {
           console.error("Cloud save failed:", err);
-          showToast("Sync Error", "Saved locally (cloud offline).", "error");
+          materialsData.unshift(newMaterial);
+          saveLocalData();
+          filterCards();
+          updateHeaderKPIs();
+          showToast("Saved Locally", "Saved to local storage (check Firestore rules).", "error");
         }
       } else {
         materialsData.unshift(newMaterial);
@@ -1915,14 +1920,18 @@
         qcRate: "99.0%"
       };
 
-      if (db && currentUser) {
+      if (db) {
         try {
-          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'suppliers', id);
+          const docRef = doc(db, 'procurement_suppliers', id);
           await setDoc(docRef, newSupplier);
           showToast("Vendor Synced", `${name} registered in cloud database.`);
         } catch (err) {
           console.error("Cloud save failed:", err);
-          showToast("Sync Error", "Saved locally.", "error");
+          suppliersData.unshift(newSupplier);
+          saveLocalData();
+          renderSuppliers();
+          updateHeaderKPIs();
+          showToast("Saved Locally", "Saved to local storage.", "error");
         }
       } else {
         suppliersData.unshift(newSupplier);
@@ -1978,14 +1987,18 @@
         dockAction: action
       };
 
-      if (db && currentUser) {
+      if (db) {
         try {
-          const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'pipeline', poNum);
+          const docRef = doc(db, 'procurement_pipeline', poNum);
           await setDoc(docRef, newPO);
           showToast("PO Issued", `Order ${poNum} synced to cloud.`);
         } catch (err) {
           console.error("Cloud PO save failed:", err);
-          showToast("Sync Error", "Saved locally.", "error");
+          pipelineData.unshift(newPO);
+          saveLocalData();
+          renderPipeline();
+          updateHeaderKPIs();
+          showToast("Saved Locally", "PO saved locally.", "error");
         }
       } else {
         pipelineData.unshift(newPO);
@@ -2024,14 +2037,14 @@
       if (!pendingDelete) return;
       const { type, key } = pendingDelete;
 
-      if (db && currentUser) {
+      if (db) {
         try {
           if (type === 'material') {
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'materials', key));
+            await deleteDoc(doc(db, 'procurement_materials', key));
           } else if (type === 'supplier') {
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suppliers', key));
+            await deleteDoc(doc(db, 'procurement_suppliers', key));
           } else if (type === 'po') {
-            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pipeline', key));
+            await deleteDoc(doc(db, 'procurement_pipeline', key));
           }
           showToast("Deleted", `Removed ${key} from cloud database.`);
         } catch (err) {
@@ -2068,15 +2081,15 @@
       const confirmBtn = document.getElementById('del-confirm-btn');
       if (confirmBtn) {
         confirmBtn.onclick = async () => {
-          if (db && currentUser) {
+          if (db) {
             for (const m of defaultMaterials) {
-              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'materials', m.code), m);
+              await setDoc(doc(db, 'procurement_materials', m.code), m);
             }
             for (const s of defaultSuppliers) {
-              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suppliers', s.id), s);
+              await setDoc(doc(db, 'procurement_suppliers', s.id), s);
             }
             for (const po of defaultPipeline) {
-              await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'pipeline', po.poNumber), po);
+              await setDoc(doc(db, 'procurement_pipeline', po.poNumber), po);
             }
             showToast("System Reset", "Cloud database re-seeded with master templates.");
           } else {
