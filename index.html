@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Purchasing & Procurement System — Visual Gallery View</title>
+  <title>Purchasing & Procurement System — High Performance Visual Hub</title>
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -29,7 +29,7 @@
       }
     }
   </script>
-  <!-- Lucide Icons -->
+  <!-- Lucide Icons (Static UI elements) -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -42,18 +42,23 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-font-smoothing: antialiased;
       -webkit-tap-highlight-color: transparent;
+      text-rendering: optimizeLegibility;
     }
 
     .mono { font-family: 'JetBrains Mono', monospace; }
 
-    .card-transition {
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Performance & GPU Layer Optimization */
+    .card-contain {
+      contain: layout style paint;
+      transform: translateZ(0);
+      will-change: transform, box-shadow;
+      transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
     }
     
     @media (hover: hover) and (pointer: fine) {
-      .card-transition:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 24px -8px rgba(15, 23, 42, 0.12);
+      .card-contain:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -6px rgba(15, 23, 42, 0.12);
       }
     }
 
@@ -73,7 +78,7 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col pb-safe md:pb-6">
 
   <!-- TOP APP NAV (Responsive for Mobile, Tablet, Laptop, Desktop) -->
-  <header class="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40 shadow-sm">
+  <header class="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40 shadow-xs">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
         
@@ -87,18 +92,18 @@
               <span class="font-bold tracking-tight text-white text-xs sm:text-sm lg:text-base truncate">ALU-GLASS PROCUREMENT</span>
               <span class="hidden xs:inline-flex text-[9px] sm:text-[10px] uppercase font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30 px-1.5 py-0.5 rounded-full shrink-0">Live Hub</span>
             </div>
-            <p class="text-[10px] sm:text-xs text-slate-400 truncate hidden xs:block">Architectural Fenestration & Material Operations</p>
+            <p class="text-[10px] sm:text-xs text-slate-400 truncate hidden xs:block">Architectural Fenestration &amp; Material Operations</p>
           </div>
         </div>
 
-        <!-- Controls: Desktop KPIs & Action Buttons -->
+        <!-- Controls: Telemetry & Actions -->
         <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
           
-          <!-- Live Cloud Sync & User Badge (Clickable to open Cloud Setup modal) -->
-          <button onclick="openModal('cloud-config-modal')" id="cloud-status-badge" title="Click to Configure Cloud Database Sync" class="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700/80 border border-slate-700 rounded-lg text-[11px] text-slate-300 transition cursor-pointer active:scale-95">
+          <!-- Cloud Sync Badge -->
+          <button onclick="openModal('cloud-config-modal')" id="cloud-status-badge" title="Click to Configure Cloud Database Sync" class="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[11px] text-slate-300 transition cursor-pointer active:scale-95">
             <span id="cloud-pulse-dot" class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
-            <span id="cloud-sync-text" class="font-medium text-slate-200">Connecting...</span>
-            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-slate-700 pl-2">Local</span>
+            <span id="cloud-sync-text" class="font-medium text-slate-200">Local Storage</span>
+            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-slate-700 pl-2">Ready</span>
           </button>
 
           <!-- Large screen KPI telemetry -->
@@ -117,14 +122,14 @@
             </div>
           </div>
           
-          <!-- Landed Cost Tool Trigger -->
+          <!-- Landed Cost Tool -->
           <button onclick="openModal('quick-calc-modal')" aria-label="Open Landed Cost Calculator" class="p-2 sm:px-3 sm:py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg border border-slate-700 flex items-center gap-1.5 transition active:scale-95">
             <i data-lucide="calculator" class="w-4 h-4 text-sky-400"></i>
             <span class="hidden sm:inline">Landed Cost</span>
           </button>
 
           <!-- Primary + New Entry Action -->
-          <button onclick="openNewEntryModal('material')" aria-label="Create New Entry" class="px-2.5 py-2 sm:px-3.5 sm:py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition shadow-sm active:scale-95">
+          <button onclick="openNewEntryModal('material')" aria-label="Create New Entry" class="px-2.5 py-2 sm:px-3.5 sm:py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition shadow-xs active:scale-95">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
             <span class="inline">+ New Entry</span>
           </button>
@@ -139,7 +144,7 @@
     </div>
   </header>
 
-  <!-- VIEW NAV & SEARCH FILTER BAR (Dynamically Responsive) -->
+  <!-- VIEW NAV & SEARCH FILTER BAR -->
   <div class="bg-white border-b border-slate-200 shadow-xs sticky top-14 sm:top-16 z-30">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
@@ -160,7 +165,7 @@
           
           <button onclick="switchGallery('pipeline')" id="tab-pipeline" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
             <i data-lucide="truck" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500"></i>
-            <span>Logistics & POs</span>
+            <span>Logistics &amp; POs</span>
             <span class="bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="po-count-badge">4</span>
           </button>
 
@@ -201,14 +206,13 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <div>
           <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-            <span>Material Inventory & Specification Cards</span>
+            <span>Material Inventory &amp; Specification Cards</span>
             <span class="text-[11px] font-normal text-slate-500 hidden sm:inline">(BOM Driven Items)</span>
           </h2>
           <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Real-time balances against Reorder Point (ROP), packaging profiles, and standard unit costs.</p>
         </div>
         
         <div class="flex items-center justify-between sm:justify-end gap-2">
-          <!-- Status legend badges -->
           <div class="flex items-center gap-1.5 text-[10px] sm:text-xs">
             <span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> In Stock
@@ -228,7 +232,7 @@
         </div>
       </div>
 
-      <!-- Responsive Material Cards Grid -->
+      <!-- Material Cards Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4" id="materials-grid"></div>
     </section>
 
@@ -256,7 +260,7 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <div>
           <h2 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-            <span>Open Purchase Orders & Expediting Cards</span>
+            <span>Open Purchase Orders &amp; Expediting Cards</span>
           </h2>
           <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Real-time status progression, overdue delivery flags, and factory dock checkpoints.</p>
         </div>
@@ -277,12 +281,11 @@
     <!-- 4. SOP & GOVERNANCE GALLERY -->
     <section id="gallery-sop" class="space-y-5 hidden">
       <div>
-        <h2 class="text-sm sm:text-base font-bold text-slate-900">Standard Operating Procedures & Official Forms</h2>
+        <h2 class="text-sm sm:text-base font-bold text-slate-900">Standard Operating Procedures &amp; Official Forms</h2>
         <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Core internal controls, financial delegation thresholds, and 3-way matching rules.</p>
       </div>
 
-      <!-- 10 Golden Rules Banner -->
-      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-xl sm:rounded-2xl p-4 sm:p-5 text-white shadow-sm border border-slate-700">
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-xl sm:rounded-2xl p-4 sm:p-5 text-white shadow-xs border border-slate-700">
         <div class="flex items-center gap-2 mb-3 text-sky-400">
           <i data-lucide="shield-check" class="w-4 h-4 sm:w-5 sm:h-5"></i>
           <h3 class="text-xs font-bold uppercase tracking-wider">The 10 Non-Negotiable Procurement Rules</h3>
@@ -338,7 +341,7 @@
     </div>
   </aside>
 
-  <!-- MODAL: CLOUD DATABASE SETUP & SETTINGS -->
+  <!-- MODAL: CLOUD DATABASE SETUP -->
   <div id="cloud-config-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
       <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
@@ -357,11 +360,11 @@
       <div class="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
         <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 text-slate-700 space-y-2">
           <span class="font-bold text-sky-900 flex items-center gap-1.5">
-            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Two Essential Firebase Steps:
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Firebase Cloud Requirements:
           </span>
           <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-600">
-            <li><strong>Create Firestore:</strong> In Firebase console &rarr; <em>Build &rarr; Firestore Database</em> &rarr; <em>Create database</em> in <strong>Test mode</strong>.</li>
-            <li><strong>Enable Anonymous Auth:</strong> Go to <em>Build &rarr; Authentication &rarr; Sign-in method &rarr; Anonymous &rarr; Enable &rarr; Save</em>.</li>
+            <li><strong>Firestore Database:</strong> Set up in <em>Build &rarr; Firestore Database</em> in <strong>Test mode</strong>.</li>
+            <li><strong>Anonymous Auth:</strong> Enabled under <em>Build &rarr; Authentication &rarr; Sign-in method</em>.</li>
           </ol>
         </div>
 
@@ -375,17 +378,11 @@
   "messagingSenderId": "123456789",
   "appId": "1:123456789:web:abcdef"
 }' class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono bg-slate-50 focus:bg-white"></textarea>
-          <p class="text-[10px] text-slate-400 mt-1">Get this at <a href="https://console.firebase.google.com" target="_blank" class="text-sky-600 underline">console.firebase.google.com</a> &gt; Project Settings &gt; General &gt; Your apps.</p>
-        </div>
-
-        <div class="pt-2 border-t border-slate-100">
-          <label class="block font-medium text-slate-700 mb-1">Or Connect Self-Hosted Python API URL</label>
-          <input type="text" id="cfg-backend-url" placeholder="e.g. http://localhost:8000 or https://procurement-api.onrender.com" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
-          <p class="text-[10px] text-slate-400 mt-1">Use this if you are running `python backend_server.py` on your intranet or cloud server.</p>
+          <p class="text-[10px] text-slate-400 mt-1">Found in <a href="https://console.firebase.google.com" target="_blank" class="text-sky-600 underline">Firebase Console</a> &gt; Project Settings &gt; General &gt; Your apps.</p>
         </div>
 
         <div class="bg-amber-50 border border-amber-100 rounded-lg p-2.5 text-[11px] text-amber-800">
-          <strong>Persistent Fallback:</strong> If cloud keys are absent or temporarily offline, all data stays safely preserved in your browser's persistent storage.
+          <strong>Instant Offline Fallback:</strong> If cloud keys are absent, all items remain safely saved in your browser's persistent storage.
         </div>
       </div>
 
@@ -399,7 +396,7 @@
     </div>
   </div>
 
-  <!-- MODAL: MATERIAL / SPEC DETAILS -->
+  <!-- MODAL: SPECIFICATION DETAILS -->
   <div id="spec-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-xl sm:rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
       <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
@@ -428,7 +425,7 @@
     </div>
   </div>
 
-  <!-- MODAL: LANDED COST QUICK CALCULATOR -->
+  <!-- MODAL: QUICK CALCULATOR -->
   <div id="quick-calc-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
       <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
@@ -487,7 +484,7 @@
         </div>
 
         <p class="text-[10px] sm:text-[11px] text-slate-500 italic">
-          *Always compare suppliers on True Landed Cost. A cheaper base unit price with high freight may cost more than a local vendor with free delivery.
+          *Compare suppliers on True Landed Cost. A cheaper base unit price with high freight may cost more than a local vendor with free delivery.
         </p>
       </div>
 
@@ -499,7 +496,7 @@
     </div>
   </div>
 
-  <!-- MODAL: DIRECT DATA ENTRY MODAL -->
+  <!-- MODAL: DIRECT DATA ENTRY -->
   <div id="new-entry-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-xl sm:rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
       <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
@@ -515,7 +512,7 @@
         </button>
       </div>
 
-      <!-- Tab Switcher Inside Modal -->
+      <!-- Tab Switcher -->
       <div class="flex border-b border-slate-200 px-4 sm:px-6 bg-slate-50 text-xs font-medium overflow-x-auto no-scrollbar shrink-0">
         <button type="button" id="entry-tab-material" onclick="switchEntryTab('material')" class="px-3 sm:px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
           <i data-lucide="box" class="w-3.5 h-3.5"></i> Material SKU
@@ -524,7 +521,7 @@
           <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Register Vendor
         </button>
         <button type="button" id="entry-tab-po" onclick="switchEntryTab('po')" class="px-3 sm:px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
-          <i data-lucide="file-plus" class="w-3.5 h-3.5"></i> Issue PO
+          <i data-lucide="truck" class="w-3.5 h-3.5"></i> Issue PO
         </button>
       </div>
 
@@ -655,7 +652,7 @@
         </div>
       </form>
 
-      <!-- Form 3: Issue Purchase Order -->
+      <!-- Form 3: Issue PO -->
       <form id="form-add-po" onsubmit="submitPO(event)" class="p-4 sm:p-6 space-y-3 sm:space-y-3.5 text-xs overflow-y-auto flex-1 hidden">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -706,7 +703,7 @@
     </div>
   </div>
 
-  <!-- MODAL: DELETE CONFIRMATION DIALOG -->
+  <!-- MODAL: DELETE CONFIRMATION -->
   <div id="delete-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4">
     <div class="bg-white rounded-xl sm:rounded-2xl max-w-sm w-full p-4 sm:p-5 shadow-2xl border border-slate-100 text-center space-y-3">
       <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
@@ -721,19 +718,39 @@
     </div>
   </div>
 
-  <!-- TOAST NOTIFICATION CONTAINER -->
+  <!-- TOAST NOTIFICATIONS -->
   <div id="toast-container" class="fixed top-4 left-3 right-3 sm:left-auto sm:top-auto sm:bottom-5 sm:right-5 z-50 space-y-2 pointer-events-none sm:max-w-sm"></div>
 
-  <!-- JAVASCRIPT SYSTEM DATA & CLOUD DATABASE PERSISTENCE -->
+  <!-- JAVASCRIPT SYSTEM & OPTIMIZED PERSISTENCE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // =========================================================================
-    // OPTIONAL: PASTE YOUR FIREBASE CONFIG HERE TO HARDCODE FOR GITHUB PAGES
-    // =========================================================================
-    const CUSTOM_FIREBASE_CONFIG = null;
+    // --- HARDWARE-ACCELERATED INLINED SVG ENGINE ---
+    // Avoids calling lucide.createIcons on hundreds of DOM nodes, eliminating MutationObserver thrashing
+    const ICONS = {
+      box: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`,
+      shield: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>`,
+      settings: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+      key: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>`,
+      disc: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>`,
+      flask: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg>`,
+      trash: `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`,
+      eye: `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+      creditCard: `<svg class="w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>`,
+      clock: `<svg class="w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+      calendar: `<svg class="w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>`
+    };
+
+    function getCardIcon(name) {
+      if (name === 'shield') return ICONS.shield;
+      if (name === 'settings') return ICONS.settings;
+      if (name === 'key') return ICONS.key;
+      if (name === 'disc') return ICONS.disc;
+      if (name === 'flask-conical' || name === 'flask') return ICONS.flask;
+      return ICONS.box;
+    }
 
     // --- 1. DEFAULT DATASETS ---
     const defaultMaterials = [
@@ -911,7 +928,7 @@
         stdCost: 4.90,
         supplier: "Sika Architectural Adhesives",
         imageBg: "from-blue-900 to-indigo-950",
-        icon: "flask-conical",
+        icon: "flask",
         status: "safe",
         details: {
           tolerance: "ASTM C1184 compliant | Shore A 40",
@@ -1116,24 +1133,7 @@
       }
     ];
 
-    // --- 2. BACKEND CLOUD & LOCAL DATA PERSISTENCE ---
-    function getResolvedFirebaseConfig() {
-      try {
-        const stored = localStorage.getItem('alu_procurement_firebase_cfg');
-        if (stored) return JSON.parse(stored);
-      } catch (e) {
-        console.warn("Could not parse stored Firebase config", e);
-      }
-      if (CUSTOM_FIREBASE_CONFIG && typeof CUSTOM_FIREBASE_CONFIG === 'object') {
-        return CUSTOM_FIREBASE_CONFIG;
-      }
-      return null;
-    }
-
-    let auth = null;
-    let db = null;
-    let activeUid = null;
-
+    // --- 2. LOCAL MEMORY & PERSISTENCE ---
     let materialsData = [...defaultMaterials];
     let suppliersData = [...defaultSuppliers];
     let pipelineData = [...defaultPipeline];
@@ -1147,269 +1147,278 @@
         const p = localStorage.getItem('alu_procurement_pipeline');
         if (p) pipelineData = JSON.parse(p);
       } catch (e) {
-        console.warn("Failed loading local storage data", e);
+        console.warn("Local storage parse note:", e);
       }
     }
 
-    function saveLocalData() {
-      try {
-        localStorage.setItem('alu_procurement_materials', JSON.stringify(materialsData));
-        localStorage.setItem('alu_procurement_suppliers', JSON.stringify(suppliersData));
-        localStorage.setItem('alu_procurement_pipeline', JSON.stringify(pipelineData));
-      } catch (e) {
-        console.warn("Failed saving local storage data", e);
-      }
+    let saveLocalTimer = null;
+    function debouncedSaveLocalData() {
+      clearTimeout(saveLocalTimer);
+      saveLocalTimer = setTimeout(() => {
+        try {
+          localStorage.setItem('alu_procurement_materials', JSON.stringify(materialsData));
+          localStorage.setItem('alu_procurement_suppliers', JSON.stringify(suppliersData));
+          localStorage.setItem('alu_procurement_pipeline', JSON.stringify(pipelineData));
+        } catch (e) {
+          console.warn("Storage write error:", e);
+        }
+      }, 150);
     }
 
     loadLocalData();
 
-    // --- PERFORMANCE ENGINE: Debounce & Scoped Render helpers ---
-    let renderTimeout = null;
-    let saveTimeout = null;
-
-    function debouncedSaveLocalData() {
-      clearTimeout(saveTimeout);
-      saveTimeout = setTimeout(() => {
-        saveLocalData();
-      }, 300);
-    }
-
-    function safeCreateIcons(containerId = null) {
-      requestAnimationFrame(() => {
-        try {
-          if (containerId) {
-            const el = document.getElementById(containerId);
-            if (el) lucide.createIcons({ root: el });
-          } else {
-            lucide.createIcons();
-          }
-        } catch (e) {
-          console.warn("Lucide icon generation error:", e);
-        }
-      });
-    }
-
-    function updateCloudStatus(status, label) {
-      const badge = document.getElementById('cloud-status-badge');
-      const pulseDot = document.getElementById('cloud-pulse-dot');
-      const syncText = document.getElementById('cloud-sync-text');
-      const userDisplay = document.getElementById('user-id-display');
-
-      if (!badge) return;
-      if (status === 'synced') {
-        if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
-        if (syncText) syncText.innerText = 'Cloud Database: Synced';
-        if (userDisplay) {
-          userDisplay.innerText = label ? `UID: ${label.substring(0, 6)}...` : 'Connected';
-          userDisplay.title = `Connected to Cloud: ${label}`;
-        }
-      } else if (status === 'local') {
-        if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-amber-400';
-        if (syncText) syncText.innerText = 'Local Storage (Synced)';
-        if (userDisplay) userDisplay.innerText = label || 'Offline/Local';
-        badge.title = 'Saved to browser storage. Click to connect shared cloud database.';
-      } else {
-        if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-slate-400';
-        if (syncText) syncText.innerText = 'Connecting...';
-        if (userDisplay) userDisplay.innerText = 'Local';
-      }
-    }
-
-    async function initCloudBackend() {
-      const firebaseConfig = getResolvedFirebaseConfig();
-
-      if (!firebaseConfig) {
-        updateCloudStatus('local', 'Local Storage');
-        renderMaterials(materialsData);
-        renderSuppliers();
-        renderPipeline();
-        updateHeaderKPIs();
-        return;
-      }
-
-      try {
-        const app = initializeApp(firebaseConfig);
-        auth = getAuth(app);
-        db = getFirestore(app);
-
-        // Attempt anonymous sign-in with fallback
-        try {
-          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-            await signInWithCustomToken(auth, __initial_auth_token);
-          } else {
-            await signInAnonymously(auth);
-          }
-          activeUid = auth.currentUser?.uid;
-        } catch (authErr) {
-          console.warn("Firebase Anonymous Auth not enabled. Operating unauthenticated:", authErr);
-          let guestUid = localStorage.getItem('alu_procurement_guest_uid');
-          if (!guestUid) {
-            guestUid = 'user_' + Math.random().toString(36).substring(2, 8);
-            localStorage.setItem('alu_procurement_guest_uid', guestUid);
-          }
-          activeUid = guestUid;
-        }
-
-        updateCloudStatus('synced', activeUid || 'Online');
-        setupRealtimeSubscriptions();
-      } catch (err) {
-        console.error("Cloud database init error:", err);
-        updateCloudStatus('local', 'Offline/Local');
-        showToast("Cloud Connection Notice", "Using persistent local storage. Check console or cloud setup.", "error");
-        renderMaterials(materialsData);
-        renderSuppliers();
-        renderPipeline();
-        updateHeaderKPIs();
-      }
-    }
-
-    let seededMaterials = false;
-    let seededSuppliers = false;
-    let seededPipeline = false;
-
-    function setupRealtimeSubscriptions() {
-      if (!db) return;
-
-      const materialsCol = collection(db, 'procurement_materials');
-      onSnapshot(materialsCol, async (snapshot) => {
-        if (snapshot.empty && !seededMaterials) {
-          seededMaterials = true;
-          const batch = writeBatch(db);
-          for (const item of defaultMaterials) {
-            batch.set(doc(db, 'procurement_materials', item.code), item);
-          }
-          await batch.commit();
-          return;
-        }
-        materialsData = snapshot.docs.map(d => d.data());
-        debouncedSaveLocalData();
-        scheduleBatchRender();
-        updateHeaderKPIs();
-      }, (error) => {
-        console.error("Materials listener error:", error);
-        if (error.code === 'permission-denied') {
-          showToast("Firestore Rules Notice", "Firestore in Test Mode required (allow read, write: if true;)", "error");
-        }
-      });
-
-      const suppliersCol = collection(db, 'procurement_suppliers');
-      onSnapshot(suppliersCol, async (snapshot) => {
-        if (snapshot.empty && !seededSuppliers) {
-          seededSuppliers = true;
-          const batch = writeBatch(db);
-          for (const sup of defaultSuppliers) {
-            batch.set(doc(db, 'procurement_suppliers', sup.id), sup);
-          }
-          await batch.commit();
-          return;
-        }
-        suppliersData = snapshot.docs.map(d => d.data());
-        debouncedSaveLocalData();
-        renderSuppliers();
-        updateHeaderKPIs();
-      }, (error) => {
-        console.error("Suppliers listener error:", error);
-      });
-
-      const pipelineCol = collection(db, 'procurement_pipeline');
-      onSnapshot(pipelineCol, async (snapshot) => {
-        if (snapshot.empty && !seededPipeline) {
-          seededPipeline = true;
-          const batch = writeBatch(db);
-          for (const po of defaultPipeline) {
-            batch.set(doc(db, 'procurement_pipeline', po.poNumber), po);
-          }
-          await batch.commit();
-          return;
-        }
-        pipelineData = snapshot.docs.map(d => d.data());
-        debouncedSaveLocalData();
-        renderPipeline();
-        updateHeaderKPIs();
-      }, (error) => {
-        console.error("Pipeline listener error:", error);
-      });
-    }
-
-    function scheduleBatchRender() {
-      clearTimeout(renderTimeout);
-      renderTimeout = setTimeout(() => {
-        executeFilterCards();
-      }, 50);
-    }
-
-    // Modal Helpers
-    function openModal(id) {
-      const el = document.getElementById(id);
-      if (el) el.classList.remove('hidden');
-      if (id === 'cloud-config-modal') {
-        const stored = localStorage.getItem('alu_procurement_firebase_cfg');
-        const area = document.getElementById('cfg-firebase-json');
-        if (stored && area) area.value = stored;
-      }
-    }
-
-    function closeModal(id) {
-      const el = document.getElementById(id);
-      if (el) el.classList.add('hidden');
-    }
-
-    function showToast(title, message, type = 'success') {
-      const container = document.getElementById('toast-container');
+    // --- 3. HIGH-SPEED RENDERING ENGINE ---
+    function renderMaterials(items = materialsData) {
+      const container = document.getElementById('materials-grid');
       if (!container) return;
-      const toast = document.createElement('div');
-      const bg = type === 'success' ? 'bg-emerald-900 border-emerald-700 text-emerald-100' : 'bg-rose-900 border-rose-700 text-rose-100';
-      const icon = type === 'success' ? 'check-circle' : 'alert-circle';
 
-      toast.className = `p-3 sm:p-3.5 rounded-xl border shadow-xl flex items-start gap-2.5 text-xs transition transform translate-y-2 opacity-0 pointer-events-auto ${bg}`;
-      toast.innerHTML = `
-        <i data-lucide="${icon}" class="w-4 h-4 mt-0.5 shrink-0"></i>
-        <div class="flex-1 min-w-0">
-          <strong class="block font-semibold text-white truncate">${title}</strong>
-          <span class="text-[11px] opacity-90 break-words">${message}</span>
-        </div>
-      `;
-
-      container.appendChild(toast);
-      safeCreateIcons();
-
-      requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-      });
-
-      setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-2');
-        setTimeout(() => toast.remove(), 300);
-      }, 4000);
-    }
-
-    function saveCloudConfig() {
-      const text = document.getElementById('cfg-firebase-json')?.value.trim();
-      if (!text) {
-        showToast("Error", "Please paste your Firebase configuration object.", "error");
+      if (!items || items.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center bg-white rounded-xl border border-slate-200">
+            <div class="w-10 h-10 text-slate-300 mx-auto mb-2 flex items-center justify-center">${ICONS.box}</div>
+            <p class="text-sm font-semibold text-slate-700">No matching materials found</p>
+            <p class="text-xs text-slate-400 mt-1">Try adjusting your search terms or category filter.</p>
+          </div>
+        `;
         return;
       }
-      try {
-        let cleaned = text;
-        if (text.includes('{') && text.includes('}')) {
-          cleaned = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+
+      const html = items.map(m => {
+        let statusBadge = '';
+        if (m.status === 'reorder' || m.currentStock <= m.safetyStock) {
+          statusBadge = '<span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>Reorder</span>';
+        } else if (m.status === 'low' || m.currentStock <= m.reorderPoint) {
+          statusBadge = '<span class="bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Low</span>';
+        } else {
+          statusBadge = '<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-semibold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>In Stock</span>';
         }
-        const jsonLike = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
-        const parsed = JSON.parse(jsonLike);
-        localStorage.setItem('alu_procurement_firebase_cfg', JSON.stringify(parsed));
-        closeModal('cloud-config-modal');
-        showToast("Config Saved", "Connecting to your cloud database...");
-        setTimeout(() => window.location.reload(), 800);
-      } catch (e) {
-        showToast("JSON Parse Error", "Please ensure the configuration is a valid JSON object.", "error");
-      }
+
+        const pct = Math.min(100, Math.round((m.currentStock / (m.reorderPoint || 1)) * 100));
+        const barColor = pct < 50 ? 'bg-rose-500' : (pct < 100 ? 'bg-amber-500' : 'bg-emerald-500');
+
+        return `
+          <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-contain flex flex-col justify-between space-y-3 relative">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <div class="w-8 h-8 rounded-lg bg-gradient-to-br ${m.imageBg || 'from-sky-700 to-slate-900'} text-white flex items-center justify-center shrink-0 shadow-xs">
+                    ${getCardIcon(m.icon)}
+                  </div>
+                  <div class="min-w-0">
+                    <span class="mono text-[10px] font-bold text-sky-700 uppercase truncate block">${m.code}</span>
+                    <span class="block text-[10px] text-slate-400 capitalize truncate">${m.categoryLabel || m.category}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  ${statusBadge}
+                  <button onclick="promptDelete('material', '${m.code}')" aria-label="Delete SKU" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete SKU">
+                    ${ICONS.trash}
+                  </button>
+                </div>
+              </div>
+
+              <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 line-clamp-1" title="${m.name}">${m.name}</h3>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2" title="${m.specs}">${m.specs}</p>
+            </div>
+
+            <div class="space-y-1.5 bg-slate-50 border border-slate-100 rounded-lg p-2.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-500 text-[11px]">Stock Balance:</span>
+                <span class="mono font-bold text-slate-800">${m.currentStock} <span class="font-normal text-slate-400 text-[10px]">${m.uom}</span></span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                <div class="${barColor} h-1.5 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px] text-slate-400 pt-0.5">
+                <span>ROP: <strong class="mono text-slate-600">${m.reorderPoint} ${m.uom}</strong></span>
+                <span>Safety: <strong class="mono text-slate-600">${m.safetyStock} ${m.uom}</strong></span>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+              <div>
+                <span class="text-[10px] text-slate-400 uppercase block">Std Cost</span>
+                <span class="mono font-bold text-emerald-700 text-xs sm:text-sm">$${Number(m.stdCost).toFixed(2)}</span>
+              </div>
+              <button onclick="viewMaterialDetail('${m.code}')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 rounded-lg font-medium text-[11px] transition flex items-center gap-1 border border-slate-200/60 active:scale-95">
+                ${ICONS.eye}
+                <span>Docket</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.innerHTML = html;
     }
 
-    function clearCloudConfig() {
-      localStorage.removeItem('alu_procurement_firebase_cfg');
-      closeModal('cloud-config-modal');
-      showToast("Config Cleared", "Reset back to local storage mode.");
-      setTimeout(() => window.location.reload(), 800);
+    function renderSuppliers() {
+      const container = document.getElementById('suppliers-grid');
+      if (!container) return;
+
+      container.innerHTML = suppliersData.map(sup => `
+        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-4 sm:p-5 card-contain flex flex-col justify-between space-y-3.5 relative">
+          <div>
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <span class="mono text-[10px] text-slate-400 uppercase font-semibold block">${sup.id}</span>
+                <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-0.5 truncate">${sup.name}</h3>
+                <span class="text-xs text-sky-700 font-medium truncate block">${sup.category}</span>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full border ${sup.tierColor}">${sup.tier}</span>
+                <button onclick="promptDelete('supplier', '${sup.id}')" aria-label="Delete Vendor" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete Supplier">
+                  ${ICONS.trash}
+                </button>
+              </div>
+            </div>
+
+            <div class="mt-3.5 grid grid-cols-3 gap-1.5 sm:gap-2 text-center bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5">
+              <div>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">Score</span>
+                <span class="mono font-bold text-xs sm:text-base text-slate-900">${sup.score}<span class="text-[10px] font-normal text-slate-400">/100</span></span>
+              </div>
+              <div>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">OTIF</span>
+                <span class="mono font-bold text-xs sm:text-base text-emerald-600">${sup.otif}</span>
+              </div>
+              <div>
+                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">QC Rate</span>
+                <span class="mono font-bold text-xs sm:text-base text-sky-600">${sup.qcRate || '99.0%'}</span>
+              </div>
+            </div>
+
+            <div class="mt-3 space-y-1 text-[11px] text-slate-600">
+              <div class="flex justify-between">
+                <span>Price Competitiveness:</span>
+                <span class="mono font-semibold">${sup.metrics?.price ?? 22}/25</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Quality Conformance:</span>
+                <span class="mono font-semibold">${sup.metrics?.quality ?? 24}/25</span>
+              </div>
+              <div class="flex justify-between">
+                <span>On-Time Delivery:</span>
+                <span class="mono font-semibold">${sup.metrics?.delivery ?? 18}/20</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <span class="flex items-center gap-1 truncate">
+              ${ICONS.creditCard} ${sup.paymentTerms}
+            </span>
+            <span class="flex items-center gap-1 shrink-0">
+              ${ICONS.clock} ${sup.leadTime}
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderPipeline() {
+      const container = document.getElementById('pipeline-grid');
+      if (!container) return;
+
+      container.innerHTML = pipelineData.map(po => `
+        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-contain flex flex-col justify-between space-y-3 relative">
+          <div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="mono text-xs font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded shrink-0">${po.poNumber}</span>
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="text-[10px] px-2 py-0.5 rounded-full border ${po.alertBadge}">${po.alert}</span>
+                <button onclick="promptDelete('po', '${po.poNumber}')" aria-label="Delete PO" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete PO">
+                  ${ICONS.trash}
+                </button>
+              </div>
+            </div>
+            <h4 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 truncate">${po.vendor}</h4>
+            <p class="text-xs text-slate-600 mt-0.5 font-medium line-clamp-1">${po.items}</p>
+          </div>
+
+          <div class="space-y-1">
+            <div class="flex justify-between text-[11px] text-slate-500">
+              <span>Status: <strong class="text-slate-800">${po.status}</strong></span>
+              <span class="mono font-semibold">${po.progressPct}%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-sky-600 h-1.5 rounded-full transition-all duration-300" style="width: ${po.progressPct}%"></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5 text-xs text-slate-700">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Expediting Action:</span>
+            <p class="text-[11px] line-clamp-2">${po.dockAction}</p>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="mono font-bold text-slate-900 text-xs sm:text-sm">${po.amount}</span>
+            <span class="text-slate-500 flex items-center gap-1 text-[11px]">
+              ${ICONS.calendar} ${po.dueDate}
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderSOP() {
+      const container = document.getElementById('sop-grid');
+      if (!container) return;
+
+      container.innerHTML = sopData.map(sop => `
+        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-contain flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="mono text-[10px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded">${sop.id}</span>
+              <span class="text-[10px] text-slate-500 font-medium">${sop.type}</span>
+            </div>
+            <h4 class="font-bold text-slate-900 text-xs sm:text-sm mt-2">${sop.title}</h4>
+            <p class="text-xs text-slate-600 mt-1">${sop.desc}</p>
+          </div>
+          <div class="bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-[11px] text-slate-500">
+            <span class="font-semibold text-slate-700 block mb-0.5">Required Fields:</span>
+            <span>${sop.fields}</span>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Custodian: <strong class="text-slate-600">${sop.role}</strong></span>
+            <span class="text-sky-600 font-medium">Standard Form</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Filter & Search Engine (Throttled & Non-blocking)
+    let searchDebounce = null;
+    function filterCards() {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(executeFilterCards, 50);
+    }
+
+    function executeFilterCards() {
+      const searchInput = document.getElementById('gallery-search');
+      const catSelect = document.getElementById('category-filter');
+
+      const term = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      const category = catSelect ? catSelect.value : 'all';
+
+      const filtered = materialsData.filter(m => {
+        const matchesTerm = !term || 
+                            (m.name || '').toLowerCase().includes(term) || 
+                            (m.code || '').toLowerCase().includes(term) || 
+                            (m.specs || '').toLowerCase().includes(term) || 
+                            (m.supplier || '').toLowerCase().includes(term);
+        const matchesCategory = category === 'all' || m.category === category;
+        return matchesTerm && matchesCategory;
+      });
+
+      renderMaterials(filtered);
+    }
+
+    // Batch KPI Updates
+    let kpiTimer = null;
+    function scheduleKPIUpdate() {
+      clearTimeout(kpiTimer);
+      kpiTimer = setTimeout(updateHeaderKPIs, 30);
     }
 
     function updateHeaderKPIs() {
@@ -1441,89 +1450,384 @@
       if (poSelect) poSelect.innerHTML = optionsHtml;
     }
 
-    function renderMaterials(items = materialsData) {
-      const container = document.getElementById('materials-grid');
-      if (!container) return;
+    // Modal & Toast Helpers
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+      if (id === 'cloud-config-modal') {
+        const stored = localStorage.getItem('alu_procurement_firebase_cfg');
+        const area = document.getElementById('cfg-firebase-json');
+        if (stored && area) area.value = stored;
+      }
+    }
 
-      if (!items || items.length === 0) {
-        container.innerHTML = `
-          <div class="col-span-full py-12 text-center bg-white rounded-xl border border-slate-200">
-            <i data-lucide="package-search" class="w-10 h-10 text-slate-300 mx-auto mb-2"></i>
-            <p class="text-sm font-semibold text-slate-700">No matching materials found</p>
-            <p class="text-xs text-slate-400 mt-1">Try adjusting your search terms or category filter.</p>
-          </div>
-        `;
-        safeCreateIcons('materials-grid');
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    }
+
+    function showToast(title, message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      const bg = type === 'success' ? 'bg-emerald-900 border-emerald-700 text-emerald-100' : 'bg-rose-900 border-rose-700 text-rose-100';
+
+      toast.className = `p-3 rounded-xl border shadow-xl flex items-start gap-2 text-xs transition transform translate-y-2 opacity-0 pointer-events-auto ${bg}`;
+      toast.innerHTML = `
+        <div class="flex-1 min-w-0">
+          <strong class="block font-semibold text-white truncate">${title}</strong>
+          <span class="text-[11px] opacity-90 break-words">${message}</span>
+        </div>
+      `;
+
+      container.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 250);
+      }, 3500);
+    }
+
+    // --- 4. OPTIMISTIC CLOUD & DATA ACTIONS ---
+    let auth = null;
+    let db = null;
+    let activeUid = null;
+
+    function updateCloudStatus(status, label) {
+      const pulseDot = document.getElementById('cloud-pulse-dot');
+      const syncText = document.getElementById('cloud-sync-text');
+      const userDisplay = document.getElementById('user-id-display');
+
+      if (status === 'synced') {
+        if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+        if (syncText) syncText.innerText = 'Cloud Synced';
+        if (userDisplay) userDisplay.innerText = label ? `UID: ${label.substring(0, 6)}` : 'Live';
+      } else if (status === 'local') {
+        if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        if (syncText) syncText.innerText = 'Local Storage';
+        if (userDisplay) userDisplay.innerText = 'Offline';
+      }
+    }
+
+    async function initCloudBackend() {
+      let firebaseConfig = null;
+      try {
+        const stored = localStorage.getItem('alu_procurement_firebase_cfg');
+        if (stored) firebaseConfig = JSON.parse(stored);
+      } catch (e) {
+        console.warn("Could not read stored Firebase config", e);
+      }
+
+      if (!firebaseConfig) {
+        updateCloudStatus('local');
         return;
       }
 
-      container.innerHTML = items.map(m => {
-        let statusBadge = '';
-        if (m.status === 'reorder' || m.currentStock <= m.safetyStock) {
-          statusBadge = '<span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>Reorder</span>';
-        } else if (m.status === 'low' || m.currentStock <= m.reorderPoint) {
-          statusBadge = '<span class="bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Low</span>';
-        } else {
-          statusBadge = '<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-semibold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>In Stock</span>';
+      try {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        // Sign in in background without blocking UI
+        signInAnonymously(auth).then(cred => {
+          activeUid = cred.user.uid;
+          updateCloudStatus('synced', activeUid);
+        }).catch(() => {
+          let guestUid = localStorage.getItem('alu_procurement_guest_uid');
+          if (!guestUid) {
+            guestUid = 'user_' + Math.random().toString(36).substring(2, 7);
+            localStorage.setItem('alu_procurement_guest_uid', guestUid);
+          }
+          activeUid = guestUid;
+          updateCloudStatus('synced', activeUid);
+        });
+
+        setupRealtimeSubscriptions();
+      } catch (err) {
+        console.error("Firebase init note:", err);
+        updateCloudStatus('local');
+      }
+    }
+
+    function setupRealtimeSubscriptions() {
+      if (!db) return;
+
+      onSnapshot(collection(db, 'procurement_materials'), (snapshot) => {
+        if (!snapshot.empty) {
+          materialsData = snapshot.docs.map(d => d.data());
+          debouncedSaveLocalData();
+          executeFilterCards();
+          scheduleKPIUpdate();
         }
+      }, err => console.warn("Materials sync note:", err.message));
 
-        const pct = Math.min(100, Math.round((m.currentStock / (m.reorderPoint || 1)) * 100));
-        let barColor = pct < 50 ? 'bg-rose-500' : (pct < 100 ? 'bg-amber-500' : 'bg-emerald-500');
+      onSnapshot(collection(db, 'procurement_suppliers'), (snapshot) => {
+        if (!snapshot.empty) {
+          suppliersData = snapshot.docs.map(d => d.data());
+          debouncedSaveLocalData();
+          renderSuppliers();
+          scheduleKPIUpdate();
+        }
+      }, err => console.warn("Suppliers sync note:", err.message));
 
-        return `
-          <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-transition flex flex-col justify-between space-y-3 relative">
-            <div>
-              <div class="flex items-start justify-between gap-2">
-                <div class="flex items-center gap-2 min-w-0">
-                  <div class="w-8 h-8 rounded-lg bg-gradient-to-br ${m.imageBg || 'from-sky-700 to-slate-900'} text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <i data-lucide="${m.icon || 'box'}" class="w-4 h-4"></i>
-                  </div>
-                  <div class="min-w-0">
-                    <span class="mono text-[10px] font-bold text-sky-700 uppercase truncate block">${m.code}</span>
-                    <span class="block text-[10px] text-slate-400 capitalize truncate">${m.categoryLabel || m.category}</span>
-                  </div>
-                </div>
-                <div class="flex items-center gap-1 shrink-0">
-                  ${statusBadge}
-                  <button onclick="promptDelete('material', '${m.code}')" aria-label="Delete SKU" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete SKU">
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                  </button>
-                </div>
-              </div>
+      onSnapshot(collection(db, 'procurement_pipeline'), (snapshot) => {
+        if (!snapshot.empty) {
+          pipelineData = snapshot.docs.map(d => d.data());
+          debouncedSaveLocalData();
+          renderPipeline();
+          scheduleKPIUpdate();
+        }
+      }, err => console.warn("Pipeline sync note:", err.message));
+    }
 
-              <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 line-clamp-1" title="${m.name}">${m.name}</h3>
-              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2" title="${m.specs}">${m.specs}</p>
-            </div>
+    // Optimistic Submissions
+    function submitMaterial(e) {
+      e.preventDefault();
+      const code = document.getElementById('mat-code').value.trim().toUpperCase();
+      const category = document.getElementById('mat-category').value;
+      const uom = document.getElementById('mat-uom').value.trim().toUpperCase();
+      const name = document.getElementById('mat-name').value.trim();
+      const specs = document.getElementById('mat-specs').value.trim();
+      const stock = parseFloat(document.getElementById('mat-stock').value) || 0;
+      const safety = parseFloat(document.getElementById('mat-safety').value) || 0;
+      const rop = parseFloat(document.getElementById('mat-rop').value) || 0;
+      const cost = parseFloat(document.getElementById('mat-cost').value) || 0;
+      const vendor = document.getElementById('mat-vendor-select').value;
+      const bom = document.getElementById('mat-bom').value.trim() || 'General Assembly';
 
-            <div class="space-y-1.5 bg-slate-50 border border-slate-100 rounded-lg p-2.5">
-              <div class="flex justify-between items-center text-xs">
-                <span class="text-slate-500 text-[11px]">Stock Balance:</span>
-                <span class="mono font-bold text-slate-800">${m.currentStock} <span class="font-normal text-slate-400 text-[10px]">${m.uom}</span></span>
-              </div>
-              <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
-                <div class="${barColor} h-1.5 rounded-full transition-all duration-500" style="width: ${pct}%"></div>
-              </div>
-              <div class="flex justify-between items-center text-[10px] text-slate-400 pt-0.5">
-                <span>ROP: <strong class="mono text-slate-600">${m.reorderPoint} ${m.uom}</strong></span>
-                <span>Safety: <strong class="mono text-slate-600">${m.safetyStock} ${m.uom}</strong></span>
-              </div>
-            </div>
+      if (materialsData.some(m => m.code === code)) {
+        showToast("SKU Exists", `Material code ${code} is already registered.`, "error");
+        return;
+      }
 
-            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-              <div>
-                <span class="text-[10px] text-slate-400 uppercase block">Std Cost</span>
-                <span class="mono font-bold text-emerald-700 text-xs sm:text-sm">$${Number(m.stdCost).toFixed(2)}</span>
-              </div>
-              <button onclick="viewMaterialDetail('${m.code}')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 rounded-lg font-medium text-[11px] transition flex items-center gap-1 border border-slate-200/60 active:scale-95">
-                <i data-lucide="eye" class="w-3 h-3"></i>
-                <span>Docket</span>
-              </button>
-            </div>
-          </div>
-        `;
-      }).join('');
+      let status = stock <= safety ? 'reorder' : (stock <= rop ? 'low' : 'safe');
 
-      safeCreateIcons('materials-grid');
+      const colorMap = {
+        aluminum: 'from-slate-700 to-slate-900',
+        glass: 'from-teal-700 to-cyan-900',
+        hardware: 'from-amber-700 to-stone-900',
+        sealant: 'from-emerald-800 to-slate-900'
+      };
+
+      const newMaterial = {
+        code,
+        category,
+        categoryLabel: category.charAt(0).toUpperCase() + category.slice(1),
+        name,
+        specs,
+        uom,
+        currentStock: stock,
+        safetyStock: safety,
+        reorderPoint: rop,
+        stdCost: cost,
+        supplier: vendor,
+        imageBg: colorMap[category] || 'from-sky-700 to-slate-900',
+        icon: 'box',
+        status,
+        details: {
+          tolerance: "± 0.05 mm standard tolerance",
+          packaging: "Production export packaging",
+          usageRate: `${Math.round(rop / 10)} ${uom} / day`,
+          leadTime: "7 days",
+          productionLink: bom
+        }
+      };
+
+      // 1. Optimistic Local UI Update (Instant 0ms latency)
+      materialsData.unshift(newMaterial);
+      closeModal('new-entry-modal');
+      e.target.reset();
+      switchGallery('materials');
+      executeFilterCards();
+      scheduleKPIUpdate();
+      debouncedSaveLocalData();
+      showToast("SKU Added", `${name} (${code}) created.`);
+
+      // 2. Background Cloud Sync
+      if (db) {
+        setDoc(doc(db, 'procurement_materials', code), newMaterial).catch(err => {
+          console.warn("Background cloud sync note:", err);
+        });
+      }
+    }
+
+    function submitSupplier(e) {
+      e.preventDefault();
+      const id = document.getElementById('sup-id').value.trim().toUpperCase();
+      const name = document.getElementById('sup-name').value.trim();
+      const category = document.getElementById('sup-cat').value.trim();
+      const tier = document.getElementById('sup-tier').value;
+      const score = parseInt(document.getElementById('sup-score').value) || 85;
+      const terms = document.getElementById('sup-terms').value.trim();
+      const lead = document.getElementById('sup-lead').value.trim();
+      const otif = document.getElementById('sup-otif').value.trim();
+      const contact = document.getElementById('sup-contact').value.trim();
+
+      if (suppliersData.some(s => s.id === id)) {
+        showToast("ID Exists", `Vendor ID ${id} already exists.`, "error");
+        return;
+      }
+
+      const newSupplier = {
+        id,
+        name,
+        category,
+        tier,
+        tierColor: score >= 85 ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-amber-100 text-amber-800 border-amber-300',
+        score,
+        metrics: {
+          price: Math.round(score * 0.25),
+          quality: Math.round(score * 0.25),
+          delivery: Math.round(score * 0.20),
+          spec: Math.round(score * 0.15),
+          terms: Math.round(score * 0.10),
+          service: Math.round(score * 0.05)
+        },
+        paymentTerms: terms,
+        leadTime: lead,
+        contact,
+        otif,
+        qcRate: "99.0%"
+      };
+
+      // Optimistic Update
+      suppliersData.unshift(newSupplier);
+      closeModal('new-entry-modal');
+      e.target.reset();
+      switchGallery('suppliers');
+      renderSuppliers();
+      scheduleKPIUpdate();
+      debouncedSaveLocalData();
+      showToast("Vendor Registered", `${name} added.`);
+
+      if (db) {
+        setDoc(doc(db, 'procurement_suppliers', id), newSupplier).catch(err => console.warn("Cloud sync note:", err));
+      }
+    }
+
+    function submitPO(e) {
+      e.preventDefault();
+      const poNum = document.getElementById('po-num').value.trim().toUpperCase();
+      const vendor = document.getElementById('po-vendor-select').value;
+      const items = document.getElementById('po-items').value.trim();
+      const val = parseFloat(document.getElementById('po-val').value) || 0;
+      const due = document.getElementById('po-due').value;
+      const status = document.getElementById('po-status').value;
+      const action = document.getElementById('po-action').value.trim() || 'PO dispatched. Awaiting delivery confirmation.';
+
+      if (pipelineData.some(p => p.poNumber === poNum)) {
+        showToast("PO Exists", `PO ${poNum} is already logged.`, "error");
+        return;
+      }
+
+      let progressPct = status === 'In Transit' ? 70 : (status === 'Arrived at Dock' ? 90 : (status === 'Delayed' ? 40 : 25));
+      let alert = status === 'Delayed' ? "🔴 Expedite Required" : "On Track";
+      let alertBadge = status === 'Delayed' ? "bg-rose-100 text-rose-800 border-rose-300 font-bold" : "bg-emerald-100 text-emerald-800 border-emerald-300";
+
+      const newPO = {
+        poNumber: poNum,
+        vendor,
+        items,
+        amount: `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        rawAmount: val,
+        dueDate: due,
+        status,
+        alert,
+        alertBadge,
+        progressPct,
+        dockAction: action
+      };
+
+      // Optimistic Update
+      pipelineData.unshift(newPO);
+      closeModal('new-entry-modal');
+      e.target.reset();
+      switchGallery('pipeline');
+      renderPipeline();
+      scheduleKPIUpdate();
+      debouncedSaveLocalData();
+      showToast("PO Issued", `Order ${poNum} created.`);
+
+      if (db) {
+        setDoc(doc(db, 'procurement_pipeline', poNum), newPO).catch(err => console.warn("Cloud sync note:", err));
+      }
+    }
+
+    // Optimistic Deletion
+    let pendingDelete = null;
+    function promptDelete(type, key) {
+      pendingDelete = { type, key };
+      const titleEl = document.getElementById('del-modal-title');
+      const msgEl = document.getElementById('del-modal-msg');
+      if (titleEl) titleEl.innerText = `Delete ${key}`;
+      if (msgEl) msgEl.innerText = `Remove this ${type} record immediately?`;
+      
+      const confirmBtn = document.getElementById('del-confirm-btn');
+      if (confirmBtn) confirmBtn.onclick = executeDelete;
+      openModal('delete-modal');
+    }
+
+    function executeDelete() {
+      if (!pendingDelete) return;
+      const { type, key } = pendingDelete;
+
+      // Optimistic Local Delete
+      if (type === 'material') {
+        materialsData = materialsData.filter(m => m.code !== key);
+        executeFilterCards();
+      } else if (type === 'supplier') {
+        suppliersData = suppliersData.filter(s => s.id !== key);
+        renderSuppliers();
+      } else if (type === 'po') {
+        pipelineData = pipelineData.filter(p => p.poNumber !== key);
+        renderPipeline();
+      }
+
+      closeModal('delete-modal');
+      scheduleKPIUpdate();
+      debouncedSaveLocalData();
+      showToast("Removed", `Deleted ${key}.`);
+
+      // Background Cloud Delete
+      if (db) {
+        const col = type === 'material' ? 'procurement_materials' : (type === 'supplier' ? 'procurement_suppliers' : 'procurement_pipeline');
+        deleteDoc(doc(db, col, key)).catch(err => console.warn("Cloud delete note:", err));
+      }
+      pendingDelete = null;
+    }
+
+    function promptReset() {
+      pendingDelete = { type: 'system_reset', key: 'ALL' };
+      const titleEl = document.getElementById('del-modal-title');
+      const msgEl = document.getElementById('del-modal-msg');
+      if (titleEl) titleEl.innerText = "Reset Master Datasets?";
+      if (msgEl) msgEl.innerText = "This will restore the standard catalog, active vendors, and open POs back to default templates.";
+      
+      const confirmBtn = document.getElementById('del-confirm-btn');
+      if (confirmBtn) {
+        confirmBtn.onclick = async () => {
+          materialsData = [...defaultMaterials];
+          suppliersData = [...defaultSuppliers];
+          pipelineData = [...defaultPipeline];
+          debouncedSaveLocalData();
+          executeFilterCards();
+          renderSuppliers();
+          renderPipeline();
+          scheduleKPIUpdate();
+          closeModal('delete-modal');
+          showToast("Reset Complete", "Restored master templates.");
+
+          if (db) {
+            const batch = writeBatch(db);
+            defaultMaterials.forEach(m => batch.set(doc(db, 'procurement_materials', m.code), m));
+            defaultSuppliers.forEach(s => batch.set(doc(db, 'procurement_suppliers', s.id), s));
+            defaultPipeline.forEach(p => batch.set(doc(db, 'procurement_pipeline', p.poNumber), p));
+            await batch.commit().catch(e => console.warn("Batch reset note:", e));
+          }
+        };
+      }
+      openModal('delete-modal');
     }
 
     function viewMaterialDetail(code) {
@@ -1581,191 +1885,66 @@
           </div>
         `;
       }
-
       openModal('spec-modal');
-      safeCreateIcons('spec-modal');
     }
 
-    function renderSuppliers() {
-      const container = document.getElementById('suppliers-grid');
-      if (!container) return;
+    function switchGallery(tabName) {
+      ['materials', 'suppliers', 'pipeline', 'sop'].forEach(t => {
+        const sec = document.getElementById('gallery-' + t);
+        if (sec) sec.classList.toggle('hidden', t !== tabName);
 
-      container.innerHTML = suppliersData.map(sup => `
-        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-4 sm:p-5 card-transition flex flex-col justify-between space-y-3.5 relative">
-          <div>
-            <div class="flex items-start justify-between gap-2">
-              <div class="min-w-0">
-                <span class="mono text-[10px] text-slate-400 uppercase font-semibold block">${sup.id}</span>
-                <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-0.5 truncate">${sup.name}</h3>
-                <span class="text-xs text-sky-700 font-medium truncate block">${sup.category}</span>
-              </div>
-              <div class="flex items-center gap-1 shrink-0">
-                <span class="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full border ${sup.tierColor}">${sup.tier}</span>
-                <button onclick="promptDelete('supplier', '${sup.id}')" aria-label="Delete Vendor" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete Supplier">
-                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                </button>
-              </div>
-            </div>
+        const btn = document.getElementById('tab-' + t);
+        if (btn) {
+          if (t === tabName) {
+            btn.className = 'tab-btn active-tab px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 bg-white text-slate-900 shadow-xs shrink-0 transition whitespace-nowrap';
+          } else {
+            btn.className = 'tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap';
+          }
+        }
 
-            <div class="mt-3.5 grid grid-cols-3 gap-1.5 sm:gap-2 text-center bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5">
-              <div>
-                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">Score</span>
-                <span class="mono font-bold text-xs sm:text-base text-slate-900">${sup.score}<span class="text-[10px] font-normal text-slate-400">/100</span></span>
-              </div>
-              <div>
-                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">OTIF</span>
-                <span class="mono font-bold text-xs sm:text-base text-emerald-600">${sup.otif}</span>
-              </div>
-              <div>
-                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">QC Rate</span>
-                <span class="mono font-bold text-xs sm:text-base text-sky-600">${sup.qcRate || '99.0%'}</span>
-              </div>
-            </div>
-
-            <div class="mt-3 space-y-1 text-[11px] text-slate-600">
-              <div class="flex justify-between">
-                <span>Price Competitiveness:</span>
-                <span class="mono font-semibold">${sup.metrics?.price ?? 22}/25</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Quality Conformance:</span>
-                <span class="mono font-semibold">${sup.metrics?.quality ?? 24}/25</span>
-              </div>
-              <div class="flex justify-between">
-                <span>On-Time Delivery:</span>
-                <span class="mono font-semibold">${sup.metrics?.delivery ?? 18}/20</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span class="flex items-center gap-1 truncate">
-              <i data-lucide="credit-card" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i> ${sup.paymentTerms}
-            </span>
-            <span class="flex items-center gap-1 shrink-0">
-              <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i> ${sup.leadTime}
-            </span>
-          </div>
-        </div>
-      `).join('');
-      safeCreateIcons('suppliers-grid');
-    }
-
-    function renderPipeline() {
-      const container = document.getElementById('pipeline-grid');
-      if (!container) return;
-
-      container.innerHTML = pipelineData.map(po => `
-        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-transition flex flex-col justify-between space-y-3 relative">
-          <div>
-            <div class="flex items-center justify-between gap-2">
-              <span class="mono text-xs font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded shrink-0">${po.poNumber}</span>
-              <div class="flex items-center gap-1 shrink-0">
-                <span class="text-[10px] px-2 py-0.5 rounded-full border ${po.alertBadge}">${po.alert}</span>
-                <button onclick="promptDelete('po', '${po.poNumber}')" aria-label="Delete PO" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition" title="Delete PO">
-                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                </button>
-              </div>
-            </div>
-            <h4 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 truncate">${po.vendor}</h4>
-            <p class="text-xs text-slate-600 mt-0.5 font-medium line-clamp-1">${po.items}</p>
-          </div>
-
-          <div class="space-y-1">
-            <div class="flex justify-between text-[11px] text-slate-500">
-              <span>Status: <strong class="text-slate-800">${po.status}</strong></span>
-              <span class="mono font-semibold">${po.progressPct}%</span>
-            </div>
-            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-sky-600 h-1.5 rounded-full" style="width: ${po.progressPct}%"></div>
-            </div>
-          </div>
-
-          <div class="bg-slate-50 border border-slate-100 rounded-lg p-2 sm:p-2.5 text-xs text-slate-700">
-            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Expediting Action:</span>
-            <p class="text-[11px] line-clamp-2">${po.dockAction}</p>
-          </div>
-
-          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-            <span class="mono font-bold text-slate-900 text-xs sm:text-sm">${po.amount}</span>
-            <span class="text-slate-500 flex items-center gap-1 text-[11px]">
-              <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i> ${po.dueDate}
-            </span>
-          </div>
-        </div>
-      `).join('');
-      safeCreateIcons('pipeline-grid');
-    }
-
-    function renderSOP() {
-      const container = document.getElementById('sop-grid');
-      if (!container) return;
-
-      container.innerHTML = sopData.map(sop => `
-        <div class="bg-white rounded-xl border border-slate-200 shadow-xs p-3.5 sm:p-4 card-transition flex flex-col justify-between space-y-3">
-          <div>
-            <div class="flex items-center justify-between">
-              <span class="mono text-[10px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded">${sop.id}</span>
-              <span class="text-[10px] text-slate-500 font-medium">${sop.type}</span>
-            </div>
-            <h4 class="font-bold text-slate-900 text-xs sm:text-sm mt-2">${sop.title}</h4>
-            <p class="text-xs text-slate-600 mt-1">${sop.desc}</p>
-          </div>
-          <div class="bg-slate-50 border border-slate-100 rounded-lg p-2.5 text-[11px] text-slate-500">
-            <span class="font-semibold text-slate-700 block mb-0.5">Required Fields:</span>
-            <span>${sop.fields}</span>
-          </div>
-          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-            <span>Custodian: <strong class="text-slate-600">${sop.role}</strong></span>
-            <span class="text-sky-600 font-medium">Standard Form</span>
-          </div>
-        </div>
-      `).join('');
-      safeCreateIcons('sop-grid');
-    }
-
-    let searchDebounceTimer = null;
-    function filterCards() {
-      clearTimeout(searchDebounceTimer);
-      searchDebounceTimer = setTimeout(() => {
-        executeFilterCards();
-      }, 80);
-    }
-
-    function executeFilterCards() {
-      const searchInput = document.getElementById('gallery-search');
-      const catSelect = document.getElementById('category-filter');
-
-      const term = searchInput ? searchInput.value.toLowerCase().trim() : '';
-      const category = catSelect ? catSelect.value : 'all';
-
-      const filtered = materialsData.filter(m => {
-        const matchesTerm = (m.name || '').toLowerCase().includes(term) || 
-                            (m.code || '').toLowerCase().includes(term) || 
-                            (m.specs || '').toLowerCase().includes(term) || 
-                            (m.supplier || '').toLowerCase().includes(term);
-        const matchesCategory = category === 'all' || m.category === category;
-        return matchesTerm && matchesCategory;
+        const mNav = document.getElementById('m-nav-' + t);
+        if (mNav) {
+          mNav.className = t === tabName 
+            ? 'flex flex-col items-center justify-center py-1 rounded-lg text-sky-700 bg-sky-50 font-bold'
+            : 'flex flex-col items-center justify-center py-1 rounded-lg text-slate-500 hover:text-slate-900';
+        }
       });
 
-      renderMaterials(filtered);
+      if (tabName === 'materials') renderMaterials(materialsData);
+      if (tabName === 'suppliers') renderSuppliers();
+      if (tabName === 'pipeline') renderPipeline();
+      if (tabName === 'sop') renderSOP();
+    }
+
+    function switchEntryTab(type) {
+      ['material', 'supplier', 'po'].forEach(t => {
+        const form = document.getElementById('form-add-' + t);
+        if (form) form.classList.toggle('hidden', t !== type);
+
+        const btn = document.getElementById('entry-tab-' + t);
+        if (btn) {
+          btn.className = t === type 
+            ? 'px-3 sm:px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap'
+            : 'px-3 sm:px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap';
+        }
+      });
+    }
+
+    function openNewEntryModal(tab = 'material') {
+      populateVendorDropdowns();
+      switchEntryTab(tab);
+      openModal('new-entry-modal');
     }
 
     function runCalculator() {
-      const qtyEl = document.getElementById('calc-qty');
-      const priceEl = document.getElementById('calc-price');
-      const discEl = document.getElementById('calc-discount');
-      const freightEl = document.getElementById('calc-freight');
-      const otherEl = document.getElementById('calc-other');
-
-      const qty = parseFloat(qtyEl?.value) || 1;
-      const price = parseFloat(priceEl?.value) || 0;
-      const discPct = parseFloat(discEl?.value) || 0;
-      const freight = parseFloat(freightEl?.value) || 0;
-      const other = parseFloat(otherEl?.value) || 0;
+      const qty = parseFloat(document.getElementById('calc-qty')?.value) || 1;
+      const price = parseFloat(document.getElementById('calc-price')?.value) || 0;
+      const discPct = parseFloat(document.getElementById('calc-discount')?.value) || 0;
+      const freight = parseFloat(document.getElementById('calc-freight')?.value) || 0;
+      const other = parseFloat(document.getElementById('calc-other')?.value) || 0;
 
       const netBasePrice = price * (1 - (discPct / 100));
-      const overheadPerUnit = (freight + other) / (qty || 1);
+      const overheadPerUnit = (freight + other) / qty;
       const trueLandedCost = netBasePrice + overheadPerUnit;
 
       const resBase = document.getElementById('calc-res-base');
@@ -1777,387 +1956,36 @@
       if (resLanded) resLanded.innerText = `$${trueLandedCost.toFixed(3)} / unit`;
     }
 
-    function switchGallery(tabName) {
-      document.getElementById('gallery-materials').classList.add('hidden');
-      document.getElementById('gallery-suppliers').classList.add('hidden');
-      document.getElementById('gallery-pipeline').classList.add('hidden');
-      document.getElementById('gallery-sop').classList.add('hidden');
-
-      document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('bg-white', 'text-slate-900', 'shadow-xs');
-        b.classList.add('text-slate-600');
-      });
-
-      const activeBtn = document.getElementById('tab-' + tabName);
-      if (activeBtn) {
-        activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-xs');
-        activeBtn.classList.remove('text-slate-600');
-      }
-
-      ['materials', 'suppliers', 'pipeline', 'sop'].forEach(t => {
-        const mNav = document.getElementById('m-nav-' + t);
-        if (mNav) {
-          if (t === tabName) {
-            mNav.className = 'flex flex-col items-center justify-center py-1 rounded-lg text-sky-700 bg-sky-50 font-bold';
-          } else {
-            mNav.className = 'flex flex-col items-center justify-center py-1 rounded-lg text-slate-500 hover:text-slate-900';
-          }
-        }
-      });
-
-      document.getElementById('gallery-' + tabName).classList.remove('hidden');
-
-      if(tabName === 'materials') renderMaterials(materialsData);
-      if(tabName === 'suppliers') renderSuppliers();
-      if(tabName === 'pipeline') renderPipeline();
-      if(tabName === 'sop') renderSOP();
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function openNewEntryModal(tab = 'material') {
-      populateVendorDropdowns();
-      switchEntryTab(tab);
-      openModal('new-entry-modal');
-    }
-
-    function switchEntryTab(type) {
-      document.getElementById('form-add-material').classList.add('hidden');
-      document.getElementById('form-add-supplier').classList.add('hidden');
-      document.getElementById('form-add-po').classList.add('hidden');
-
-      ['material', 'supplier', 'po'].forEach(t => {
-        const btn = document.getElementById('entry-tab-' + t);
-        if (btn) btn.className = 'px-3 sm:px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap';
-      });
-
-      document.getElementById('form-add-' + type).classList.remove('hidden');
-      const activeBtn = document.getElementById('entry-tab-' + type);
-      if (activeBtn) activeBtn.className = 'px-3 sm:px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap';
-      safeCreateIcons();
-    }
-
-    async function submitMaterial(e) {
-      e.preventDefault();
-      const code = document.getElementById('mat-code').value.trim().toUpperCase();
-      const category = document.getElementById('mat-category').value;
-      const uom = document.getElementById('mat-uom').value.trim().toUpperCase();
-      const name = document.getElementById('mat-name').value.trim();
-      const specs = document.getElementById('mat-specs').value.trim();
-      const stock = parseFloat(document.getElementById('mat-stock').value) || 0;
-      const safety = parseFloat(document.getElementById('mat-safety').value) || 0;
-      const rop = parseFloat(document.getElementById('mat-rop').value) || 0;
-      const cost = parseFloat(document.getElementById('mat-cost').value) || 0;
-      const vendor = document.getElementById('mat-vendor-select').value;
-      const bom = document.getElementById('mat-bom').value.trim() || 'General Assembly';
-
-      if (materialsData.some(m => m.code === code)) {
-        showToast("SKU Exists", `Material code ${code} is already registered.`, "error");
+    function saveCloudConfig() {
+      const text = document.getElementById('cfg-firebase-json')?.value.trim();
+      if (!text) {
+        showToast("Missing Config", "Please paste your Firebase configuration object.", "error");
         return;
       }
-
-      let status = 'safe';
-      if (stock <= safety) {
-        status = 'reorder';
-      } else if (stock <= rop) {
-        status = 'low';
-      }
-
-      const colorMap = {
-        aluminum: 'from-slate-700 to-slate-900',
-        glass: 'from-teal-700 to-cyan-900',
-        hardware: 'from-amber-700 to-stone-900',
-        sealant: 'from-emerald-800 to-slate-900'
-      };
-
-      const catLabelMap = {
-        aluminum: 'Aluminum Profile',
-        glass: 'Architectural Glass',
-        hardware: 'Hardware Accessories',
-        sealant: 'Sealants & Gaskets'
-      };
-
-      const newMaterial = {
-        code,
-        category,
-        categoryLabel: catLabelMap[category] || 'Raw Material',
-        name,
-        specs,
-        uom,
-        currentStock: stock,
-        safetyStock: safety,
-        reorderPoint: rop,
-        stdCost: cost,
-        supplier: vendor,
-        imageBg: colorMap[category] || 'from-sky-700 to-slate-900',
-        icon: 'box',
-        status,
-        details: {
-          tolerance: "± 0.05 mm standard tolerance",
-          packaging: "Production export packaging",
-          usageRate: `${Math.round(rop / 10)} ${uom} / day`,
-          leadTime: "7 days",
-          productionLink: bom
+      try {
+        let cleaned = text;
+        if (text.includes('{') && text.includes('}')) {
+          cleaned = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
         }
-      };
-
-      if (db) {
-        try {
-          const docRef = doc(db, 'procurement_materials', code);
-          await setDoc(docRef, newMaterial);
-          showToast("Cloud Synced", `${name} (${code}) saved to shared database.`);
-        } catch (err) {
-          console.error("Cloud save failed:", err);
-          materialsData.unshift(newMaterial);
-          saveLocalData();
-          executeFilterCards();
-          updateHeaderKPIs();
-          showToast("Saved Locally", "Saved to local storage (check Firestore rules).", "error");
-        }
-      } else {
-        materialsData.unshift(newMaterial);
-        saveLocalData();
-        executeFilterCards();
-        updateHeaderKPIs();
-        showToast("SKU Added", `${name} saved locally.`);
+        const jsonLike = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+        const parsed = JSON.parse(jsonLike);
+        localStorage.setItem('alu_procurement_firebase_cfg', JSON.stringify(parsed));
+        closeModal('cloud-config-modal');
+        showToast("Config Saved", "Connecting to cloud database...");
+        setTimeout(() => window.location.reload(), 400);
+      } catch (e) {
+        showToast("Format Error", "Ensure the configuration is a valid JSON object.", "error");
       }
-
-      closeModal('new-entry-modal');
-      e.target.reset();
-      switchGallery('materials');
     }
 
-    async function submitSupplier(e) {
-      e.preventDefault();
-      const id = document.getElementById('sup-id').value.trim().toUpperCase();
-      const name = document.getElementById('sup-name').value.trim();
-      const category = document.getElementById('sup-cat').value.trim();
-      const tier = document.getElementById('sup-tier').value;
-      const score = parseInt(document.getElementById('sup-score').value) || 85;
-      const terms = document.getElementById('sup-terms').value.trim();
-      const lead = document.getElementById('sup-lead').value.trim();
-      const otif = document.getElementById('sup-otif').value.trim();
-      const contact = document.getElementById('sup-contact').value.trim();
-
-      if (suppliersData.some(s => s.id === id)) {
-        showToast("ID Exists", `Vendor ID ${id} already exists.`, "error");
-        return;
-      }
-
-      const tierColor = score >= 85 ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-amber-100 text-amber-800 border-amber-300';
-
-      const newSupplier = {
-        id,
-        name,
-        category,
-        tier,
-        tierColor,
-        score,
-        metrics: {
-          price: Math.round(score * 0.25),
-          quality: Math.round(score * 0.25),
-          delivery: Math.round(score * 0.20),
-          spec: Math.round(score * 0.15),
-          terms: Math.round(score * 0.10),
-          service: Math.round(score * 0.05)
-        },
-        paymentTerms: terms,
-        leadTime: lead,
-        contact,
-        otif,
-        qcRate: "99.0%"
-      };
-
-      if (db) {
-        try {
-          const docRef = doc(db, 'procurement_suppliers', id);
-          await setDoc(docRef, newSupplier);
-          showToast("Vendor Synced", `${name} registered in cloud database.`);
-        } catch (err) {
-          console.error("Cloud save failed:", err);
-          suppliersData.unshift(newSupplier);
-          saveLocalData();
-          renderSuppliers();
-          updateHeaderKPIs();
-          showToast("Saved Locally", "Saved to local storage.", "error");
-        }
-      } else {
-        suppliersData.unshift(newSupplier);
-        saveLocalData();
-        renderSuppliers();
-        updateHeaderKPIs();
-        showToast("Vendor Registered", `${name} saved locally.`);
-      }
-
-      closeModal('new-entry-modal');
-      e.target.reset();
-      switchGallery('suppliers');
+    function clearCloudConfig() {
+      localStorage.removeItem('alu_procurement_firebase_cfg');
+      closeModal('cloud-config-modal');
+      showToast("Config Cleared", "Reset back to local storage mode.");
+      setTimeout(() => window.location.reload(), 400);
     }
 
-    async function submitPO(e) {
-      e.preventDefault();
-      const poNum = document.getElementById('po-num').value.trim().toUpperCase();
-      const vendor = document.getElementById('po-vendor-select').value;
-      const items = document.getElementById('po-items').value.trim();
-      const val = parseFloat(document.getElementById('po-val').value) || 0;
-      const due = document.getElementById('po-due').value;
-      const status = document.getElementById('po-status').value;
-      const action = document.getElementById('po-action').value.trim() || 'PO dispatched. Awaiting delivery confirmation.';
-
-      if (pipelineData.some(p => p.poNumber === poNum)) {
-        showToast("PO Exists", `PO ${poNum} is already logged.`, "error");
-        return;
-      }
-
-      let progressPct = 25;
-      let alert = "On Track";
-      let alertBadge = "bg-emerald-100 text-emerald-800 border-emerald-300";
-
-      if (status === 'In Transit') progressPct = 70;
-      if (status === 'Arrived at Dock') progressPct = 90;
-      if (status === 'Delayed') {
-        progressPct = 40;
-        alert = "🔴 Expedite Required";
-        alertBadge = "bg-rose-100 text-rose-800 border-rose-300 font-bold";
-      }
-
-      const newPO = {
-        poNumber: poNum,
-        vendor,
-        items,
-        amount: `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-        rawAmount: val,
-        dueDate: due,
-        status,
-        alert,
-        alertBadge,
-        progressPct,
-        dockAction: action
-      };
-
-      if (db) {
-        try {
-          const docRef = doc(db, 'procurement_pipeline', poNum);
-          await setDoc(docRef, newPO);
-          showToast("PO Issued", `Order ${poNum} synced to cloud.`);
-        } catch (err) {
-          console.error("Cloud PO save failed:", err);
-          pipelineData.unshift(newPO);
-          saveLocalData();
-          renderPipeline();
-          updateHeaderKPIs();
-          showToast("Saved Locally", "PO saved locally.", "error");
-        }
-      } else {
-        pipelineData.unshift(newPO);
-        saveLocalData();
-        renderPipeline();
-        updateHeaderKPIs();
-        showToast("PO Issued", `PO ${poNum} created.`);
-      }
-
-      closeModal('new-entry-modal');
-      e.target.reset();
-      switchGallery('pipeline');
-    }
-
-    let pendingDelete = null;
-
-    function promptDelete(type, key) {
-      pendingDelete = { type, key };
-      let label = key;
-      if (type === 'material') label = `Material SKU: ${key}`;
-      if (type === 'supplier') label = `Supplier: ${key}`;
-      if (type === 'po') label = `Purchase Order: ${key}`;
-
-      const titleEl = document.getElementById('del-modal-title');
-      const msgEl = document.getElementById('del-modal-msg');
-      if (titleEl) titleEl.innerText = `Delete ${key}`;
-      if (msgEl) msgEl.innerText = `Are you sure you want to remove ${label}?`;
-      
-      const confirmBtn = document.getElementById('del-confirm-btn');
-      if (confirmBtn) confirmBtn.onclick = executeDelete;
-      
-      openModal('delete-modal');
-    }
-
-    async function executeDelete() {
-      if (!pendingDelete) return;
-      const { type, key } = pendingDelete;
-
-      if (db) {
-        try {
-          if (type === 'material') {
-            await deleteDoc(doc(db, 'procurement_materials', key));
-          } else if (type === 'supplier') {
-            await deleteDoc(doc(db, 'procurement_suppliers', key));
-          } else if (type === 'po') {
-            await deleteDoc(doc(db, 'procurement_pipeline', key));
-          }
-          showToast("Deleted", `Removed ${key} from cloud database.`);
-        } catch (err) {
-          console.error("Cloud deletion failed:", err);
-          showToast("Delete Error", "Could not delete from cloud.", "error");
-        }
-      } else {
-        if (type === 'material') {
-          materialsData = materialsData.filter(m => m.code !== key);
-          executeFilterCards();
-        } else if (type === 'supplier') {
-          suppliersData = suppliersData.filter(s => s.id !== key);
-          renderSuppliers();
-        } else if (type === 'po') {
-          pipelineData = pipelineData.filter(p => p.poNumber !== key);
-          renderPipeline();
-        }
-        saveLocalData();
-        updateHeaderKPIs();
-        showToast("Item Removed", `Removed ${key}.`);
-      }
-
-      closeModal('delete-modal');
-      pendingDelete = null;
-    }
-
-    function promptReset() {
-      pendingDelete = { type: 'system_reset', key: 'ALL' };
-      const titleEl = document.getElementById('del-modal-title');
-      const msgEl = document.getElementById('del-modal-msg');
-      if (titleEl) titleEl.innerText = "Reset Master Datasets?";
-      if (msgEl) msgEl.innerText = "This will restore the standard catalog, active vendors, and open POs back to default templates.";
-      
-      const confirmBtn = document.getElementById('del-confirm-btn');
-      if (confirmBtn) {
-        confirmBtn.onclick = async () => {
-          if (db) {
-            for (const m of defaultMaterials) {
-              await setDoc(doc(db, 'procurement_materials', m.code), m);
-            }
-            for (const s of defaultSuppliers) {
-              await setDoc(doc(db, 'procurement_suppliers', s.id), s);
-            }
-            for (const po of defaultPipeline) {
-              await setDoc(doc(db, 'procurement_pipeline', po.poNumber), po);
-            }
-            showToast("System Reset", "Cloud database re-seeded with master templates.");
-          } else {
-            materialsData = [...defaultMaterials];
-            suppliersData = [...defaultSuppliers];
-            pipelineData = [...defaultPipeline];
-            saveLocalData();
-            renderMaterials(materialsData);
-            renderSuppliers();
-            renderPipeline();
-            updateHeaderKPIs();
-            showToast("System Reset", "Master templates restored.");
-          }
-          closeModal('delete-modal');
-        };
-      }
-      openModal('delete-modal');
-    }
-
-    // Attach to global window
+    // Window Exposure
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.switchGallery = switchGallery;
@@ -2169,22 +1997,31 @@
     window.submitSupplier = submitSupplier;
     window.submitPO = submitPO;
     window.promptDelete = promptDelete;
-    window.executeDelete = executeDelete;
     window.promptReset = promptReset;
     window.viewMaterialDetail = viewMaterialDetail;
     window.saveCloudConfig = saveCloudConfig;
     window.clearCloudConfig = clearCloudConfig;
 
-    // Initialization
+    // Zero-Delay Initialization
     window.addEventListener('DOMContentLoaded', () => {
       runCalculator();
 
       const nextWeek = new Date();
       nextWeek.setDate(nextWeek.getDate() + 7);
-      const formatted = nextWeek.toISOString().split('T')[0];
       const dueInput = document.getElementById('po-due');
-      if (dueInput) dueInput.value = formatted;
+      if (dueInput) dueInput.value = nextWeek.toISOString().split('T')[0];
 
+      // 1. Instant local render (0ms wait time)
+      renderMaterials(materialsData);
+      renderSuppliers();
+      renderPipeline();
+      renderSOP();
+      updateHeaderKPIs();
+
+      // Render static icons once
+      lucide.createIcons();
+
+      // 2. Connect cloud in background
       initCloudBackend();
     });
   </script>
