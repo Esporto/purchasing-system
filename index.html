@@ -3,53 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>ALU-GLASS PROCUREMENT | Management Hub</title>
-  
-  <!-- Compiled Tailwind CSS: Zero Runtime DOM Observation Lag -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  
+  <title>Purchasing & Procurement System — High Performance Visual Hub</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          screens: {
+            'xs': '420px',
+            '3xl': '1600px'
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#082f49',
+            }
+          }
+        }
+      }
+    }
+  </script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    
     :root {
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-font-smoothing: antialiased;
       -webkit-tap-highlight-color: transparent;
       text-rendering: optimizeLegibility;
-      background-color: #f8fafc;
-      color: #0f172a;
     }
+
     .mono { font-family: 'JetBrains Mono', monospace; }
-    
-    /* Hardware acceleration & layout containment to stop browser reflow lag */
+
     .card-contain {
       contain: layout style paint;
       transform: translateZ(0);
       will-change: transform, box-shadow;
       transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
     }
+    
     @media (hover: hover) and (pointer: fine) {
       .card-contain:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 20px -6px rgba(15, 23, 42, 0.10);
+        box-shadow: 0 10px 20px -6px rgba(15, 23, 42, 0.12);
       }
     }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .pb-safe { padding-bottom: calc(4.5rem + var(--safe-bottom)); }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .pb-safe {
+      padding-bottom: calc(4.5rem + var(--safe-bottom));
+    }
   </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col pb-safe md:pb-6">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col pb-safe md:pb-6">
 
-  <!-- TOP APP BAR -->
-  <header class="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40 shadow-sm">
+  <!-- TOP APP NAV -->
+  <header class="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40 shadow-xs">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
         
@@ -71,25 +99,25 @@
         <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
           
           <!-- Cloud Sync Badge -->
-          <button onclick="openModal('cloud-config-modal')" id="cloud-status-badge" title="Click to View Cloud Configuration" class="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[11px] text-slate-300 transition cursor-pointer active:scale-95">
+          <button onclick="openModal('cloud-config-modal')" id="cloud-status-badge" title="Click to Configure Cloud Database Sync" class="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[11px] text-slate-300 transition cursor-pointer active:scale-95">
             <span id="cloud-pulse-dot" class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
-            <span id="cloud-sync-text" class="font-medium text-slate-200">Connecting...</span>
-            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-slate-700 pl-2">Syncing</span>
+            <span id="cloud-sync-text" class="font-medium text-slate-200">Local Storage</span>
+            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-slate-700 pl-2">Offline</span>
           </button>
 
-          <!-- Large Screen KPI Telemetry -->
+          <!-- Large screen KPI telemetry -->
           <div class="hidden lg:flex items-center gap-5 border-l border-slate-800 pl-5 text-xs mr-1">
             <div>
-              <span class="text-slate-400 block text-[10px] uppercase font-semibold">Active SKUs</span>
-              <span class="font-bold text-slate-100 mono text-sm" id="sku-count-header">--</span>
+              <span class="text-slate-400 block text-[10px] uppercase">Active SKUs</span>
+              <span class="font-semibold text-slate-100 mono" id="sku-count-header">8</span>
             </div>
             <div>
-              <span class="text-slate-400 block text-[10px] uppercase font-semibold">Vendors</span>
-              <span class="font-bold text-emerald-400 mono text-sm" id="vendor-count-header">--</span>
+              <span class="text-slate-400 block text-[10px] uppercase">Vendors</span>
+              <span class="font-semibold text-emerald-400 mono" id="vendor-count-header">6 Active</span>
             </div>
             <div>
-              <span class="text-slate-400 block text-[10px] uppercase font-semibold">Open PO Value</span>
-              <span class="font-bold text-sky-400 mono text-sm" id="po-value-header">$--</span>
+              <span class="text-slate-400 block text-[10px] uppercase">Open PO Value</span>
+              <span class="font-semibold text-sky-400 mono" id="po-value-header">$11,302.50</span>
             </div>
           </div>
           
@@ -99,14 +127,14 @@
             <span class="hidden sm:inline">Landed Cost</span>
           </button>
 
-          <!-- Primary Entry Action -->
-          <button onclick="openNewEntryModal('material')" aria-label="Create New Entry" class="px-2.5 py-2 sm:px-3.5 sm:py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition shadow-sm active:scale-95">
+          <!-- Primary + New Entry Action -->
+          <button onclick="openNewEntryModal('material')" aria-label="Create New Entry" class="px-2.5 py-2 sm:px-3.5 sm:py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition shadow-xs active:scale-95">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
             <span class="inline">+ New Entry</span>
           </button>
 
-          <!-- Force Direct Push to Cloud -->
-          <button onclick="window.forceSyncAllToCloud()" title="Force Upload All Records to Firestore" aria-label="Force Sync to Cloud" class="p-2 text-sky-400 hover:text-white hover:bg-slate-800 rounded-lg transition active:scale-95">
+          <!-- Force Push to Cloud / Reset Button -->
+          <button onclick="forceSyncAllToCloud()" title="Upload / Sync All Records to Firebase Cloud" aria-label="Push All to Cloud" class="p-2 text-sky-400 hover:text-white hover:bg-slate-800 rounded-lg transition active:scale-95">
             <i data-lucide="cloud-upload" class="w-4 h-4"></i>
           </button>
         </div>
@@ -116,7 +144,7 @@
   </header>
 
   <!-- VIEW NAV & SEARCH FILTER BAR -->
-  <div class="bg-white border-b border-slate-200 sticky top-14 sm:top-16 z-30 shadow-xs">
+  <div class="bg-white border-b border-slate-200 shadow-xs sticky top-14 sm:top-16 z-30">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
         
@@ -125,19 +153,19 @@
           <button onclick="switchGallery('materials')" id="tab-materials" class="tab-btn active-tab px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 bg-white text-slate-900 shadow-xs shrink-0 transition whitespace-nowrap">
             <i data-lucide="box" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600"></i>
             <span>Materials</span>
-            <span class="bg-sky-100 text-sky-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="mat-count-badge">0</span>
+            <span class="bg-sky-100 text-sky-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="mat-count-badge">8</span>
           </button>
           
           <button onclick="switchGallery('suppliers')" id="tab-suppliers" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
             <i data-lucide="building-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500"></i>
             <span>Vendors</span>
-            <span class="bg-slate-200 text-slate-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="sup-count-badge">0</span>
+            <span class="bg-slate-200 text-slate-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="sup-count-badge">6</span>
           </button>
           
           <button onclick="switchGallery('pipeline')" id="tab-pipeline" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
             <i data-lucide="truck" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500"></i>
             <span>Logistics &amp; POs</span>
-            <span class="bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="po-count-badge">0</span>
+            <span class="bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="po-count-badge">4</span>
           </button>
 
           <button onclick="switchGallery('sop')" id="tab-sop" class="tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
@@ -149,7 +177,8 @@
         <!-- Search & Filter Controls -->
         <div class="flex items-center gap-2 w-full md:w-auto">
           <div class="relative flex-1 md:w-60 lg:w-72">
-            <input type="text" id="gallery-search" oninput="filterCards()" placeholder="Search code, specs, vendors..." class="w-full pl-3 pr-3 py-1.5 sm:py-2 bg-slate-50 hover:bg-slate-100 focus:bg-white text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5"></i>
+            <input type="text" id="gallery-search" oninput="filterCards()" placeholder="Search code, specs, vendors..." class="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 bg-slate-50 hover:bg-slate-100 focus:bg-white text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition">
           </div>
 
           <div class="relative shrink-0">
@@ -309,15 +338,15 @@
     </div>
   </aside>
 
-  <!-- MODAL: CLOUD CONFIG / STATUS -->
+  <!-- MODAL: CLOUD DATABASE SETUP -->
   <div id="cloud-config-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-xl sm:rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
       <div class="bg-slate-900 text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
           <i data-lucide="cloud" class="w-5 h-5 text-sky-400"></i>
           <div>
-            <h3 class="font-bold text-xs sm:text-sm">Cloud Database Diagnostics</h3>
-            <p class="text-[10px] sm:text-[11px] text-slate-400">Project: purchasing-system-b7ef2</p>
+            <h3 class="font-bold text-xs sm:text-sm">Cloud Database Configuration</h3>
+            <p class="text-[10px] sm:text-[11px] text-slate-400">Shared real-time persistence across team members</p>
           </div>
         </div>
         <button onclick="closeModal('cloud-config-modal')" class="text-slate-400 hover:text-white p-1">
@@ -326,21 +355,43 @@
       </div>
 
       <div class="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
-        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-slate-700 space-y-1">
-          <span class="font-bold text-emerald-900 flex items-center gap-1.5">
-            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Direct Long-Polling Transport
+        <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 text-slate-700 space-y-2">
+          <span class="font-bold text-sky-900 flex items-center gap-1.5">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Required in Firebase Console:
           </span>
-          <p class="text-[11px] text-slate-600">The application writes directly to Google Cloud Firestore collections over HTTP long-polling, bypassing static hosting WebSocket stream dropouts.</p>
+          <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-600">
+            <li>Open your Firestore tab: <strong>Security</strong> &rarr; ensure <code>allow read, write: if true;</code> and click <strong>Publish</strong>.</li>
+            <li>Click <strong>⚡ Push All to Cloud</strong> below to send all 8 materials, 6 vendors, and 4 POs to Firestore immediately!</li>
+          </ol>
         </div>
 
-        <button onclick="window.forceSyncAllToCloud()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg text-xs shadow-xs flex items-center justify-center gap-1.5">
-          <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-          <span>⚡ Force Upload All Records to Firestore</span>
-        </button>
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Firebase Project Config (JSON)</label>
+          <textarea id="cfg-firebase-json" rows="6" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "your-app.firebaseapp.com",
+  "projectId": "your-app",
+  "storageBucket": "your-app.appspot.com",
+  "messagingSenderId": "123456789",
+  "appId": "1:123456789:web:abcdef"
+}' class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono bg-slate-50 focus:bg-white"></textarea>
+        </div>
+
+        <div class="pt-2 flex flex-col gap-2">
+          <button onclick="forceSyncAllToCloud()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg text-xs shadow-xs flex items-center justify-center gap-1.5">
+            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+            <span>⚡ Push All Local &amp; Master Data into Firestore</span>
+          </button>
+          <p class="text-[10px] text-slate-400 text-center">Click this to immediately create the 3 collections in your Firebase console.</p>
+        </div>
       </div>
 
-      <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 flex justify-end items-center shrink-0">
-        <button onclick="closeModal('cloud-config-modal')" class="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg text-xs shadow-xs">Close</button>
+      <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 flex justify-between items-center shrink-0">
+        <button onclick="clearCloudConfig()" class="text-rose-600 hover:text-rose-700 text-xs font-semibold">Reset to Offline</button>
+        <div class="flex gap-2">
+          <button onclick="closeModal('cloud-config-modal')" class="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-100 text-xs">Cancel</button>
+          <button onclick="saveCloudConfig()" class="px-4 py-1.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg text-xs shadow-xs">Save &amp; Connect</button>
+        </div>
       </div>
     </div>
   </div>
@@ -367,7 +418,9 @@
 
       <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 shrink-0">
         <span class="text-[10px] sm:text-xs text-slate-500 text-center sm:text-left">Technical Rule: Verify CAD profile before issuing PO.</span>
-        <button onclick="closeModal('spec-modal')" class="w-full sm:w-auto bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-slate-800 transition">Close Docket</button>
+        <button onclick="closeModal('spec-modal')" class="w-full sm:w-auto bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-lg hover:bg-slate-800 transition">
+          Close Docket
+        </button>
       </div>
     </div>
   </div>
@@ -432,7 +485,9 @@
       </div>
 
       <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 text-right shrink-0">
-        <button onclick="closeModal('quick-calc-modal')" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">Done</button>
+        <button onclick="closeModal('quick-calc-modal')" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
+          Done
+        </button>
       </div>
     </div>
   </div>
@@ -662,19 +717,11 @@
   <!-- TOAST NOTIFICATIONS -->
   <div id="toast-container" class="fixed top-4 left-3 right-3 sm:left-auto sm:top-auto sm:bottom-5 sm:right-5 z-50 space-y-2 pointer-events-none sm:max-w-sm"></div>
 
-  <!-- UNIFIED APPLICATION & FIRESTORE SCRIPT -->
+  <!-- JAVASCRIPT SYSTEM & OPTIMIZED PERSISTENCE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { 
-      initializeFirestore, 
-      doc, 
-      setDoc, 
-      deleteDoc, 
-      onSnapshot, 
-      collection, 
-      getDocs 
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // HARDWARE-ACCELERATED INLINED SVG ENGINE
     const ICONS = {
@@ -700,18 +747,7 @@
       return ICONS.box;
     }
 
-    // EMBEDDED PRODUCTION FIREBASE CONFIG
-    const EMBEDDED_FIREBASE_CONFIG = {
-      apiKey: "AIzaSyCGRDupJViKmVZdY3ksD7tnW0KPY7Ap08I",
-      authDomain: "purchasing-system-b7ef2.firebaseapp.com",
-      databaseURL: "https://purchasing-system-b7ef2-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "purchasing-system-b7ef2",
-      storageBucket: "purchasing-system-b7ef2.firebasestorage.app",
-      messagingSenderId: "9199159764",
-      appId: "1:9199159764:web:0b656ee19420076a5e01cb"
-    };
-
-    // MASTER DEFAULT DATASETS
+    // DEFAULT MASTER DATASETS
     const defaultMaterials = [
       {
         code: "AL-76-SLD-BLK",
@@ -1092,14 +1128,10 @@
       }
     ];
 
-    // STATE INITIALIZATION
+    // LOCAL DATA STORAGE
     let materialsData = [...defaultMaterials];
     let suppliersData = [...defaultSuppliers];
     let pipelineData = [...defaultPipeline];
-
-    let auth = null;
-    let db = null;
-    let activeUid = null;
 
     function loadLocalData() {
       try {
@@ -1110,7 +1142,7 @@
         const p = localStorage.getItem('alu_procurement_pipeline');
         if (p) pipelineData = JSON.parse(p);
       } catch (e) {
-        console.warn("Storage parse error:", e);
+        console.warn("Local storage parse note:", e);
       }
     }
 
@@ -1130,7 +1162,7 @@
 
     loadLocalData();
 
-    // RENDER FUNCTIONS
+    // RENDER MATERIALS
     function renderMaterials(items = materialsData) {
       const container = document.getElementById('materials-grid');
       if (!container) return;
@@ -1396,10 +1428,14 @@
       if (poSelect) poSelect.innerHTML = optionsHtml;
     }
 
-    // UI DIALOGS & FEEDBACK
     function openModal(id) {
       const el = document.getElementById(id);
       if (el) el.classList.remove('hidden');
+      if (id === 'cloud-config-modal') {
+        const stored = localStorage.getItem('alu_procurement_firebase_cfg');
+        const area = document.getElementById('cfg-firebase-json');
+        if (stored && area) area.value = stored;
+      }
     }
 
     function closeModal(id) {
@@ -1430,7 +1466,11 @@
       }, 4000);
     }
 
-    // CLOUD DATABASE INTEGRATION (LONG POLLING TRANSPORT)
+    // FIREBASE REALTIME CLOUD BACKEND
+    let auth = null;
+    let db = null;
+    let activeUid = null;
+
     function updateCloudStatus(status, label) {
       const pulseDot = document.getElementById('cloud-pulse-dot');
       const syncText = document.getElementById('cloud-sync-text');
@@ -1448,21 +1488,30 @@
     }
 
     async function initCloudBackend() {
+      let firebaseConfig = null;
       try {
-        const app = initializeApp(EMBEDDED_FIREBASE_CONFIG);
+        const stored = localStorage.getItem('alu_procurement_firebase_cfg');
+        if (stored) firebaseConfig = JSON.parse(stored);
+      } catch (e) {
+        console.warn("Could not read stored Firebase config", e);
+      }
+
+      if (!firebaseConfig) {
+        updateCloudStatus('local');
+        return;
+      }
+
+      try {
+        const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
-        
-        // Force long-polling to prevent WebSocket connection hangs on static hosting
-        db = initializeFirestore(app, {
-          experimentalForceLongPolling: true
-        });
+        db = getFirestore(app);
 
         signInAnonymously(auth).then(cred => {
           activeUid = cred.user.uid;
           updateCloudStatus('synced', activeUid);
-          runDirectSeed();
-        }).catch(err => {
-          console.warn("Anonymous auth notice:", err.message);
+          checkAndAutoSeedFirestore();
+        }).catch((err) => {
+          console.warn("Auth notice:", err.message);
           let guestUid = localStorage.getItem('alu_procurement_guest_uid');
           if (!guestUid) {
             guestUid = 'user_' + Math.random().toString(36).substring(2, 7);
@@ -1470,7 +1519,7 @@
           }
           activeUid = guestUid;
           updateCloudStatus('synced', activeUid);
-          runDirectSeed();
+          checkAndAutoSeedFirestore();
         });
 
         setupRealtimeSubscriptions();
@@ -1480,66 +1529,59 @@
       }
     }
 
-    async function runDirectSeed() {
+    async function checkAndAutoSeedFirestore() {
       if (!db) return;
       try {
-        console.log("Checking Firestore collections...");
         const snap = await getDocs(collection(db, 'procurement_materials'));
         if (snap.empty) {
-          console.log("[Auto-Seed] Firestore collection is empty. Pushing master templates now...");
-          await window.forceSyncAllToCloud();
-        } else {
-          console.log(`[Firestore] Remote already populated with ${snap.size} records.`);
+          console.log("[Auto-Seed] Firestore collection is empty. Pushing master datasets...");
+          await forceSyncAllToCloud(true);
         }
       } catch (err) {
-        console.error("Auto-seed query error:", err);
+        if (err.message && err.message.includes('permission-denied')) {
+          showToast("Firestore Permission Notice", "Please open Firebase Console > Firestore > Security and change rules to 'allow read, write: if true;' then click Publish.", "error");
+        }
       }
     }
 
-    // DIRECT SEQUENTIAL WRITE ENGINE
-    window.forceSyncAllToCloud = async function() {
+    async function forceSyncAllToCloud(silent = false) {
       if (!db) {
-        showToast("Cloud Not Ready", "Database is not connected yet.", "error");
+        showToast("Cloud Not Configured", "Please paste your Firebase config in the modal first.", "error");
         return;
       }
 
-      showToast("Syncing...", "Uploading records directly to Firestore...", "success");
-
       try {
-        let count = 0;
+        const batch = writeBatch(db);
 
-        // 1. Upload Materials
-        for (const item of materialsData) {
-          const cleanItem = JSON.parse(JSON.stringify(item));
-          await setDoc(doc(db, 'procurement_materials', item.code), cleanItem);
-          count++;
-          console.log(`[Firestore Upload] Saved SKU: ${item.code}`);
+        // Upload all current materials
+        materialsData.forEach(m => {
+          batch.set(doc(db, 'procurement_materials', m.code), m);
+        });
+
+        // Upload all current suppliers
+        suppliersData.forEach(s => {
+          batch.set(doc(db, 'procurement_suppliers', s.id), s);
+        });
+
+        // Upload all current POs
+        pipelineData.forEach(p => {
+          batch.set(doc(db, 'procurement_pipeline', p.poNumber), p);
+        });
+
+        await batch.commit();
+        if (!silent) {
+          showToast("Cloud Synchronized!", `Pushed ${materialsData.length} SKUs, ${suppliersData.length} vendors, and ${pipelineData.length} POs to Firestore.`);
+          closeModal('cloud-config-modal');
         }
-
-        // 2. Upload Suppliers
-        for (const sup of suppliersData) {
-          const cleanSup = JSON.parse(JSON.stringify(sup));
-          await setDoc(doc(db, 'procurement_suppliers', sup.id), cleanSup);
-          count++;
-          console.log(`[Firestore Upload] Saved Vendor: ${sup.id}`);
-        }
-
-        // 3. Upload Pipeline POs
-        for (const po of pipelineData) {
-          const cleanPO = JSON.parse(JSON.stringify(po));
-          await setDoc(doc(db, 'procurement_pipeline', po.poNumber), cleanPO);
-          count++;
-          console.log(`[Firestore Upload] Saved PO: ${po.poNumber}`);
-        }
-
-        console.log(`[Firestore Upload Complete] Stored ${count} total documents successfully!`);
-        showToast("Cloud Synchronized!", `Uploaded ${materialsData.length} SKUs, ${suppliersData.length} vendors, and ${pipelineData.length} POs.`);
-        closeModal('cloud-config-modal');
       } catch (err) {
-        console.error("Direct document upload failed:", err);
-        showToast("Upload Error", err.message || "Failed to write to Firestore.", "error");
+        console.error("Batch push failed:", err);
+        if (err.message && err.message.includes('permission-denied')) {
+          showToast("Write Blocked by Rules", "Go to Firebase > Firestore > Security tab, change to 'allow read, write: if true;' and click Publish.", "error");
+        } else {
+          showToast("Sync Error", err.message || "Failed to push to cloud database.", "error");
+        }
       }
-    };
+    }
 
     function setupRealtimeSubscriptions() {
       if (!db) return;
@@ -1552,7 +1594,9 @@
           scheduleKPIUpdate();
         }
       }, err => {
-        console.warn("Materials snapshot listener note:", err.message);
+        if (err.message.includes('permission-denied')) {
+          console.warn("Firestore rules blocking read:", err.message);
+        }
       });
 
       onSnapshot(collection(db, 'procurement_suppliers'), (snapshot) => {
@@ -1627,6 +1671,7 @@
         }
       };
 
+      // Optimistic Local UI Update
       materialsData.unshift(newMaterial);
       closeModal('new-entry-modal');
       e.target.reset();
@@ -1636,9 +1681,13 @@
       debouncedSaveLocalData();
       showToast("SKU Added", `${name} (${code}) created.`);
 
+      // Push to Cloud
       if (db) {
-        setDoc(doc(db, 'procurement_materials', code), JSON.parse(JSON.stringify(newMaterial))).catch(err => {
+        setDoc(doc(db, 'procurement_materials', code), newMaterial).catch(err => {
           console.warn("Background cloud sync note:", err);
+          if (err.message && err.message.includes('permission-denied')) {
+            showToast("Cloud Permission Notice", "Publish Firestore security rules to persist permanently.", "error");
+          }
         });
       }
     }
@@ -1692,9 +1741,7 @@
       showToast("Vendor Registered", `${name} added.`);
 
       if (db) {
-        setDoc(doc(db, 'procurement_suppliers', id), JSON.parse(JSON.stringify(newSupplier))).catch(err => {
-          console.warn("Cloud sync note:", err);
-        });
+        setDoc(doc(db, 'procurement_suppliers', id), newSupplier).catch(err => console.warn("Cloud sync note:", err));
       }
     }
 
@@ -1741,9 +1788,7 @@
       showToast("PO Issued", `Order ${poNum} created.`);
 
       if (db) {
-        setDoc(doc(db, 'procurement_pipeline', poNum), JSON.parse(JSON.stringify(newPO))).catch(err => {
-          console.warn("Cloud sync note:", err);
-        });
+        setDoc(doc(db, 'procurement_pipeline', poNum), newPO).catch(err => console.warn("Cloud sync note:", err));
       }
     }
 
@@ -1825,7 +1870,7 @@
               </div>
             </div>
 
-            <div class="bg-sky-50 border border-sky-100 rounded-xl p-3.5 space-y-1.5 text-slate-700 text-xs">
+            <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 sm:p-3.5 space-y-1.5 text-slate-700 text-xs">
               <div class="flex justify-between items-center gap-2">
                 <span class="shrink-0">Vendor:</span>
                 <strong class="text-sky-900 truncate">${item.supplier}</strong>
@@ -1907,7 +1952,35 @@
       if (resLanded) resLanded.innerText = `$${trueLandedCost.toFixed(3)} / unit`;
     }
 
-    // EXPOSE GLOBALS TO WINDOW
+    function saveCloudConfig() {
+      const text = document.getElementById('cfg-firebase-json')?.value.trim();
+      if (!text) {
+        showToast("Missing Config", "Please paste your Firebase configuration object.", "error");
+        return;
+      }
+      try {
+        let cleaned = text;
+        if (text.includes('{') && text.includes('}')) {
+          cleaned = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+        }
+        const jsonLike = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+        const parsed = JSON.parse(jsonLike);
+        localStorage.setItem('alu_procurement_firebase_cfg', JSON.stringify(parsed));
+        showToast("Config Saved", "Connecting to cloud database...");
+        setTimeout(() => window.location.reload(), 300);
+      } catch (e) {
+        showToast("Format Error", "Ensure the configuration is a valid JSON object.", "error");
+      }
+    }
+
+    function clearCloudConfig() {
+      localStorage.removeItem('alu_procurement_firebase_cfg');
+      closeModal('cloud-config-modal');
+      showToast("Config Cleared", "Reset back to local storage mode.");
+      setTimeout(() => window.location.reload(), 300);
+    }
+
+    // EXPOSE GLOBALS
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.switchGallery = switchGallery;
@@ -1920,8 +1993,10 @@
     window.submitPO = submitPO;
     window.promptDelete = promptDelete;
     window.viewMaterialDetail = viewMaterialDetail;
+    window.saveCloudConfig = saveCloudConfig;
+    window.clearCloudConfig = clearCloudConfig;
+    window.forceSyncAllToCloud = forceSyncAllToCloud;
 
-    // BOOT SEQUENCE
     window.addEventListener('DOMContentLoaded', () => {
       runCalculator();
 
@@ -1936,9 +2011,7 @@
       renderSOP();
       updateHeaderKPIs();
 
-      if (window.lucide) {
-        window.lucide.createIcons();
-      }
+      lucide.createIcons();
       initCloudBackend();
     });
   </script>
