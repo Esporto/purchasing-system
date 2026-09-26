@@ -167,12 +167,6 @@
             <span class="hidden sm:inline">Landed Cost</span>
           </button>
 
-          <!-- Admin-Only User Access Control Center -->
-          <button id="btn-admin-access-mgmt" onclick="openUserManagementModal()" title="Manage Account Permissions & Access" aria-label="Open Account Permissions" class="hidden p-2 sm:px-3 sm:py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 flex items-center gap-1.5 transition active:scale-95">
-            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
-            <span class="hidden sm:inline">Access Control</span>
-          </button>
-
           <!-- Primary New Entry Action -->
           <button onclick="openNewEntryModal('material')" aria-label="Create New Entry" class="px-2.5 py-2 sm:px-3.5 sm:py-2 btn-gradient-primary text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition shadow-sm active:scale-95">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
@@ -184,21 +178,17 @@
             <i data-lucide="cloud-upload" class="w-4 h-4"></i>
           </button>
 
-          <!-- User Session Profile & Logout Pill -->
-          <div id="user-session-container" class="flex items-center gap-1.5 sm:gap-2 pl-2 sm:pl-3 border-l border-slate-800">
-            <div class="flex items-center gap-2">
-              <div id="user-avatar-badge" class="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 text-white font-extrabold text-xs flex items-center justify-center shadow-sm shrink-0 border border-sky-400/30">
-                AD
-              </div>
-              <div class="hidden sm:block text-left">
-                <span id="user-display-name" class="block font-bold text-xs text-slate-100 leading-tight truncate max-w-[110px]">Admin</span>
-                <span id="user-display-role" class="block text-[10px] text-sky-400 font-medium leading-tight truncate max-w-[110px]">Administrator</span>
-              </div>
+          <!-- User Profile & Sidebar Drawer Trigger -->
+          <button onclick="openUserSidebar()" id="user-session-container" title="Open User Profile & Settings" class="flex items-center gap-1.5 sm:gap-2 pl-2 sm:pl-2.5 py-1 px-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 hover:border-slate-600 transition active:scale-95 cursor-pointer ml-0.5">
+            <div id="user-avatar-badge" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 text-white font-extrabold text-xs flex items-center justify-center shadow-sm shrink-0 border border-sky-400/30">
+              AD
             </div>
-            <button onclick="handleSignOut()" title="Sign Out" aria-label="Sign Out" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-xl transition active:scale-95 ml-0.5">
-              <i data-lucide="log-out" class="w-4 h-4"></i>
-            </button>
-          </div>
+            <div class="hidden sm:block text-left">
+              <span id="user-display-name" class="block font-bold text-xs text-slate-100 leading-tight truncate max-w-[100px]">Admin</span>
+              <span id="user-display-role" class="block text-[10px] text-sky-400 font-medium leading-tight truncate max-w-[100px]">Administrator</span>
+            </div>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 hidden sm:block"></i>
+          </button>
         </div>
 
       </div>
@@ -427,6 +417,132 @@
       <button onclick="switchGallery('sop')" id="m-nav-sop" class="flex flex-col items-center justify-center py-1 rounded-xl text-slate-500 hover:text-slate-900">
         <i data-lucide="shield-check" class="w-4 h-4 mb-0.5"></i>
         <span>SOP</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- RIGHT SLIDE-OVER SIDEBAR: USER PROFILE & ACCESS CONTROL -->
+  <div id="user-sidebar-backdrop" onclick="closeUserSidebar()" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 hidden transition-opacity duration-300 opacity-0"></div>
+
+  <aside id="user-profile-sidebar" class="fixed top-0 right-0 bottom-0 w-80 sm:w-96 bg-white z-50 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out border-l border-slate-200">
+    <!-- Sidebar Header -->
+    <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between border-b border-slate-800 shrink-0">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-xs">
+          <i data-lucide="user-check" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <span class="font-bold text-xs sm:text-sm block leading-tight">User Account &amp; Access</span>
+          <span class="text-[10px] text-slate-400">Profile &amp; Session Management</span>
+        </div>
+      </div>
+      <button onclick="closeUserSidebar()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- Sidebar Scrollable Body -->
+    <div class="p-5 space-y-5 overflow-y-auto flex-1 text-xs">
+      
+      <!-- Profile Card -->
+      <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-4 text-white shadow-sm border border-slate-800 relative overflow-hidden">
+        <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-sky-500/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="flex items-center gap-3.5 relative z-10">
+          <div id="sidebar-avatar-badge" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-sky-500 via-indigo-600 to-purple-600 text-white font-extrabold text-base flex items-center justify-center shadow-lg shadow-sky-500/30 border-2 border-white/20 shrink-0">
+            AD
+          </div>
+          <div class="min-w-0 flex-1">
+            <span id="sidebar-user-name" class="font-bold text-sm block truncate text-white">Alex Miller (GM)</span>
+            <span id="sidebar-user-username" class="mono text-[11px] text-sky-400 block truncate">@admin</span>
+            <div class="mt-1 flex items-center gap-1.5">
+              <span id="sidebar-user-role-badge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30 truncate">
+                Administrator
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3.5 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300">
+          <span class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Active Session</span>
+          </span>
+          <span id="sidebar-session-time" class="mono text-[10px] text-slate-400">Authenticated</span>
+        </div>
+      </div>
+
+      <!-- Access Control Section (Admin Exclusive) -->
+      <div id="sidebar-access-control-box" class="space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-slate-900 text-xs flex items-center gap-1.5">
+            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-500"></i>
+            <span>System Access Control</span>
+          </span>
+          <span class="text-[9px] uppercase font-bold bg-amber-100 text-amber-800 border border-amber-300 px-1.5 py-0.5 rounded">Admin Security</span>
+        </div>
+
+        <div class="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-3.5 space-y-3">
+          <p class="text-[11px] text-slate-600 leading-relaxed">
+            Manage staff account permissions, permit or revoke portal logins, and create credentials.
+          </p>
+
+          <div class="grid grid-cols-2 gap-2 text-center">
+            <div class="bg-white p-2 rounded-xl border border-amber-200/60 shadow-xs">
+              <span class="text-[9px] uppercase font-bold text-slate-400 block">Allowed Users</span>
+              <span id="sidebar-allowed-count" class="mono font-bold text-emerald-600 text-sm">--</span>
+            </div>
+            <div class="bg-white p-2 rounded-xl border border-amber-200/60 shadow-xs">
+              <span class="text-[9px] uppercase font-bold text-slate-400 block">Revoked</span>
+              <span id="sidebar-revoked-count" class="mono font-bold text-rose-600 text-sm">--</span>
+            </div>
+          </div>
+
+          <button onclick="closeUserSidebar(); openUserManagementModal();" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition shadow-sm active:scale-95">
+            <i data-lucide="users" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Open Access Control Center</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Non-admin informational fallback -->
+      <div id="sidebar-non-admin-info" class="hidden bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-1.5 text-slate-600">
+        <span class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+          <i data-lucide="shield-check" class="w-4 h-4 text-sky-600"></i>
+          <span>Operational Role Authority</span>
+        </span>
+        <p class="text-[11px] text-slate-500 leading-relaxed">
+          Your account is operating under assigned departmental authority. For elevated permissions or access changes, please contact your administrator.
+        </p>
+      </div>
+
+      <!-- Quick Operations Shortcuts -->
+      <div class="space-y-1.5 pt-1">
+        <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Quick Utilities</span>
+        
+        <button onclick="closeUserSidebar(); openModal('quick-calc-modal');" class="w-full p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold flex items-center justify-between transition text-left">
+          <div class="flex items-center gap-2">
+            <i data-lucide="calculator" class="w-4 h-4 text-sky-600"></i>
+            <span>Landed Cost Calculator</span>
+          </div>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+        </button>
+
+        <button onclick="closeUserSidebar(); openModal('cloud-config-modal');" class="w-full p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold flex items-center justify-between transition text-left">
+          <div class="flex items-center gap-2">
+            <i data-lucide="cloud" class="w-4 h-4 text-sky-600"></i>
+            <span>Cloud Database Diagnostics</span>
+          </div>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Sidebar Footer / Logout -->
+    <div class="p-4 bg-slate-50 border-t border-slate-200 shrink-0">
+      <button onclick="handleSignOut(); closeUserSidebar();" class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs">
+        <i data-lucide="log-out" class="w-4 h-4 text-rose-600"></i>
+        <span>Sign Out of Sourcing Hub</span>
       </button>
     </div>
   </aside>
@@ -1823,12 +1939,48 @@
       if (modal) modal.classList.add('hidden');
     }
 
+    function openUserSidebar() {
+      updateUserInterface();
+      const backdrop = document.getElementById('user-sidebar-backdrop');
+      const sidebar = document.getElementById('user-profile-sidebar');
+      if (backdrop && sidebar) {
+        backdrop.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          backdrop.classList.remove('opacity-0');
+          sidebar.classList.remove('translate-x-full');
+        });
+      }
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function closeUserSidebar() {
+      const backdrop = document.getElementById('user-sidebar-backdrop');
+      const sidebar = document.getElementById('user-profile-sidebar');
+      if (backdrop && sidebar) {
+        backdrop.classList.add('opacity-0');
+        sidebar.classList.add('translate-x-full');
+        setTimeout(() => {
+          backdrop.classList.add('hidden');
+        }, 300);
+      }
+    }
+
     function updateUserInterface() {
       if (!currentUserSession) return;
       const avatarEl = document.getElementById('user-avatar-badge');
       const nameEl = document.getElementById('user-display-name');
       const roleEl = document.getElementById('user-display-role');
-      const adminBtn = document.getElementById('btn-admin-access-mgmt');
+
+      // Sidebar Profile Elements
+      const sideAvatarEl = document.getElementById('sidebar-avatar-badge');
+      const sideNameEl = document.getElementById('sidebar-user-name');
+      const sideUserEl = document.getElementById('sidebar-user-username');
+      const sideRoleBadge = document.getElementById('sidebar-user-role-badge');
+      const sideSessionTime = document.getElementById('sidebar-session-time');
+      const sideAccessBox = document.getElementById('sidebar-access-control-box');
+      const sideNonAdminInfo = document.getElementById('sidebar-non-admin-info');
+      const sideAllowedCount = document.getElementById('sidebar-allowed-count');
+      const sideRevokedCount = document.getElementById('sidebar-revoked-count');
 
       const initials = (currentUserSession.name || currentUserSession.username || 'AD')
         .split(' ')
@@ -1841,13 +1993,30 @@
       if (nameEl) nameEl.innerText = currentUserSession.name || currentUserSession.username;
       if (roleEl) roleEl.innerText = currentUserSession.role || 'Staff Member';
 
-      // Only show the User Access Control Center to Administrators
-      if (adminBtn) {
-        if (currentUserSession.role === 'Administrator') {
-          adminBtn.classList.remove('hidden');
-        } else {
-          adminBtn.classList.add('hidden');
-        }
+      // Populate Right Sidebar
+      if (sideAvatarEl) sideAvatarEl.innerText = initials;
+      if (sideNameEl) sideNameEl.innerText = currentUserSession.name || currentUserSession.username;
+      if (sideUserEl) sideUserEl.innerText = `@${currentUserSession.username || 'user'}`;
+      if (sideRoleBadge) sideRoleBadge.innerText = currentUserSession.role || 'Staff Member';
+
+      if (currentUserSession.loginTime && sideSessionTime) {
+        const d = new Date(currentUserSession.loginTime);
+        sideSessionTime.innerText = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+
+      // Calculate allowed vs revoked counts for Access Control widget
+      const allowedUsers = usersData.filter(u => u.status === 'allowed').length;
+      const revokedUsers = usersData.filter(u => u.status === 'revoked').length;
+      if (sideAllowedCount) sideAllowedCount.innerText = allowedUsers;
+      if (sideRevokedCount) sideRevokedCount.innerText = revokedUsers;
+
+      // Restrict Access Control in sidebar to Administrators only
+      if (currentUserSession.role === 'Administrator') {
+        if (sideAccessBox) sideAccessBox.classList.remove('hidden');
+        if (sideNonAdminInfo) sideNonAdminInfo.classList.add('hidden');
+      } else {
+        if (sideAccessBox) sideAccessBox.classList.add('hidden');
+        if (sideNonAdminInfo) sideNonAdminInfo.classList.remove('hidden');
       }
     }
 
@@ -3555,6 +3724,8 @@
     window.calculatePRBudget = calculatePRBudget;
     window.promptDelete = promptDelete;
     window.viewMaterialDetail = viewMaterialDetail;
+    window.openUserSidebar = openUserSidebar;
+    window.closeUserSidebar = closeUserSidebar;
     window.openUserManagementModal = openUserManagementModal;
     window.toggleUserAccess = toggleUserAccess;
     window.submitNewUser = submitNewUser;
