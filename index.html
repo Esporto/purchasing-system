@@ -224,6 +224,12 @@
             <span class="inline">+ New Entry</span>
           </button>
 
+          <!-- Master Admin Access Control Button (Instantly Accessible for Master Admin) -->
+          <button onclick="openModal('user-management-modal')" id="header-admin-access-btn" class="hidden px-2.5 py-2 sm:px-3 sm:py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg items-center gap-1.5 transition shadow-sm active:scale-95" title="Master Admin Access & Permissions Control">
+            <i data-lucide="shield" class="w-4 h-4 text-indigo-200"></i>
+            <span class="hidden sm:inline">Access Control</span>
+          </button>
+
           <!-- User Profile Trigger Pill (Opens Slide-Over Sidebar) -->
           <button onclick="openSidebar('user-profile-sidebar')" id="header-user-btn" class="flex items-center gap-2.5 px-2.5 py-1.5 bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 rounded-xl transition text-left cursor-pointer active:scale-95">
             <div id="user-header-avatar" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-sky-600 text-white font-bold text-xs flex items-center justify-center shadow-inner uppercase shrink-0">
@@ -751,8 +757,14 @@
           <select id="pr-approver-role" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-medium">
             <option value="Production Head / Tech Lead">Production Head / Project Tech Lead</option>
             <option value="Finance Department Head">Finance Department Head</option>
-            <option value="General Manager / Director">General Manager / Managing Director</option>
+            <option value="Master Admin / General Manager">Master Admin / General Manager</option>
           </select>
+        </div>
+
+        <!-- Security Clearance Banner for Step 2 -->
+        <div id="pr-step2-security-notice" class="hidden p-2.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-[11px] flex items-center gap-2">
+          <i data-lucide="shield-alert" class="w-4 h-4 text-purple-600 shrink-0"></i>
+          <span><strong>Authorized Clearance:</strong> Step 2 final sign-off is restricted to <strong>Finance Dept Head</strong> and <strong>Master Admin</strong>.</span>
         </div>
 
         <!-- Decision Selector -->
@@ -1931,11 +1943,13 @@
         return;
       }
 
+      const isStep2Authorized = currentUser && (currentUser.role === 'finance' || currentUser.role === 'admin');
+
       container.innerHTML = prsData.map(pr => {
         const step1Done = pr.step1 && pr.step1.approved;
         const step2Done = pr.step2 && pr.step2.approved;
 
-        // Action Buttons based on Step
+        // Action Buttons based on Step and Authority Level
         let actionButtons = '';
         if (!step1Done) {
           actionButtons = `
@@ -1945,12 +1959,21 @@
             </button>
           `;
         } else if (!step2Done) {
-          actionButtons = `
-            <button onclick="openApprovalModal('${pr.prNumber}', 2)" class="w-full py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
-              <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-              <span>Step 2: Finance Sign-off</span>
-            </button>
-          `;
+          if (isStep2Authorized) {
+            actionButtons = `
+              <button onclick="openApprovalModal('${pr.prNumber}', 2)" class="w-full py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
+                <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                <span>Step 2: Finance / Admin Sign-off</span>
+              </button>
+            `;
+          } else {
+            actionButtons = `
+              <button type="button" onclick="showUnauthorizedStep2Notice()" class="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-lg font-semibold text-xs transition flex items-center justify-center gap-1.5 border border-slate-200 cursor-not-allowed">
+                <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-400"></i>
+                <span>🔒 Step 2: Finance / Admin Only</span>
+              </button>
+            `;
+          }
         } else if (pr.status !== 'Converted to PO') {
           actionButtons = `
             <button onclick="convertPRToPO('${pr.prNumber}')" class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
@@ -2384,6 +2407,15 @@
       const pr = prsData.find(p => p.prNumber === prNumber);
       if (!pr) return;
 
+      // Enforcement Gate: Step 2 requires Finance Head or Master Admin
+      if (step === 2) {
+        const canApproveStep2 = currentUser && (currentUser.role === 'finance' || currentUser.role === 'admin');
+        if (!canApproveStep2) {
+          showToast("Authorization Restricted", "Step 2 Final Authorization strictly requires Finance Department Head or Master Admin authority.", "error");
+          return;
+        }
+      }
+
       document.getElementById('pr-approval-target-pr').value = prNumber;
       document.getElementById('pr-approval-target-step').value = step;
 
@@ -2391,6 +2423,8 @@
       const titleEl = document.getElementById('pr-modal-title');
       const prNumEl = document.getElementById('pr-modal-pr-num');
       const submitBtn = document.getElementById('pr-modal-submit-btn');
+      const securityNotice = document.getElementById('pr-step2-security-notice');
+      const roleSelect = document.getElementById('pr-approver-role');
 
       if (prNumEl) prNumEl.innerText = `${pr.prNumber} (${pr.itemCode})`;
       if (document.getElementById('pr-approval-item-name')) {
@@ -2406,24 +2440,40 @@
       // Pre-fill approver name if user is logged in
       const approverNameInput = document.getElementById('pr-approver-name');
       if (approverNameInput && currentUser) {
-        approverNameInput.value = currentUser.fullName || '';
+        approverNameInput.value = currentUser.fullName || currentUser.name || '';
       }
-
-      const roleSelect = document.getElementById('pr-approver-role');
 
       if (step === 1) {
         titleEl.innerText = "Step 1: Production & Technical Lead Review";
         if (headerEl) headerEl.className = "bg-amber-700 text-white px-6 py-4 flex items-center justify-between shrink-0";
         if (submitBtn) submitBtn.className = "px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl shadow-sm";
-        if (roleSelect) roleSelect.value = "Production Head / Tech Lead";
+        if (securityNotice) securityNotice.classList.add('hidden');
+        if (roleSelect) {
+          roleSelect.innerHTML = `
+            <option value="Production Head / Tech Lead">Production Head / Project Tech Lead</option>
+            <option value="Master Admin / General Manager">Master Admin / General Manager</option>
+          `;
+          roleSelect.value = currentUser?.role === 'admin' ? "Master Admin / General Manager" : "Production Head / Tech Lead";
+        }
       } else {
-        titleEl.innerText = "Step 2: Finance Department Head Authorization";
+        titleEl.innerText = "Step 2: Finance Head / Master Admin Final Authorization";
         if (headerEl) headerEl.className = "bg-purple-900 text-white px-6 py-4 flex items-center justify-between shrink-0";
         if (submitBtn) submitBtn.className = "px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl shadow-sm";
-        if (roleSelect) roleSelect.value = "Finance Department Head";
+        if (securityNotice) securityNotice.classList.remove('hidden');
+        if (roleSelect) {
+          roleSelect.innerHTML = `
+            <option value="Finance Department Head">Finance Department Head</option>
+            <option value="Master Admin / General Manager">Master Admin / General Manager</option>
+          `;
+          roleSelect.value = currentUser?.role === 'admin' ? "Master Admin / General Manager" : "Finance Department Head";
+        }
       }
 
       openModal('pr-approval-modal');
+    }
+
+    function showUnauthorizedStep2Notice() {
+      showToast("Access Restricted", "Step 2 sign-off requires Finance Department Head or Master Admin clearance.", "error");
     }
 
     function submitPRApproval(e) {
@@ -2434,6 +2484,16 @@
       const role = document.getElementById('pr-approver-role').value;
       const decision = document.getElementById('pr-approver-decision').value;
       const remarks = document.getElementById('pr-approver-remarks').value.trim();
+
+      // Guard check before processing
+      if (step === 2) {
+        const canApproveStep2 = currentUser && (currentUser.role === 'finance' || currentUser.role === 'admin');
+        if (!canApproveStep2) {
+          showToast("Authorization Restricted", "Only Finance Department Head or Master Admin can authorize Step 2.", "error");
+          closeModal('pr-approval-modal');
+          return;
+        }
+      }
 
       const pr = prsData.find(p => p.prNumber === prNumber);
       if (!pr) return;
@@ -2462,7 +2522,7 @@
         };
         pr.status = "Approved";
         pr.statusBadge = "bg-emerald-50 text-emerald-800 border-emerald-300 font-bold";
-        showToast("Step 2 Authorized", `PR fully authorized by ${approverName}. Ready for PO conversion.`);
+        showToast("Step 2 Authorized", `PR fully authorized by ${approverName} (${role}). Ready for PO conversion.`);
       }
 
       closeModal('pr-approval-modal');
@@ -2740,6 +2800,18 @@
       if (sUname) sUname.innerText = `@${currentUser.username || 'user'}`;
       if (sBadge) sBadge.innerText = currentUser.roleLabel || currentUser.role || 'Staff';
 
+      // Master Admin Header button visibility
+      const headerAdminBtn = document.getElementById('header-admin-access-btn');
+      if (headerAdminBtn) {
+        if (currentUser.role === 'admin') {
+          headerAdminBtn.classList.remove('hidden');
+          headerAdminBtn.classList.add('flex');
+        } else {
+          headerAdminBtn.classList.add('hidden');
+          headerAdminBtn.classList.remove('flex');
+        }
+      }
+
       // Admin Access card visibility in sidebar
       const accessCard = document.getElementById('sidebar-access-card');
       if (accessCard) {
@@ -2747,6 +2819,7 @@
       }
 
       renderUsersTable();
+      renderPRs();
     }
 
     function renderUsersTable() {
@@ -3237,6 +3310,7 @@
     window.promptDelete = promptDelete;
     window.viewMaterialDetail = viewMaterialDetail;
     window.openApprovalModal = openApprovalModal;
+    window.showUnauthorizedStep2Notice = showUnauthorizedStep2Notice;
     window.submitPRApproval = submitPRApproval;
     window.viewPRVoucher = viewPRVoucher;
     window.convertPRToPO = convertPRToPO;
