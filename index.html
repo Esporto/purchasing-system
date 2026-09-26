@@ -1434,7 +1434,9 @@
       if (id === 'cloud-config-modal') {
         const stored = localStorage.getItem('alu_procurement_firebase_cfg');
         const area = document.getElementById('cfg-firebase-json');
-        if (stored && area) area.value = stored;
+        if (area) {
+          area.value = stored || JSON.stringify(EMBEDDED_FIREBASE_CONFIG, null, 2);
+        }
       }
     }
 
@@ -1487,8 +1489,19 @@
       }
     }
 
+    // Hardcoded production Firebase configuration for automatic cloud sync
+    const EMBEDDED_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyCGRDupJViKmVZdY3ksD7tnW0KPY7Ap08I",
+      authDomain: "purchasing-system-b7ef2.firebaseapp.com",
+      databaseURL: "https://purchasing-system-b7ef2-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "purchasing-system-b7ef2",
+      storageBucket: "purchasing-system-b7ef2.firebasestorage.app",
+      messagingSenderId: "9199159764",
+      appId: "1:9199159764:web:0b656ee19420076a5e01cb"
+    };
+
     async function initCloudBackend() {
-      let firebaseConfig = null;
+      let firebaseConfig = EMBEDDED_FIREBASE_CONFIG;
       try {
         const stored = localStorage.getItem('alu_procurement_firebase_cfg');
         if (stored) firebaseConfig = JSON.parse(stored);
