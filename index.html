@@ -1504,7 +1504,7 @@
       try {
         const app = initializeApp(firebaseConfig);
         auth = getAuth(app);
-        db = getFirestore(app);
+        db = getFirestore(app, "default");
 
         signInAnonymously(auth).then(cred => {
           activeUid = cred.user.uid;
@@ -1582,7 +1582,7 @@
         }
       }
     }
-
+`
     function setupRealtimeSubscriptions() {
       if (!db) return;
 
