@@ -29,7 +29,7 @@
       }
     }
   </script>
-  <!-- Lucide Icons (Static UI elements) -->
+  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -47,7 +47,6 @@
 
     .mono { font-family: 'JetBrains Mono', monospace; }
 
-    /* Performance & GPU Layer Optimization */
     .card-contain {
       contain: layout style paint;
       transform: translateZ(0);
@@ -77,7 +76,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col pb-safe md:pb-6">
 
-  <!-- TOP APP NAV (Responsive for Mobile, Tablet, Laptop, Desktop) -->
+  <!-- TOP APP NAV -->
   <header class="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-40 shadow-xs">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-14 sm:h-16 gap-2">
@@ -103,7 +102,7 @@
           <button onclick="openModal('cloud-config-modal')" id="cloud-status-badge" title="Click to Configure Cloud Database Sync" class="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg text-[11px] text-slate-300 transition cursor-pointer active:scale-95">
             <span id="cloud-pulse-dot" class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
             <span id="cloud-sync-text" class="font-medium text-slate-200">Local Storage</span>
-            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-slate-700 pl-2">Ready</span>
+            <span id="user-id-display" class="hidden xl:inline text-[10px] mono text-sky-400 border-l border-slate-700 pl-2">Offline</span>
           </button>
 
           <!-- Large screen KPI telemetry -->
@@ -134,9 +133,9 @@
             <span class="inline">+ New Entry</span>
           </button>
 
-          <!-- Reset to master defaults button -->
-          <button onclick="promptReset()" title="Reset to Master Defaults" aria-label="Reset System Data" class="hidden sm:flex p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition">
-            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          <!-- Force Push to Cloud / Reset Button -->
+          <button onclick="forceSyncAllToCloud()" title="Upload / Sync All Records to Firebase Cloud" aria-label="Push All to Cloud" class="p-2 text-sky-400 hover:text-white hover:bg-slate-800 rounded-lg transition active:scale-95">
+            <i data-lucide="cloud-upload" class="w-4 h-4"></i>
           </button>
         </div>
 
@@ -182,7 +181,6 @@
             <input type="text" id="gallery-search" oninput="filterCards()" placeholder="Search code, specs, vendors..." class="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 bg-slate-50 hover:bg-slate-100 focus:bg-white text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition">
           </div>
 
-          <!-- Dynamic Category Select Filter -->
           <div class="relative shrink-0">
             <select id="category-filter" onchange="filterCards()" aria-label="Filter by material category" class="bg-slate-50 border border-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 sm:py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
               <option value="all">All Categories</option>
@@ -232,7 +230,6 @@
         </div>
       </div>
 
-      <!-- Material Cards Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4" id="materials-grid"></div>
     </section>
 
@@ -360,16 +357,16 @@
       <div class="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
         <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 text-slate-700 space-y-2">
           <span class="font-bold text-sky-900 flex items-center gap-1.5">
-            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Firebase Cloud Requirements:
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Required in Firebase Console:
           </span>
           <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-600">
-            <li><strong>Firestore Database:</strong> Set up in <em>Build &rarr; Firestore Database</em> in <strong>Test mode</strong>.</li>
-            <li><strong>Anonymous Auth:</strong> Enabled under <em>Build &rarr; Authentication &rarr; Sign-in method</em>.</li>
+            <li>Open your Firestore tab: <strong>Security</strong> &rarr; ensure <code>allow read, write: if true;</code> and click <strong>Publish</strong>.</li>
+            <li>Click <strong>⚡ Push All to Cloud</strong> below to send all 8 materials, 6 vendors, and 4 POs to Firestore immediately!</li>
           </ol>
         </div>
 
         <div>
-          <label class="block font-medium text-slate-700 mb-1">Firebase Project Config (JSON or JS Object)</label>
+          <label class="block font-medium text-slate-700 mb-1">Firebase Project Config (JSON)</label>
           <textarea id="cfg-firebase-json" rows="6" placeholder='{
   "apiKey": "AIzaSy...",
   "authDomain": "your-app.firebaseapp.com",
@@ -378,11 +375,14 @@
   "messagingSenderId": "123456789",
   "appId": "1:123456789:web:abcdef"
 }' class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono bg-slate-50 focus:bg-white"></textarea>
-          <p class="text-[10px] text-slate-400 mt-1">Found in <a href="https://console.firebase.google.com" target="_blank" class="text-sky-600 underline">Firebase Console</a> &gt; Project Settings &gt; General &gt; Your apps.</p>
         </div>
 
-        <div class="bg-amber-50 border border-amber-100 rounded-lg p-2.5 text-[11px] text-amber-800">
-          <strong>Instant Offline Fallback:</strong> If cloud keys are absent, all items remain safely saved in your browser's persistent storage.
+        <div class="pt-2 flex flex-col gap-2">
+          <button onclick="forceSyncAllToCloud()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg text-xs shadow-xs flex items-center justify-center gap-1.5">
+            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+            <span>⚡ Push All Local &amp; Master Data into Firestore</span>
+          </button>
+          <p class="text-[10px] text-slate-400 text-center">Click this to immediately create the 3 collections in your Firebase console.</p>
         </div>
       </div>
 
@@ -482,10 +482,6 @@
             <span class="mono font-bold text-sky-700 text-sm sm:text-base" id="calc-res-landed">$2.625 / unit</span>
           </div>
         </div>
-
-        <p class="text-[10px] sm:text-[11px] text-slate-500 italic">
-          *Compare suppliers on True Landed Cost. A cheaper base unit price with high freight may cost more than a local vendor with free delivery.
-        </p>
       </div>
 
       <div class="bg-slate-50 px-4 sm:px-6 py-3 border-t border-slate-200 text-right shrink-0">
@@ -725,10 +721,9 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    // --- HARDWARE-ACCELERATED INLINED SVG ENGINE ---
-    // Avoids calling lucide.createIcons on hundreds of DOM nodes, eliminating MutationObserver thrashing
+    // HARDWARE-ACCELERATED INLINED SVG ENGINE
     const ICONS = {
       box: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`,
       shield: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>`,
@@ -752,7 +747,7 @@
       return ICONS.box;
     }
 
-    // --- 1. DEFAULT DATASETS ---
+    // DEFAULT MASTER DATASETS
     const defaultMaterials = [
       {
         code: "AL-76-SLD-BLK",
@@ -1133,7 +1128,7 @@
       }
     ];
 
-    // --- 2. LOCAL MEMORY & PERSISTENCE ---
+    // LOCAL DATA STORAGE
     let materialsData = [...defaultMaterials];
     let suppliersData = [...defaultSuppliers];
     let pipelineData = [...defaultPipeline];
@@ -1167,7 +1162,7 @@
 
     loadLocalData();
 
-    // --- 3. HIGH-SPEED RENDERING ENGINE ---
+    // RENDER MATERIALS
     function renderMaterials(items = materialsData) {
       const container = document.getElementById('materials-grid');
       if (!container) return;
@@ -1183,7 +1178,7 @@
         return;
       }
 
-      const html = items.map(m => {
+      container.innerHTML = items.map(m => {
         let statusBadge = '';
         if (m.status === 'reorder' || m.currentStock <= m.safetyStock) {
           statusBadge = '<span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>Reorder</span>';
@@ -1248,8 +1243,6 @@
           </div>
         `;
       }).join('');
-
-      container.innerHTML = html;
     }
 
     function renderSuppliers() {
@@ -1285,21 +1278,6 @@
               <div>
                 <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase block">QC Rate</span>
                 <span class="mono font-bold text-xs sm:text-base text-sky-600">${sup.qcRate || '99.0%'}</span>
-              </div>
-            </div>
-
-            <div class="mt-3 space-y-1 text-[11px] text-slate-600">
-              <div class="flex justify-between">
-                <span>Price Competitiveness:</span>
-                <span class="mono font-semibold">${sup.metrics?.price ?? 22}/25</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Quality Conformance:</span>
-                <span class="mono font-semibold">${sup.metrics?.quality ?? 24}/25</span>
-              </div>
-              <div class="flex justify-between">
-                <span>On-Time Delivery:</span>
-                <span class="mono font-semibold">${sup.metrics?.delivery ?? 18}/20</span>
               </div>
             </div>
           </div>
@@ -1387,7 +1365,7 @@
       `).join('');
     }
 
-    // Filter & Search Engine (Throttled & Non-blocking)
+    // FILTER & SEARCH
     let searchDebounce = null;
     function filterCards() {
       clearTimeout(searchDebounce);
@@ -1414,7 +1392,7 @@
       renderMaterials(filtered);
     }
 
-    // Batch KPI Updates
+    // KPI TELEMETRY
     let kpiTimer = null;
     function scheduleKPIUpdate() {
       clearTimeout(kpiTimer);
@@ -1450,7 +1428,6 @@
       if (poSelect) poSelect.innerHTML = optionsHtml;
     }
 
-    // Modal & Toast Helpers
     function openModal(id) {
       const el = document.getElementById(id);
       if (el) el.classList.remove('hidden');
@@ -1486,10 +1463,10 @@
       setTimeout(() => {
         toast.classList.add('opacity-0', 'translate-y-2');
         setTimeout(() => toast.remove(), 250);
-      }, 3500);
+      }, 4000);
     }
 
-    // --- 4. OPTIMISTIC CLOUD & DATA ACTIONS ---
+    // FIREBASE REALTIME CLOUD BACKEND
     let auth = null;
     let db = null;
     let activeUid = null;
@@ -1501,8 +1478,8 @@
 
       if (status === 'synced') {
         if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
-        if (syncText) syncText.innerText = 'Cloud Synced';
-        if (userDisplay) userDisplay.innerText = label ? `UID: ${label.substring(0, 6)}` : 'Live';
+        if (syncText) syncText.innerText = 'Cloud Database: Synced';
+        if (userDisplay) userDisplay.innerText = label ? `ID: ${label.substring(0, 6)}` : 'Live';
       } else if (status === 'local') {
         if (pulseDot) pulseDot.className = 'w-2 h-2 rounded-full bg-amber-400';
         if (syncText) syncText.innerText = 'Local Storage';
@@ -1529,11 +1506,12 @@
         auth = getAuth(app);
         db = getFirestore(app);
 
-        // Sign in in background without blocking UI
         signInAnonymously(auth).then(cred => {
           activeUid = cred.user.uid;
           updateCloudStatus('synced', activeUid);
-        }).catch(() => {
+          checkAndAutoSeedFirestore();
+        }).catch((err) => {
+          console.warn("Auth notice:", err.message);
           let guestUid = localStorage.getItem('alu_procurement_guest_uid');
           if (!guestUid) {
             guestUid = 'user_' + Math.random().toString(36).substring(2, 7);
@@ -1541,12 +1519,67 @@
           }
           activeUid = guestUid;
           updateCloudStatus('synced', activeUid);
+          checkAndAutoSeedFirestore();
         });
 
         setupRealtimeSubscriptions();
       } catch (err) {
         console.error("Firebase init note:", err);
         updateCloudStatus('local');
+      }
+    }
+
+    async function checkAndAutoSeedFirestore() {
+      if (!db) return;
+      try {
+        const snap = await getDocs(collection(db, 'procurement_materials'));
+        if (snap.empty) {
+          console.log("[Auto-Seed] Firestore collection is empty. Pushing master datasets...");
+          await forceSyncAllToCloud(true);
+        }
+      } catch (err) {
+        if (err.message && err.message.includes('permission-denied')) {
+          showToast("Firestore Permission Notice", "Please open Firebase Console > Firestore > Security and change rules to 'allow read, write: if true;' then click Publish.", "error");
+        }
+      }
+    }
+
+    async function forceSyncAllToCloud(silent = false) {
+      if (!db) {
+        showToast("Cloud Not Configured", "Please paste your Firebase config in the modal first.", "error");
+        return;
+      }
+
+      try {
+        const batch = writeBatch(db);
+
+        // Upload all current materials
+        materialsData.forEach(m => {
+          batch.set(doc(db, 'procurement_materials', m.code), m);
+        });
+
+        // Upload all current suppliers
+        suppliersData.forEach(s => {
+          batch.set(doc(db, 'procurement_suppliers', s.id), s);
+        });
+
+        // Upload all current POs
+        pipelineData.forEach(p => {
+          batch.set(doc(db, 'procurement_pipeline', p.poNumber), p);
+        });
+
+        await batch.commit();
+        if (!silent) {
+          showToast("Cloud Synchronized!", `Pushed ${materialsData.length} SKUs, ${suppliersData.length} vendors, and ${pipelineData.length} POs to Firestore.`);
+          closeModal('cloud-config-modal');
+        }
+      } catch (err) {
+        console.error("Batch push failed:", err);
+        if (err.message && err.message.includes('permission-denied')) {
+          showToast("Write Blocked by Rules", "Go to Firebase > Firestore > Security tab, change to 'allow read, write: if true;' and click Publish.", "error");
+        } else {
+          showToast("Sync Error", err.message || "Failed to push to cloud database.", "error");
+        }
       }
     }
 
@@ -1560,7 +1593,11 @@
           executeFilterCards();
           scheduleKPIUpdate();
         }
-      }, err => console.warn("Materials sync note:", err.message));
+      }, err => {
+        if (err.message.includes('permission-denied')) {
+          console.warn("Firestore rules blocking read:", err.message);
+        }
+      });
 
       onSnapshot(collection(db, 'procurement_suppliers'), (snapshot) => {
         if (!snapshot.empty) {
@@ -1569,7 +1606,7 @@
           renderSuppliers();
           scheduleKPIUpdate();
         }
-      }, err => console.warn("Suppliers sync note:", err.message));
+      });
 
       onSnapshot(collection(db, 'procurement_pipeline'), (snapshot) => {
         if (!snapshot.empty) {
@@ -1578,10 +1615,10 @@
           renderPipeline();
           scheduleKPIUpdate();
         }
-      }, err => console.warn("Pipeline sync note:", err.message));
+      });
     }
 
-    // Optimistic Submissions
+    // FORM SUBMISSIONS
     function submitMaterial(e) {
       e.preventDefault();
       const code = document.getElementById('mat-code').value.trim().toUpperCase();
@@ -1634,7 +1671,7 @@
         }
       };
 
-      // 1. Optimistic Local UI Update (Instant 0ms latency)
+      // Optimistic Local UI Update
       materialsData.unshift(newMaterial);
       closeModal('new-entry-modal');
       e.target.reset();
@@ -1644,10 +1681,13 @@
       debouncedSaveLocalData();
       showToast("SKU Added", `${name} (${code}) created.`);
 
-      // 2. Background Cloud Sync
+      // Push to Cloud
       if (db) {
         setDoc(doc(db, 'procurement_materials', code), newMaterial).catch(err => {
           console.warn("Background cloud sync note:", err);
+          if (err.message && err.message.includes('permission-denied')) {
+            showToast("Cloud Permission Notice", "Publish Firestore security rules to persist permanently.", "error");
+          }
         });
       }
     }
@@ -1691,7 +1731,6 @@
         qcRate: "99.0%"
       };
 
-      // Optimistic Update
       suppliersData.unshift(newSupplier);
       closeModal('new-entry-modal');
       e.target.reset();
@@ -1739,7 +1778,6 @@
         dockAction: action
       };
 
-      // Optimistic Update
       pipelineData.unshift(newPO);
       closeModal('new-entry-modal');
       e.target.reset();
@@ -1754,7 +1792,6 @@
       }
     }
 
-    // Optimistic Deletion
     let pendingDelete = null;
     function promptDelete(type, key) {
       pendingDelete = { type, key };
@@ -1772,7 +1809,6 @@
       if (!pendingDelete) return;
       const { type, key } = pendingDelete;
 
-      // Optimistic Local Delete
       if (type === 'material') {
         materialsData = materialsData.filter(m => m.code !== key);
         executeFilterCards();
@@ -1789,45 +1825,11 @@
       debouncedSaveLocalData();
       showToast("Removed", `Deleted ${key}.`);
 
-      // Background Cloud Delete
       if (db) {
         const col = type === 'material' ? 'procurement_materials' : (type === 'supplier' ? 'procurement_suppliers' : 'procurement_pipeline');
         deleteDoc(doc(db, col, key)).catch(err => console.warn("Cloud delete note:", err));
       }
       pendingDelete = null;
-    }
-
-    function promptReset() {
-      pendingDelete = { type: 'system_reset', key: 'ALL' };
-      const titleEl = document.getElementById('del-modal-title');
-      const msgEl = document.getElementById('del-modal-msg');
-      if (titleEl) titleEl.innerText = "Reset Master Datasets?";
-      if (msgEl) msgEl.innerText = "This will restore the standard catalog, active vendors, and open POs back to default templates.";
-      
-      const confirmBtn = document.getElementById('del-confirm-btn');
-      if (confirmBtn) {
-        confirmBtn.onclick = async () => {
-          materialsData = [...defaultMaterials];
-          suppliersData = [...defaultSuppliers];
-          pipelineData = [...defaultPipeline];
-          debouncedSaveLocalData();
-          executeFilterCards();
-          renderSuppliers();
-          renderPipeline();
-          scheduleKPIUpdate();
-          closeModal('delete-modal');
-          showToast("Reset Complete", "Restored master templates.");
-
-          if (db) {
-            const batch = writeBatch(db);
-            defaultMaterials.forEach(m => batch.set(doc(db, 'procurement_materials', m.code), m));
-            defaultSuppliers.forEach(s => batch.set(doc(db, 'procurement_suppliers', s.id), s));
-            defaultPipeline.forEach(p => batch.set(doc(db, 'procurement_pipeline', p.poNumber), p));
-            await batch.commit().catch(e => console.warn("Batch reset note:", e));
-          }
-        };
-      }
-      openModal('delete-modal');
     }
 
     function viewMaterialDetail(code) {
@@ -1877,10 +1879,6 @@
                 <span class="shrink-0">BOM Link:</span>
                 <strong class="text-slate-800 truncate">${item.details?.productionLink || 'General System'}</strong>
               </div>
-              <div class="flex justify-between items-center gap-2">
-                <span class="shrink-0">Usage Rate:</span>
-                <strong class="text-slate-800 truncate">${item.details?.usageRate || 'Standard Daily'}</strong>
-              </div>
             </div>
           </div>
         `;
@@ -1895,11 +1893,9 @@
 
         const btn = document.getElementById('tab-' + t);
         if (btn) {
-          if (t === tabName) {
-            btn.className = 'tab-btn active-tab px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 bg-white text-slate-900 shadow-xs shrink-0 transition whitespace-nowrap';
-          } else {
-            btn.className = 'tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap';
-          }
+          btn.className = t === tabName 
+            ? 'tab-btn active-tab px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 bg-white text-slate-900 shadow-xs shrink-0 transition whitespace-nowrap'
+            : 'tab-btn px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap';
         }
 
         const mNav = document.getElementById('m-nav-' + t);
@@ -1970,9 +1966,8 @@
         const jsonLike = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
         const parsed = JSON.parse(jsonLike);
         localStorage.setItem('alu_procurement_firebase_cfg', JSON.stringify(parsed));
-        closeModal('cloud-config-modal');
         showToast("Config Saved", "Connecting to cloud database...");
-        setTimeout(() => window.location.reload(), 400);
+        setTimeout(() => window.location.reload(), 300);
       } catch (e) {
         showToast("Format Error", "Ensure the configuration is a valid JSON object.", "error");
       }
@@ -1982,10 +1977,10 @@
       localStorage.removeItem('alu_procurement_firebase_cfg');
       closeModal('cloud-config-modal');
       showToast("Config Cleared", "Reset back to local storage mode.");
-      setTimeout(() => window.location.reload(), 400);
+      setTimeout(() => window.location.reload(), 300);
     }
 
-    // Window Exposure
+    // EXPOSE GLOBALS
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.switchGallery = switchGallery;
@@ -1997,12 +1992,11 @@
     window.submitSupplier = submitSupplier;
     window.submitPO = submitPO;
     window.promptDelete = promptDelete;
-    window.promptReset = promptReset;
     window.viewMaterialDetail = viewMaterialDetail;
     window.saveCloudConfig = saveCloudConfig;
     window.clearCloudConfig = clearCloudConfig;
+    window.forceSyncAllToCloud = forceSyncAllToCloud;
 
-    // Zero-Delay Initialization
     window.addEventListener('DOMContentLoaded', () => {
       runCalculator();
 
@@ -2011,17 +2005,13 @@
       const dueInput = document.getElementById('po-due');
       if (dueInput) dueInput.value = nextWeek.toISOString().split('T')[0];
 
-      // 1. Instant local render (0ms wait time)
       renderMaterials(materialsData);
       renderSuppliers();
       renderPipeline();
       renderSOP();
       updateHeaderKPIs();
 
-      // Render static icons once
       lucide.createIcons();
-
-      // 2. Connect cloud in background
       initCloudBackend();
     });
   </script>
