@@ -167,6 +167,12 @@
             <span class="hidden sm:inline">Landed Cost</span>
           </button>
 
+          <!-- Admin-Only User Access Control Center -->
+          <button id="btn-admin-access-mgmt" onclick="openUserManagementModal()" title="Manage Account Permissions & Access" aria-label="Open Account Permissions" class="hidden p-2 sm:px-3 sm:py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 flex items-center gap-1.5 transition active:scale-95">
+            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+            <span class="hidden sm:inline">Access Control</span>
+          </button>
+
           <!-- Primary New Entry Action -->
           <button onclick="openNewEntryModal('material')" aria-label="Create New Entry" class="px-2.5 py-2 sm:px-3.5 sm:py-2 btn-gradient-primary text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition shadow-sm active:scale-95">
             <i data-lucide="plus-circle" class="w-4 h-4"></i>
@@ -972,6 +978,120 @@
     </div>
   </div>
 
+  <!-- MODAL 6B: USER ACCESS & ACCOUNT PERMISSIONS CONTROL (ADMIN ONLY) -->
+  <div id="user-management-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-3xl w-full shadow-2xl border border-slate-100 overflow-hidden my-auto flex flex-col max-h-[92vh]">
+      
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white px-5 py-4 flex items-center justify-between shrink-0 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs shrink-0 border border-amber-400/30">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-xs sm:text-sm">Account Access &amp; Permissions Manager</h3>
+              <span class="text-[9px] uppercase font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full">Admin Security</span>
+            </div>
+            <p class="text-[10px] text-slate-400">Allow or revoke system access per staff account in real time</p>
+          </div>
+        </div>
+        <button onclick="closeModal('user-management-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Main Body -->
+      <div class="p-5 space-y-5 text-xs overflow-y-auto flex-1">
+        
+        <!-- Registration of New Account Form -->
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+          <span class="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+            <i data-lucide="user-plus" class="w-4 h-4 text-sky-600"></i> Add / Register New Team Member Account
+          </span>
+          
+          <form id="form-create-user" onsubmit="submitNewUser(event)" class="space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Username / ID *</label>
+                <input type="text" id="new-user-username" required placeholder="e.g. srun.meng" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Full Legal Name *</label>
+                <input type="text" id="new-user-fullname" required placeholder="e.g. Srun Meng (QC)" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Password *</label>
+                <input type="text" id="new-user-password" required placeholder="Temporary password" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs mono focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1">Role / Designation *</label>
+                <select id="new-user-role" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
+                  <option value="Purchasing Officer">Purchasing &amp; Sourcing Officer</option>
+                  <option value="Production Head">Production &amp; Technical Head</option>
+                  <option value="Finance Department Head">Finance Department Head</option>
+                  <option value="Warehouse / QC Lead">Warehouse Inward &amp; QC Lead</option>
+                  <option value="Administrator">Administrator / General Manager</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Initial Access State</label>
+                <select id="new-user-status" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-emerald-700 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none">
+                  <option value="allowed">Allowed (Active)</option>
+                  <option value="revoked">Revoked (Suspended)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex justify-end pt-1">
+              <button type="submit" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5 transition active:scale-95">
+                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                <span>Register Account</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Registered Accounts Table -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-900 text-xs">Registered Accounts Directory (<span id="user-count-badge">0</span> Users)</span>
+            <span class="text-[10px] text-slate-500">Click toggle button to permit or block user access immediately</span>
+          </div>
+
+          <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs">
+            <div class="overflow-x-auto no-scrollbar">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-100/80 text-slate-600 font-bold uppercase text-[10px] border-b border-slate-200">
+                  <tr>
+                    <th class="py-2.5 px-3">User &amp; Username</th>
+                    <th class="py-2.5 px-3">Role</th>
+                    <th class="py-2.5 px-3 text-center">Access Status</th>
+                    <th class="py-2.5 px-3 text-right">Access Controls</th>
+                  </tr>
+                </thead>
+                <tbody id="user-accounts-table-body" class="divide-y divide-slate-100">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-slate-50 px-5 py-3 border-t border-slate-200 flex justify-between items-center shrink-0">
+        <span class="text-[10px] text-slate-500 font-medium">Changes take effect immediately on next login attempt.</span>
+        <button onclick="closeModal('user-management-modal')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-xs transition">Done</button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- MODAL 7: AUTHENTICATION / LOGIN GATE -->
   <div id="login-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto hidden">
     <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden my-auto flex flex-col">
@@ -1608,24 +1728,78 @@
     let pipelineData = [...defaultPipeline];
     let prsData = [...defaultPRs];
 
+    // MASTER USER ACCOUNTS REGISTRY WITH ALLOW/REVOKE STATE
+    const defaultUsers = [
+      {
+        username: "admin",
+        name: "Alex Miller (GM)",
+        role: "Administrator",
+        password: "admin123",
+        status: "allowed", // 'allowed' | 'revoked'
+        createdAt: "2026-09-01",
+        lastLogin: "Active"
+      },
+      {
+        username: "purchasing",
+        name: "Sophea Vorn (Buyer)",
+        role: "Purchasing Officer",
+        password: "buyer123",
+        status: "allowed",
+        createdAt: "2026-09-01",
+        lastLogin: "Active"
+      },
+      {
+        username: "engineer",
+        name: "Sokhom Phay (Tech)",
+        role: "Production Head",
+        password: "tech123",
+        status: "allowed",
+        createdAt: "2026-09-01",
+        lastLogin: "Active"
+      },
+      {
+        username: "finance",
+        name: "Katherine Seng (CFO)",
+        role: "Finance Department Head",
+        password: "fin123",
+        status: "allowed",
+        createdAt: "2026-09-01",
+        lastLogin: "Active"
+      },
+      {
+        username: "temp_contractor",
+        name: "External Auditor (Temp)",
+        role: "Purchasing Officer",
+        password: "temp123",
+        status: "revoked", // Demonstrates revoked access
+        createdAt: "2026-09-10",
+        lastLogin: "Disabled"
+      }
+    ];
+
+    let usersData = [...defaultUsers];
+
     let auth = null;
     let db = null;
     let activeUid = null;
     let currentUserSession = null;
-
-    // PRESET TEAM ACCOUNTS
-    const DEMO_ACCOUNTS = {
-      admin: { name: "Alex Miller", role: "Administrator", pass: "admin123" },
-      purchasing: { name: "Sophea Vorn", role: "Purchasing Officer", pass: "buyer123" },
-      engineer: { name: "Sokhom Phay", role: "Production Head", pass: "tech123" },
-      finance: { name: "Katherine Seng", role: "Finance Department Head", pass: "fin123" }
-    };
 
     function checkUserSession() {
       try {
         const stored = localStorage.getItem('alu_procurement_user_session');
         if (stored) {
           currentUserSession = JSON.parse(stored);
+
+          // Verify if session account has been revoked by admin in the meantime
+          const matchedUser = usersData.find(u => u.username.toLowerCase() === currentUserSession.username.toLowerCase());
+          if (matchedUser && matchedUser.status === 'revoked') {
+            localStorage.removeItem('alu_procurement_user_session');
+            currentUserSession = null;
+            showToast("Access Revoked", "Your account access has been revoked by an Administrator.", "error");
+            openAuthModal();
+            return false;
+          }
+
           updateUserInterface();
           return true;
         }
@@ -1654,6 +1828,7 @@
       const avatarEl = document.getElementById('user-avatar-badge');
       const nameEl = document.getElementById('user-display-name');
       const roleEl = document.getElementById('user-display-role');
+      const adminBtn = document.getElementById('btn-admin-access-mgmt');
 
       const initials = (currentUserSession.name || currentUserSession.username || 'AD')
         .split(' ')
@@ -1665,6 +1840,15 @@
       if (avatarEl) avatarEl.innerText = initials;
       if (nameEl) nameEl.innerText = currentUserSession.name || currentUserSession.username;
       if (roleEl) roleEl.innerText = currentUserSession.role || 'Staff Member';
+
+      // Only show the User Access Control Center to Administrators
+      if (adminBtn) {
+        if (currentUserSession.role === 'Administrator') {
+          adminBtn.classList.remove('hidden');
+        } else {
+          adminBtn.classList.add('hidden');
+        }
+      }
     }
 
     window.quickFillAccount = function(username, pass, role, fullName) {
@@ -1676,7 +1860,6 @@
       if (pInput) pInput.value = pass;
       if (rSelect) rSelect.value = role;
 
-      // Auto submit login
       executeLoginProcess(username, pass, role, fullName);
     };
 
@@ -1687,39 +1870,43 @@
       const role = document.getElementById('login-role').value;
 
       let fullName = username.charAt(0).toUpperCase() + username.slice(1);
-      if (DEMO_ACCOUNTS[username.toLowerCase()]) {
-        fullName = DEMO_ACCOUNTS[username.toLowerCase()].name;
-      }
+      const matched = usersData.find(u => u.username.toLowerCase() === username.toLowerCase());
+      if (matched) fullName = matched.name;
 
       executeLoginProcess(username, pass, role, fullName);
     };
 
     async function executeLoginProcess(username, password, role, fullName) {
       const btnText = document.getElementById('btn-login-text');
-      if (btnText) btnText.innerText = "Authenticating...";
+      if (btnText) btnText.innerText = "Verifying Access...";
 
-      // Attempt Firebase Auth sign in if user supplied an email, or with local fallback
-      const emailDomain = username.includes('@') ? username : `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@aluglass.internal`;
+      // 1. Check account against Users Registry
+      const userRecord = usersData.find(u => u.username.toLowerCase() === username.toLowerCase());
 
-      try {
-        if (auth) {
-          try {
-            await signInWithEmailAndPassword(auth, emailDomain, password);
-          } catch (fbErr) {
-            // If account doesn't exist, create it in Firebase Auth
-            if (fbErr.code === 'auth/user-not-found' || fbErr.code === 'auth/invalid-credential') {
-              try {
-                await createUserWithEmailAndPassword(auth, emailDomain, password);
-              } catch (createErr) {
-                console.info("Firebase Auth note (operating with local resilient session):", createErr.message);
-              }
-            } else {
-              console.info("Firebase Auth note:", fbErr.message);
-            }
-          }
+      if (userRecord) {
+        // Verify Password
+        if (userRecord.password && userRecord.password !== password) {
+          if (btnText) btnText.innerText = "Sign In to Dashboard";
+          showToast("Authentication Failed", "Incorrect password entered for this user.", "error");
+          return;
         }
-      } catch (err) {
-        console.warn("Auth pipeline notice:", err);
+
+        // CRITICAL ACCESS CONTROL CHECK: Allow vs Revoke
+        if (userRecord.status === 'revoked') {
+          if (btnText) btnText.innerText = "Sign In to Dashboard";
+          showToast(
+            "Access Denied", 
+            `Account [${username}] is currently REVOKED by management. Please contact an Administrator to restore access.`, 
+            "error"
+          );
+          return;
+        }
+
+        // Keep official role from registry
+        role = userRecord.role;
+        fullName = userRecord.name;
+        userRecord.lastLogin = new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        debouncedSaveLocalData();
       }
 
       // Establish authenticated session
@@ -1748,6 +1935,154 @@
       openAuthModal();
     };
 
+    // USER ACCESS MANAGEMENT FUNCTIONS (ADMIN ONLY)
+    function openUserManagementModal() {
+      if (!currentUserSession || currentUserSession.role !== 'Administrator') {
+        showToast("Access Restricted", "Only Administrators can manage user account permissions.", "error");
+        return;
+      }
+      renderUserAccountsTable();
+      openModal('user-management-modal');
+    }
+
+    function renderUserAccountsTable() {
+      const tbody = document.getElementById('user-accounts-table-body');
+      const badge = document.getElementById('user-count-badge');
+      if (badge) badge.innerText = usersData.length;
+      if (!tbody) return;
+
+      tbody.innerHTML = usersData.map(u => {
+        const isSelf = currentUserSession && currentUserSession.username.toLowerCase() === u.username.toLowerCase();
+        const isAllowed = u.status === 'allowed';
+
+        const statusBadge = isAllowed 
+          ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Allowed
+             </span>`
+          : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
+               <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span> Access Revoked
+             </span>`;
+
+        let toggleBtn = '';
+        if (isSelf) {
+          toggleBtn = `<span class="text-[10px] font-semibold text-slate-400 italic">Current User</span>`;
+        } else if (isAllowed) {
+          toggleBtn = `
+            <button onclick="toggleUserAccess('${u.username}', 'revoked')" class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-bold rounded-lg transition active:scale-95 flex items-center gap-1">
+              <i data-lucide="ban" class="w-3 h-3 text-rose-600"></i>
+              <span>Revoke Access</span>
+            </button>
+          `;
+        } else {
+          toggleBtn = `
+            <button onclick="toggleUserAccess('${u.username}', 'allowed')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 font-bold rounded-lg transition active:scale-95 flex items-center gap-1">
+              <i data-lucide="check-circle" class="w-3 h-3 text-emerald-600"></i>
+              <span>Allow Access</span>
+            </button>
+          `;
+        }
+
+        const deleteBtn = isSelf || u.username === 'admin'
+          ? ''
+          : `<button onclick="deleteUserAccount('${u.username}')" class="p-1 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Delete Account">
+               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+             </button>`;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition">
+            <td class="py-2.5 px-3">
+              <span class="font-bold text-slate-900 block">${u.name}</span>
+              <span class="mono text-[10px] text-slate-400 block">${u.username}</span>
+            </td>
+            <td class="py-2.5 px-3 font-medium text-slate-700">
+              ${u.role}
+            </td>
+            <td class="py-2.5 px-3 text-center">
+              ${statusBadge}
+            </td>
+            <td class="py-2.5 px-3 text-right">
+              <div class="flex items-center justify-end gap-1.5">
+                ${toggleBtn}
+                ${deleteBtn}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function toggleUserAccess(username, newStatus) {
+      const user = usersData.find(u => u.username.toLowerCase() === username.toLowerCase());
+      if (!user) return;
+
+      user.status = newStatus;
+      debouncedSaveLocalData();
+      renderUserAccountsTable();
+
+      const actionText = newStatus === 'allowed' ? 'Access Restored & Allowed' : 'Access Revoked & Blocked';
+      showToast(actionText, `Account [${username}] is now ${newStatus.toUpperCase()}.`);
+
+      if (db) {
+        setDoc(doc(db, 'procurement_users', username), JSON.parse(JSON.stringify(user))).catch(err => {
+          console.warn("Cloud user sync note:", err);
+        });
+      }
+    }
+
+    function submitNewUser(e) {
+      e.preventDefault();
+      const username = document.getElementById('new-user-username').value.trim().toLowerCase();
+      const fullname = document.getElementById('new-user-fullname').value.trim();
+      const password = document.getElementById('new-user-password').value.trim();
+      const role = document.getElementById('new-user-role').value;
+      const status = document.getElementById('new-user-status').value;
+
+      if (usersData.some(u => u.username.toLowerCase() === username)) {
+        showToast("Account Exists", `Username '${username}' is already in use.`, "error");
+        return;
+      }
+
+      const newUser = {
+        username,
+        name: fullname,
+        role,
+        password,
+        status,
+        createdAt: new Date().toISOString().split('T')[0],
+        lastLogin: "Never"
+      };
+
+      usersData.unshift(newUser);
+      debouncedSaveLocalData();
+      renderUserAccountsTable();
+      e.target.reset();
+
+      showToast("Account Created", `User '${fullname}' (${username}) added with status: ${status.toUpperCase()}.`);
+
+      if (db) {
+        setDoc(doc(db, 'procurement_users', username), JSON.parse(JSON.stringify(newUser))).catch(err => {
+          console.warn("Cloud user upload note:", err);
+        });
+      }
+    }
+
+    function deleteUserAccount(username) {
+      if (username.toLowerCase() === 'admin') {
+        showToast("Protected", "Cannot delete primary admin account.", "error");
+        return;
+      }
+      usersData = usersData.filter(u => u.username.toLowerCase() !== username.toLowerCase());
+      debouncedSaveLocalData();
+      renderUserAccountsTable();
+      showToast("Account Removed", `User '${username}' was deleted.`);
+
+      if (db) {
+        deleteDoc(doc(db, 'procurement_users', username)).catch(() => {});
+      }
+    }
+
     function loadLocalData() {
       try {
         const m = localStorage.getItem('alu_procurement_materials');
@@ -1770,6 +2105,11 @@
           const parsed = JSON.parse(r);
           if (Array.isArray(parsed) && parsed.length > 0) prsData = parsed;
         }
+        const u = localStorage.getItem('alu_procurement_users');
+        if (u) {
+          const parsed = JSON.parse(u);
+          if (Array.isArray(parsed) && parsed.length > 0) usersData = parsed;
+        }
       } catch (e) {
         console.warn("Storage parse error:", e);
       }
@@ -1784,6 +2124,7 @@
           localStorage.setItem('alu_procurement_suppliers', JSON.stringify(suppliersData));
           localStorage.setItem('alu_procurement_pipeline', JSON.stringify(pipelineData));
           localStorage.setItem('alu_procurement_prs', JSON.stringify(prsData));
+          localStorage.setItem('alu_procurement_users', JSON.stringify(usersData));
         } catch (e) {
           console.warn("Storage write error:", e);
         }
@@ -2380,8 +2721,16 @@
           console.log(`[Firestore Upload -> 'default'] Saved PR: ${pr.prNumber}`);
         }
 
+        // 5. Upload User Accounts Registry
+        for (const user of usersData) {
+          const cleanUser = JSON.parse(JSON.stringify(user));
+          await setDoc(doc(db, 'procurement_users', user.username), cleanUser);
+          count++;
+          console.log(`[Firestore Upload -> 'default'] Saved User Account: ${user.username}`);
+        }
+
         console.log(`[Firestore Complete] Stored ${count} total documents into database 'default'!`);
-        showToast("Cloud Synchronized!", `Uploaded ${materialsData.length} SKUs, ${prsData.length} PRs, ${suppliersData.length} vendors, and ${pipelineData.length} POs.`);
+        showToast("Cloud Synchronized!", `Uploaded catalog and ${usersData.length} team account permissions.`);
         closeModal('cloud-config-modal');
       } catch (err) {
         console.error("Direct document upload failed:", err);
@@ -2430,6 +2779,18 @@
         }
       }, err => {
         console.warn("PR snapshot listener note:", err.message);
+      });
+
+      onSnapshot(collection(db, 'procurement_users'), (snapshot) => {
+        if (!snapshot.empty) {
+          usersData = snapshot.docs.map(d => d.data());
+          debouncedSaveLocalData();
+          if (currentUserSession && currentUserSession.role === 'Administrator') {
+            renderUserAccountsTable();
+          }
+        }
+      }, err => {
+        console.warn("User registry listener note:", err.message);
       });
     }
 
@@ -3194,6 +3555,10 @@
     window.calculatePRBudget = calculatePRBudget;
     window.promptDelete = promptDelete;
     window.viewMaterialDetail = viewMaterialDetail;
+    window.openUserManagementModal = openUserManagementModal;
+    window.toggleUserAccess = toggleUserAccess;
+    window.submitNewUser = submitNewUser;
+    window.deleteUserAccount = deleteUserAccount;
 
     // APPLICATION BOOT SEQUENCE
     window.addEventListener('DOMContentLoaded', () => {
