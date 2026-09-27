@@ -92,42 +92,10 @@
       }
     }
 
-    .btn-gradient-primary {
-      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-      box-shadow: 0 2px 6px -1px rgba(2, 132, 199, 0.35);
-      transition: all 0.15s ease;
-    }
-    .btn-gradient-primary:hover {
-      background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
-      box-shadow: 0 4px 10px -1px rgba(2, 132, 199, 0.45);
-    }
-    .btn-gradient-primary:active { transform: scale(0.98); }
-
-    .btn-gradient-purple {
-      background: linear-gradient(135deg, #7e22ce 0%, #6b21a8 100%);
-      box-shadow: 0 2px 6px -1px rgba(126, 34, 206, 0.35);
-      transition: all 0.15s ease;
-    }
-    .btn-gradient-purple:hover {
-      background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
-      box-shadow: 0 4px 10px -1px rgba(126, 34, 206, 0.45);
-    }
-    .btn-gradient-purple:active { transform: scale(0.98); }
-
-    .btn-gradient-emerald {
-      background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      box-shadow: 0 2px 6px -1px rgba(5, 150, 105, 0.35);
-      transition: all 0.15s ease;
-    }
-    .btn-gradient-emerald:hover {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      box-shadow: 0 4px 10px -1px rgba(5, 150, 105, 0.45);
-    }
-    .btn-gradient-emerald:active { transform: scale(0.98); }
-
     .pulse-amber { animation: pulse-ring-amber 2s infinite; }
     .pulse-purple { animation: pulse-ring-purple 2s infinite; }
     .pulse-emerald { animation: pulse-ring-emerald 2s infinite; }
+    .pulse-rose { animation: pulse-ring-rose 2s infinite; }
 
     @keyframes pulse-ring-amber {
       0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6); }
@@ -143,6 +111,11 @@
       0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
       70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
       100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    @keyframes pulse-ring-rose {
+      0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.6); }
+      70% { box-shadow: 0 0 0 6px rgba(225, 29, 72, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
     }
 
     .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -202,7 +175,7 @@
           <div class="hidden xl:flex items-center gap-6 border-r border-slate-800 pr-5 text-xs">
             <div>
               <span class="text-slate-400 block text-[9px] uppercase tracking-wider">Catalog SKUs</span>
-              <span class="font-bold text-slate-100 mono text-xs sm:text-sm" id="sku-count-header">9</span>
+              <span class="font-bold text-slate-100 mono text-xs sm:text-sm" id="sku-count-header">8</span>
             </div>
             <div>
               <span class="text-slate-400 block text-[9px] uppercase tracking-wider">Requisitions</span>
@@ -224,7 +197,7 @@
             <span class="inline">+ New Entry</span>
           </button>
 
-          <!-- Master Admin Access Control Button (Instantly Accessible in Top Header) -->
+          <!-- Master Admin Access Control Button (Header Direct Trigger) -->
           <button onclick="openModal('user-management-modal')" id="header-admin-access-btn" class="flex px-2.5 py-2 sm:px-3 sm:py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg items-center gap-1.5 transition shadow-sm active:scale-95" title="Master Admin Access & Permissions Control">
             <i data-lucide="shield" class="w-4 h-4 text-indigo-200"></i>
             <span class="hidden sm:inline">Access Control</span>
@@ -290,10 +263,10 @@
         <div class="flex items-center gap-2 w-full md:w-auto">
           <div class="relative flex-1 md:w-64 lg:w-80">
             <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-            <input type="text" id="gallery-search" oninput="filterCards()" placeholder="Search code, specs, vendors..." class="w-full pl-9 pr-3 py-1.5 bg-slate-50 hover:bg-slate-100 focus:bg-white text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition">
+            <input type="text" id="gallery-search" oninput="filterCards()" placeholder="Search code, specs, vendors, PRs..." class="w-full pl-9 pr-3 py-1.5 bg-slate-50 hover:bg-slate-100 focus:bg-white text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition">
           </div>
 
-          <div class="relative shrink-0">
+          <div class="relative shrink-0" id="category-filter-wrapper">
             <select id="category-filter" onchange="filterCards()" aria-label="Filter by material category" class="bg-slate-50 border border-slate-200 text-xs font-medium rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
               <option value="all">All Categories</option>
               <option value="aluminum">Aluminum</option>
@@ -360,6 +333,54 @@
           <i data-lucide="plus-circle" class="w-4 h-4"></i>
           <span>Create New PR</span>
         </button>
+      </div>
+
+      <!-- PR Status Filter Pills & Quick Sorter Bar -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-2.5 sm:p-3 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        
+        <!-- Status Filter Pills -->
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
+          <button onclick="setPRFilter('all')" id="pr-filter-all" class="pr-filter-btn px-3 py-1.5 rounded-xl font-semibold bg-purple-600 text-white shadow-xs shrink-0 transition flex items-center gap-1.5">
+            <span>All PRs</span>
+            <span class="bg-white/20 text-white text-[10px] px-1.5 py-0.2 rounded-full" id="pr-filter-count-all">3</span>
+          </button>
+
+          <button onclick="setPRFilter('pending-step1')" id="pr-filter-pending-step1" class="pr-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            <span>Pending Step 1 (Tech)</span>
+            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full" id="pr-filter-count-step1">1</span>
+          </button>
+
+          <button onclick="setPRFilter('pending-step2')" id="pr-filter-pending-step2" class="pr-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+            <span>Pending Step 2 (Finance)</span>
+            <span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full" id="pr-filter-count-step2">1</span>
+          </button>
+
+          <button onclick="setPRFilter('approved')" id="pr-filter-approved" class="pr-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Approved / Ready</span>
+            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full" id="pr-filter-count-approved">1</span>
+          </button>
+
+          <button onclick="setPRFilter('rejected')" id="pr-filter-rejected" class="pr-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+            <span>Returned / Rejected</span>
+            <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full" id="pr-filter-count-rejected">0</span>
+          </button>
+        </div>
+
+        <!-- PR Sorting Dropdown -->
+        <div class="flex items-center gap-2 shrink-0 self-end lg:self-auto text-xs">
+          <span class="text-slate-400 text-[11px] font-medium hidden sm:inline">Sort:</span>
+          <select id="pr-sort-select" onchange="setPRSort(this.value)" class="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500/20">
+            <option value="newest">Newest First</option>
+            <option value="due">Due Date (Soonest)</option>
+            <option value="budget">Estimated Budget (Highest)</option>
+            <option value="priority">Priority (Critical &rarr; Routine)</option>
+          </select>
+        </div>
+
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4" id="prs-grid"></div>
@@ -450,10 +471,8 @@
 
   <!-- RIGHT SLIDE-OVER DRAWER: USER PROFILE, CLOUD STATUS & ACCESS CONTROL -->
   <div id="user-profile-sidebar" class="fixed inset-0 z-50 hidden">
-    <!-- Backdrop overlay -->
     <div onclick="closeSidebar('user-profile-sidebar')" class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300"></div>
     
-    <!-- Drawer Panel -->
     <div class="absolute inset-y-0 right-0 max-w-md w-full bg-white shadow-2xl flex flex-col border-l border-slate-200 transform transition-transform duration-300 ease-in-out">
       
       <!-- Drawer Header -->
@@ -492,7 +511,7 @@
           </div>
         </div>
 
-        <!-- Cloud Connection Status Card (Integrated into Sidebar) -->
+        <!-- Cloud Connection Status Card -->
         <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-4 text-white border border-slate-700 shadow-sm space-y-3">
           <div class="flex items-center justify-between">
             <span class="font-semibold text-slate-200 text-xs flex items-center gap-2">
@@ -551,7 +570,6 @@
         <div class="space-y-2">
           <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Workspace Utilities</span>
           
-          <!-- Master Admin Access in Utilities list as fallback -->
           <button onclick="closeSidebar('user-profile-sidebar'); openModal('user-management-modal');" id="sidebar-util-access-btn" class="w-full p-2.5 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl flex items-center justify-between transition text-indigo-900 font-semibold">
             <div class="flex items-center gap-2">
               <i data-lucide="shield-check" class="w-4 h-4 text-indigo-600"></i>
@@ -560,7 +578,6 @@
             <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-indigo-400"></i>
           </button>
 
-          <!-- Landed Cost Tool -->
           <button onclick="closeSidebar('user-profile-sidebar'); openModal('quick-calc-modal');" class="w-full p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-between transition text-slate-700">
             <div class="flex items-center gap-2">
               <i data-lucide="calculator" class="w-4 h-4 text-sky-600"></i>
@@ -569,7 +586,6 @@
             <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
           </button>
 
-          <!-- Cloud Diagnostics -->
           <button onclick="closeSidebar('user-profile-sidebar'); openModal('cloud-config-modal');" class="w-full p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-between transition text-slate-700">
             <div class="flex items-center gap-2">
               <i data-lucide="database" class="w-4 h-4 text-emerald-600"></i>
@@ -596,7 +612,6 @@
   <div id="login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col my-auto">
       
-      <!-- Brand Top -->
       <div class="bg-slate-900 text-white p-6 text-center space-y-2 relative">
         <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/30 mx-auto">
           <i data-lucide="lock" class="w-6 h-6 text-white"></i>
@@ -605,7 +620,6 @@
         <p class="text-xs text-slate-400">Enterprise Fenestration Procurement Gateway</p>
       </div>
 
-      <!-- Login Form -->
       <form onsubmit="handleLoginSubmit(event)" class="p-6 space-y-4 text-xs">
         <div id="login-error-alert" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium"></div>
 
@@ -623,7 +637,6 @@
           Sign In to System
         </button>
 
-        <!-- Quick Switcher Demo Accounts -->
         <div class="pt-3 border-t border-slate-200">
           <span class="text-[10px] uppercase font-bold text-slate-400 block mb-2 text-center">Quick Role Access (One-Click)</span>
           <div class="grid grid-cols-2 gap-2 text-[11px]">
@@ -656,7 +669,6 @@
 
       <div class="p-6 space-y-5 overflow-y-auto flex-1 text-xs">
         
-        <!-- Add New User Form -->
         <form onsubmit="handleCreateUser(event)" class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
           <h4 class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
             <i data-lucide="user-plus" class="w-4 h-4 text-emerald-600"></i> Register New Staff Account
@@ -691,7 +703,6 @@
           </div>
         </form>
 
-        <!-- User Accounts Table -->
         <div class="border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <table class="w-full text-left border-collapse text-xs">
             <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
@@ -714,11 +725,10 @@
     </div>
   </div>
 
-  <!-- MODAL: DYNAMIC 2-STEP PR APPROVAL SIGN-OFF -->
+  <!-- MODAL: DYNAMIC 2-STEP PR APPROVAL & REJECTION SIGN-OFF (WITH MULTI-ITEM PREVIEW) -->
   <div id="pr-approval-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
+    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
       
-      <!-- Modal Header -->
       <div id="pr-modal-header" class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
           <i data-lucide="check-square" class="w-5 h-5 text-purple-400"></i>
@@ -732,35 +742,44 @@
         </button>
       </div>
 
-      <!-- Modal Body -->
       <form onsubmit="submitPRApproval(event)" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
         <input type="hidden" id="pr-approval-target-pr">
         <input type="hidden" id="pr-approval-target-step">
 
-        <!-- Target PR Summary Box -->
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1.5">
-          <div class="flex justify-between items-center text-slate-500">
-            <span>Item Requested:</span>
-            <strong class="text-slate-800" id="pr-approval-item-name">Loading...</strong>
+        <!-- Multi-Item Line Summary Box -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2">
+          <div class="flex justify-between items-center text-slate-600">
+            <span class="font-semibold text-slate-700">Project / Demand:</span>
+            <span class="font-bold text-slate-900" id="pr-approval-bom-display">SD-100</span>
           </div>
-          <div class="flex justify-between items-center text-slate-500">
-            <span>Estimated Budget:</span>
-            <strong class="mono text-emerald-700 font-bold" id="pr-approval-budget">$0.00</strong>
+          
+          <div class="border border-slate-200 rounded-lg overflow-hidden bg-white">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-slate-100 text-slate-600 text-[11px]">
+                <tr>
+                  <th class="p-2">Item Code</th>
+                  <th class="p-2">Description</th>
+                  <th class="p-2 text-right">Qty</th>
+                  <th class="p-2 text-right">Unit Rate</th>
+                  <th class="p-2 text-right">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody id="pr-approval-items-tbody" class="divide-y divide-slate-100"></tbody>
+            </table>
           </div>
-          <div class="flex justify-between items-center text-slate-500">
-            <span>Required By Date:</span>
-            <strong class="mono text-slate-700" id="pr-approval-due">--</strong>
+
+          <div class="flex justify-between items-center text-xs pt-1">
+            <span class="text-slate-500">Required By: <strong class="mono text-slate-800" id="pr-approval-due">--</strong></span>
+            <span class="text-slate-700 font-semibold">Grand Estimated Total: <strong class="mono text-emerald-700 text-sm font-bold" id="pr-approval-budget">$0.00</strong></span>
           </div>
         </div>
 
-        <!-- Approver Legal Name Input (Mandatory User Requirement) -->
         <div>
           <label class="block font-medium text-slate-700 mb-1">Approver Full Name (Direct Signatory) *</label>
           <input type="text" id="pr-approver-name" required placeholder="e.g. Alex Miller or Somnang Seng" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500">
           <p class="text-[10px] text-slate-400 mt-1">This name will be permanently stamped on the official audit voucher docket.</p>
         </div>
 
-        <!-- Role / Authority Tier -->
         <div>
           <label class="block font-medium text-slate-700 mb-1">Signatory Title / Designation *</label>
           <select id="pr-approver-role" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-medium">
@@ -770,25 +789,24 @@
           </select>
         </div>
 
-        <!-- Security Clearance Banner for Step 2 -->
         <div id="pr-step2-security-notice" class="hidden p-2.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-[11px] flex items-center gap-2">
           <i data-lucide="shield-alert" class="w-4 h-4 text-purple-600 shrink-0"></i>
           <span><strong>Authorized Clearance:</strong> Step 2 final sign-off is restricted to <strong>Finance Dept Head</strong> and <strong>Master Admin</strong>.</span>
         </div>
 
-        <!-- Decision Selector -->
         <div>
           <label class="block font-medium text-slate-700 mb-1">Authorization Decision *</label>
-          <select id="pr-approver-decision" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-emerald-800 bg-emerald-50 border-emerald-200">
+          <select id="pr-approver-decision" onchange="handleDecisionChange()" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-emerald-800 bg-emerald-50 border-emerald-200">
             <option value="Approved">Endorse &amp; Approve</option>
             <option value="Approved with Conditions">Approve with Conditions</option>
+            <option value="Rejected">❌ Reject / Return for Revision</option>
           </select>
         </div>
 
-        <!-- Remarks / Conditions -->
         <div>
-          <label class="block font-medium text-slate-700 mb-1">Signatory Notes &amp; Verification Remarks</label>
-          <textarea id="pr-approver-remarks" rows="2.5" placeholder="e.g. Specifications verified against SD-100 CAD profile. Expedite delivery to Bay 2." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs"></textarea>
+          <label class="block font-medium text-slate-700 mb-1" id="pr-remarks-label">Signatory Notes &amp; Verification Remarks</label>
+          <textarea id="pr-approver-remarks" rows="2.5" placeholder="e.g. Specifications and tolerances verified against CAD schedule." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs"></textarea>
+          <p class="text-[10px] text-slate-400 mt-1" id="pr-remarks-hint">Required when rejecting to explain reasons to the requester.</p>
         </div>
 
         <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
@@ -801,17 +819,81 @@
     </div>
   </div>
 
-  <!-- MODAL: OFFICIAL PR DOCKET & PRINT VOUCHER -->
+  <!-- MODAL: REVISE & RESUBMIT REQUISITION (MULTI-LINE READY) -->
+  <div id="pr-revision-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
+      <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="edit-3" class="w-5 h-5 text-amber-400"></i>
+          <div>
+            <h3 class="font-bold text-sm">Revise &amp; Resubmit Requisition</h3>
+            <p class="text-[11px] text-slate-400 mono" id="revise-modal-pr-num">PR-2026-001</p>
+          </div>
+        </div>
+        <button onclick="closeModal('pr-revision-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="submitPRRevision(event)" class="p-6 space-y-3.5 text-xs overflow-y-auto flex-1">
+        <input type="hidden" id="revise-target-pr">
+
+        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-800 space-y-1">
+          <div class="flex items-center gap-1.5 font-bold text-rose-900">
+            <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-600 shrink-0"></i>
+            <span>Approver Feedback to Address:</span>
+          </div>
+          <p class="text-[11px] italic" id="revise-previous-feedback">Loading notes...</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Required Delivery Date *</label>
+            <input type="date" id="revise-due-date" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-700 mb-1">Project / BOM Assignment *</label>
+            <input type="text" id="revise-bom" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+          </div>
+        </div>
+
+        <!-- Editable Line Items Schedule -->
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Requisition Line Items</label>
+          <div class="border border-slate-200 rounded-xl overflow-hidden bg-slate-50 p-2.5 space-y-2">
+            <div id="revise-items-container" class="space-y-2 max-h-56 overflow-y-auto pr-1"></div>
+            <div class="flex justify-between items-center pt-2 border-t border-slate-200">
+              <span class="font-bold text-slate-700">Revised Budget Total:</span>
+              <span class="mono font-bold text-amber-900 text-sm" id="revise-est-budget">$0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Revision Changelog Notes *</label>
+          <textarea id="revise-changelog" required rows="2" placeholder="e.g. Corrected profile thickness and adjusted quantities to fit revised facade schedule." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs"></textarea>
+        </div>
+
+        <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
+          <button type="button" onclick="closeModal('pr-revision-modal')" class="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl shadow-sm transition">
+            Resubmit to Step 1 Review
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: OFFICIAL PR DOCKET & PRINT VOUCHER (MULTI-LINE INVOICE READY) -->
   <div id="pr-docket-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-3xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[95vh]">
+    <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[95vh]">
       
-      <!-- Voucher Modal Header (Hidden during Print) -->
       <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shrink-0 no-print">
         <div class="flex items-center gap-2.5">
           <i data-lucide="printer" class="w-5 h-5 text-purple-400"></i>
           <div>
             <h3 class="font-bold text-sm">Official Purchase Requisition Voucher</h3>
-            <p class="text-[11px] text-slate-400">Printable Form 01 Authorization Sheet</p>
+            <p class="text-[11px] text-slate-400">Printable Form 01 Multi-Line Demand Docket</p>
           </div>
         </div>
         <div class="flex items-center gap-2">
@@ -824,26 +906,25 @@
         </div>
       </div>
 
-      <!-- Printable Voucher Body -->
       <div id="pr-voucher-body" class="p-6 sm:p-8 space-y-6 overflow-y-auto flex-1 text-slate-800 text-xs"></div>
 
       <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-between items-center shrink-0 no-print">
-        <span class="text-[11px] text-slate-500">Internal Audit Compliance: Standard Form 01</span>
+        <span class="text-[11px] text-slate-500">Internal Audit Compliance: Standard Form 01 (Multi-Item Docket)</span>
         <button onclick="closeModal('pr-docket-modal')" class="px-4 py-1.5 bg-slate-900 text-white font-semibold rounded-lg text-xs">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: DIRECT DATA ENTRY (NEW MATERIAL, PR, VENDOR, PO) -->
+  <!-- MODAL: DIRECT DATA ENTRY -->
   <div id="new-entry-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
+    <div class="bg-white rounded-2xl max-w-3xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
       
       <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
           <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-400"></i>
           <div>
             <h3 class="font-bold text-sm">Direct Operations Entry</h3>
-            <p class="text-[11px] text-slate-400">Create Material SKU, PR Requisition, Vendor, or PO</p>
+            <p class="text-[11px] text-slate-400">Create Material SKU, Multi-Line PR, Vendor, or PO</p>
           </div>
         </div>
         <button onclick="closeModal('new-entry-modal')" class="text-slate-400 hover:text-white p-1">
@@ -851,7 +932,6 @@
         </button>
       </div>
 
-      <!-- Entry Tab Switcher -->
       <div class="flex border-b border-slate-200 px-6 bg-slate-50 text-xs font-medium overflow-x-auto no-scrollbar shrink-0">
         <button type="button" id="entry-tab-material" onclick="switchEntryTab('material')" class="px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
           <i data-lucide="box" class="w-3.5 h-3.5"></i> Material SKU
@@ -937,9 +1017,9 @@
         </div>
       </form>
 
-      <!-- FORM 2: CREATE PURCHASE REQUISITION (PR) -->
-      <form id="form-add-pr" onsubmit="submitPR(event)" class="p-6 space-y-3.5 text-xs overflow-y-auto flex-1 hidden">
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <!-- FORM 2: CREATE MULTI-LINE PURCHASE REQUISITION (PR) -->
+      <form id="form-add-pr" onsubmit="submitPR(event)" class="p-6 space-y-4 text-xs overflow-y-auto flex-1 hidden">
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
           <div>
             <label class="block font-medium text-slate-700 mb-1">Requisition No. *</label>
             <input type="text" id="pr-num" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase font-bold text-purple-700 bg-purple-50">
@@ -956,37 +1036,10 @@
           <div>
             <label class="block font-medium text-slate-700 mb-1">Priority Level *</label>
             <select id="pr-priority" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-semibold">
-              <option value="Routine">Routine (Lead time normal)</option>
+              <option value="Routine">Routine (Normal)</option>
               <option value="Urgent">Urgent (Low stock)</option>
               <option value="Critical Line-Stop">Critical (Line-stop risk)</option>
             </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Material SKU Selector *</label>
-            <select id="pr-sku-select" onchange="autoFillPRFromSKU()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-mono"></select>
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Item Title / Description</label>
-            <input type="text" id="pr-item-name" required placeholder="Material name" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Technical Specification Reference</label>
-          <input type="text" id="pr-item-specs" required placeholder="Specs and finishes" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Requested Quantity *</label>
-            <input type="number" id="pr-qty" required value="500" oninput="calculatePRBudget()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Est. Unit Rate ($)</label>
-            <input type="number" step="0.01" id="pr-unit-rate" required value="2.65" oninput="calculatePRBudget()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
           </div>
           <div>
             <label class="block font-medium text-slate-700 mb-1">Required Delivery Date *</label>
@@ -994,20 +1047,33 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Project / BOM Assignment</label>
-            <input type="text" id="pr-bom-proj" required placeholder="e.g. SD-100 Sliding System - Tower A" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+        <div>
+          <label class="block font-medium text-slate-700 mb-1">Project Assignment / Work Order *</label>
+          <input type="text" id="pr-bom-proj" required placeholder="e.g. SD-100 Sliding System - Tower A Facade" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+        </div>
+
+        <!-- Dynamic Multi-Line Items Builder -->
+        <div class="border border-purple-200 rounded-xl overflow-hidden bg-purple-50/30 p-3 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-purple-950 text-xs flex items-center gap-1.5">
+              <i data-lucide="list-plus" class="w-4 h-4 text-purple-700"></i>
+              <span>Requisition Line Items Schedule</span>
+            </span>
+            <button type="button" onclick="addPRLineRow()" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-[11px] font-semibold flex items-center gap-1 transition shadow-xs">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>Add Line Item</span>
+            </button>
           </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Total Estimated Investment</label>
-            <div class="px-3 py-2 bg-purple-50 border border-purple-200 rounded-lg mono font-bold text-purple-900 text-sm" id="pr-est-budget-display">
-              $1,325.00
-            </div>
+
+          <div class="space-y-2" id="pr-lines-builder-container"></div>
+
+          <div class="flex justify-between items-center pt-2 border-t border-purple-200">
+            <span class="text-slate-600 font-medium">Requisition Total Budget:</span>
+            <span class="mono font-bold text-purple-950 text-base" id="pr-lines-grand-total">$0.00</span>
           </div>
         </div>
 
-        <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
+        <div class="pt-2 border-t border-slate-200 flex justify-end gap-2">
           <button type="button" onclick="closeModal('new-entry-modal')" class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
           <button type="submit" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg shadow-sm">Submit PR to Sign-off Gate</button>
         </div>
@@ -1312,7 +1378,112 @@
       return ICONS.box;
     }
 
-    // DEFAULT MASTER DATASETS
+    function getPriorityBadgeClass(priority) {
+      const p = String(priority || '').toLowerCase();
+      if (p.includes('crit') || p.includes('stop')) return 'bg-rose-100 text-rose-800 border-rose-300 font-bold';
+      if (p.includes('urg')) return 'bg-amber-100 text-amber-800 border-amber-300 font-semibold';
+      return 'bg-sky-100 text-sky-800 border-sky-300 font-medium';
+    }
+
+    // MULTI-ITEM DEFENSIVE SANITIZER
+    // Ensures every PR has an array of `items` and a computed `estimatedTotal`
+    function sanitizePR(raw) {
+      if (!raw) return null;
+
+      let items = [];
+      if (Array.isArray(raw.items) && raw.items.length > 0) {
+        items = raw.items.map(it => {
+          const q = Number(it.quantity || it.qty || 1);
+          const r = Number(it.unitRate || it.rate || 0);
+          return {
+            itemCode: it.itemCode || 'SKU-GEN',
+            itemName: it.itemName || 'Architectural Specification Item',
+            itemSpecs: it.itemSpecs || 'Standard architectural specifications',
+            quantity: q,
+            uom: (it.uom || 'UNITS').toUpperCase(),
+            unitRate: r,
+            extendedTotal: Number(it.extendedTotal || (q * r))
+          };
+        });
+      } else {
+        // Legacy single item migration
+        const q = Number(raw.quantity || raw.qty || 1);
+        const r = Number(raw.unitRate || raw.rate || raw.stdCost || 0);
+        items = [{
+          itemCode: raw.itemCode || 'SKU-GEN',
+          itemName: raw.itemName || raw.name || raw.itemTitle || 'Architectural Specification SKU',
+          itemSpecs: raw.itemSpecs || raw.specs || raw.description || 'Standard specifications',
+          quantity: q,
+          uom: (raw.uom || 'UNITS').toUpperCase(),
+          unitRate: r,
+          extendedTotal: Number(raw.estimatedTotal || (q * r))
+        }];
+      }
+
+      const grandTotal = items.reduce((sum, it) => sum + (it.extendedTotal || 0), 0);
+      const totalUnits = items.reduce((sum, it) => sum + (it.quantity || 0), 0);
+
+      const priority = raw.priority || 'Routine';
+      const step1 = raw.step1 || {};
+      const step2 = raw.step2 || {};
+      const status = raw.status || 'Pending Step 1: Technical Review';
+
+      let statusBadge = raw.statusBadge;
+      if (!statusBadge) {
+        if (status.toLowerCase().includes('reject') || status.toLowerCase().includes('return')) {
+          statusBadge = 'bg-rose-50 text-rose-800 border-rose-300 font-bold pulse-rose';
+        } else if (status === 'Approved' || status === 'Converted to PO') {
+          statusBadge = 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold';
+        } else if (status.includes('Step 2')) {
+          statusBadge = 'bg-purple-50 text-purple-800 border-purple-300 pulse-purple';
+        } else {
+          statusBadge = 'bg-amber-50 text-amber-800 border-amber-300 pulse-amber';
+        }
+      }
+
+      return {
+        prNumber: raw.prNumber || ('PR-' + Math.floor(1000 + Math.random() * 9000)),
+        department: raw.department || raw.dept || 'Production - Fabrication Line A',
+        requester: raw.requester || raw.requesterName || raw.submittedBy || 'Procurement Team',
+        requiredDate: raw.requiredDate || raw.dueDate || '2026-10-05',
+        priority: priority,
+        priorityColor: getPriorityBadgeClass(priority),
+        status: status,
+        statusBadge: statusBadge,
+        bomProject: raw.bomProject || raw.project || 'General Assembly / Project Demand',
+        items: items,
+        estimatedTotal: grandTotal,
+        totalUnits: totalUnits,
+        // Primary alias for card headers
+        itemCode: items[0].itemCode,
+        itemName: items[0].itemName,
+        itemSpecs: items[0].itemSpecs,
+        quantity: items[0].quantity,
+        uom: items[0].uom,
+        unitRate: items[0].unitRate,
+        step1: {
+          approved: Boolean(step1.approved),
+          rejected: Boolean(step1.rejected),
+          by: step1.by || '',
+          role: step1.role || 'Production Head / Tech Lead',
+          date: step1.date || '',
+          notes: step1.notes || '',
+          decision: step1.decision || (step1.approved ? 'Approved' : (step1.rejected ? 'Rejected' : ''))
+        },
+        step2: {
+          approved: Boolean(step2.approved),
+          rejected: Boolean(step2.rejected),
+          by: step2.by || '',
+          role: step2.role || 'Finance Department Head',
+          date: step2.date || '',
+          notes: step2.notes || '',
+          decision: step2.decision || (step2.approved ? 'Approved' : (step2.rejected ? 'Rejected' : ''))
+        },
+        revisions: Array.isArray(raw.revisions) ? raw.revisions : []
+      };
+    }
+
+    // MASTER MATERIALS CATALOG
     const defaultMaterials = [
       {
         code: "AL-76-SLD-BLK",
@@ -1500,89 +1671,127 @@
       }
     ];
 
-    // DEFAULT PURCHASE REQUISITIONS (PHASE 2)
+    // INITIAL MULTI-LINE DEMO REQUISITIONS
     const defaultPRs = [
       {
         prNumber: "PR-2026-001",
-        itemCode: "AL-76-SLD-BLK",
-        itemName: "Sliding Frame Outer 76 Series",
-        itemSpecs: "Alloy 6063-T5 | Wall: 1.4mm | Powder Coated Matte Black RAL9005",
         department: "Production - Fabrication Line A",
         requester: "Alex Miller",
         requiredDate: "2026-09-30",
-        quantity: 1000,
-        uom: "KG",
-        unitRate: 2.65,
-        estimatedTotal: 2650.00,
         priority: "Urgent",
-        priorityColor: "bg-amber-100 text-amber-800 border-amber-300",
+        priorityColor: "bg-amber-100 text-amber-800 border-amber-300 font-semibold",
         status: "Pending Step 1: Technical Review",
         statusBadge: "bg-amber-50 text-amber-800 border-amber-300 pulse-amber",
         bomProject: "SD-100 Sliding Patio Series - Tower A",
-        step1: { approved: false, by: "", role: "", date: "", notes: "" },
-        step2: { approved: false, by: "", role: "", date: "", notes: "" }
+        items: [
+          {
+            itemCode: "AL-76-SLD-BLK",
+            itemName: "Sliding Frame Outer 76 Series",
+            itemSpecs: "Alloy 6063-T5 | Wall: 1.4mm | Powder Coated Matte Black RAL9005",
+            quantity: 1000,
+            uom: "KG",
+            unitRate: 2.65,
+            extendedTotal: 2650.00
+          },
+          {
+            itemCode: "SL-EPDM-GSK-01",
+            itemName: "EPDM Wedge Gasket Strip",
+            itemSpecs: "Peroxide cured EPDM rubber | Shore A 65",
+            quantity: 500,
+            uom: "METER",
+            unitRate: 0.32,
+            extendedTotal: 160.00
+          }
+        ],
+        step1: { approved: false, rejected: false, by: "", role: "", date: "", notes: "", decision: "" },
+        step2: { approved: false, rejected: false, by: "", role: "", date: "", notes: "", decision: "" },
+        revisions: []
       },
       {
         prNumber: "PR-2026-002",
-        itemCode: "GL-TMP-08-CLR",
-        itemName: "8mm Clear Fully Tempered Glass",
-        itemSpecs: "Nominal 8mm | Flat polished edge | Arrissed corners",
         department: "Production - CNC & Glazing Bay",
         requester: "Somnang Seng",
         requiredDate: "2026-10-02",
-        quantity: 200,
-        uom: "SQM",
-        unitRate: 15.50,
-        estimatedTotal: 3100.00,
         priority: "Routine",
-        priorityColor: "bg-sky-100 text-sky-800 border-sky-300",
+        priorityColor: "bg-sky-100 text-sky-800 border-sky-300 font-medium",
         status: "Pending Step 2: Finance Authorization",
         statusBadge: "bg-purple-50 text-purple-800 border-purple-300 pulse-purple",
         bomProject: "CW-50 Commercial Window Glazing",
+        items: [
+          {
+            itemCode: "GL-TMP-08-CLR",
+            itemName: "8mm Clear Fully Tempered Glass",
+            itemSpecs: "Nominal 8mm | Flat polished edge | Arrissed corners",
+            quantity: 200,
+            uom: "SQM",
+            unitRate: 15.50,
+            extendedTotal: 3100.00
+          }
+        ],
         step1: { 
           approved: true, 
+          rejected: false,
           by: "Dara Vuth", 
           role: "Production Head / Tech Lead", 
           date: "2026-09-26 14:30", 
-          notes: "Tolerances & CNC notch drawings verified with factory line." 
+          notes: "Tolerances & CNC notch drawings verified with factory line.",
+          decision: "Approved"
         },
-        step2: { approved: false, by: "", role: "", date: "", notes: "" }
+        step2: { approved: false, rejected: false, by: "", role: "", date: "", notes: "", decision: "" },
+        revisions: []
       },
       {
         prNumber: "PR-2026-003",
-        itemCode: "HD-ROL-TDM-120",
-        itemName: "Heavy Duty Tandem Roller 120KG",
-        itemSpecs: "SUS304 Stainless Steel Housing | Dual POM Wheels",
         department: "Site Installation Team",
         requester: "Bunroeun Meas",
         requiredDate: "2026-09-28",
-        quantity: 350,
-        uom: "PAIR",
-        unitRate: 4.80,
-        estimatedTotal: 1680.00,
         priority: "Critical Line-Stop",
         priorityColor: "bg-rose-100 text-rose-800 border-rose-300 font-bold",
         status: "Approved",
         statusBadge: "bg-emerald-50 text-emerald-800 border-emerald-300 font-bold",
         bomProject: "SD-100 Heavy Duty Sliding Door",
+        items: [
+          {
+            itemCode: "HD-ROL-TDM-120",
+            itemName: "Heavy Duty Tandem Roller 120KG",
+            itemSpecs: "SUS304 Stainless Steel Housing | Dual POM Wheels",
+            quantity: 350,
+            uom: "PAIR",
+            unitRate: 4.80,
+            extendedTotal: 1680.00
+          },
+          {
+            itemCode: "HD-LCK-MLT-BLK",
+            itemName: "Multipoint Casement Lock Set",
+            itemSpecs: "Zinc alloy die-cast handle | Matte black finish",
+            quantity: 120,
+            uom: "SET",
+            unitRate: 9.20,
+            extendedTotal: 1104.00
+          }
+        ],
         step1: { 
           approved: true, 
+          rejected: false,
           by: "Dara Vuth", 
           role: "Production Head / Tech Lead", 
           date: "2026-09-25 09:15", 
-          notes: "Hardware specs checked and approved." 
+          notes: "Hardware specs checked and approved.",
+          decision: "Approved"
         },
         step2: { 
           approved: true, 
+          rejected: false,
           by: "Alex Miller", 
-          role: "Finance Department Head", 
+          role: "Master Admin / General Manager", 
           date: "2026-09-25 11:20", 
-          notes: "Budget verified against Project Cost Code #CW-09." 
-        }
+          notes: "Budget verified against Project Cost Code #CW-09.",
+          decision: "Approved"
+        },
+        revisions: []
       }
-    ];
+    ].map(sanitizePR);
 
-    // DEFAULT SUPPLIERS
     const defaultSuppliers = [
       {
         id: "VND-ALU-01",
@@ -1664,7 +1873,6 @@
       }
     ];
 
-    // DEFAULT PURCHASE ORDERS
     const defaultPipeline = [
       {
         poNumber: "PO-2026-089",
@@ -1720,7 +1928,6 @@
       }
     ];
 
-    // DEFAULT USER ACCOUNTS (CUSTOM FIRESTORE /procurement_users/)
     const defaultUsers = [
       {
         username: "admin",
@@ -1807,7 +2014,7 @@
       }
     ];
 
-    // IN-MEMORY ACTIVE STATE
+    // IN-MEMORY ACTIVE STATE & FILTERS
     let materialsData = [...defaultMaterials];
     let prsData = [...defaultPRs];
     let suppliersData = [...defaultSuppliers];
@@ -1815,12 +2022,19 @@
     let usersData = [...defaultUsers];
     let currentUser = null;
 
+    let activeGalleryTab = 'materials';
+    let activePRFilter = 'all';
+    let activePRSort = 'newest';
+
+    // Active Line Items State for New PR Form
+    let prLinesBuilder = [];
+
     function loadLocalState() {
       try {
         const m = localStorage.getItem('alu_materials');
         if (m) materialsData = JSON.parse(m);
         const pr = localStorage.getItem('alu_prs');
-        if (pr) prsData = JSON.parse(pr);
+        if (pr) prsData = JSON.parse(pr).map(sanitizePR);
         const s = localStorage.getItem('alu_suppliers');
         if (s) suppliersData = JSON.parse(s);
         const p = localStorage.getItem('alu_pipeline');
@@ -1852,6 +2066,22 @@
     }
 
     loadLocalState();
+
+    function isUserAdmin(user) {
+      if (!user) return false;
+      const r = String(user.role || '').toLowerCase();
+      const u = String(user.username || '').toLowerCase();
+      const l = String(user.roleLabel || '').toLowerCase();
+      return r.includes('admin') || u === 'admin' || l.includes('admin') || r.includes('gm');
+    }
+
+    function isUserFinanceOrAdmin(user) {
+      if (!user) return false;
+      if (isUserAdmin(user)) return true;
+      const r = String(user.role || '').toLowerCase();
+      const l = String(user.roleLabel || '').toLowerCase();
+      return r.includes('finance') || l.includes('finance');
+    }
 
     function renderMaterials(items = materialsData) {
       const container = document.getElementById('materials-grid');
@@ -1886,7 +2116,7 @@
             <div>
               <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-2 min-w-0">
-                  <div class="w-8 h-8 rounded-lg bg-gradient-to-br ${m.imageBg || 'from-sky-700 to-slate-900'} text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <div class="w-8 h-8 rounded-lg bg-gradient-to-br ${m.imageBg || 'from-slate-700 to-slate-900'} text-white flex items-center justify-center shrink-0 shadow-xs">
                     ${getCardIcon(m.icon)}
                   </div>
                   <div class="min-w-0">
@@ -1935,49 +2165,286 @@
       }).join('');
     }
 
-    // UTILITY: ROBUST ROLE RESOLUTION (CASE-INSENSITIVE & BACKWARD-COMPATIBLE)
-    function isUserAdmin(user) {
-      if (!user) return false;
-      const r = String(user.role || '').toLowerCase();
-      const u = String(user.username || '').toLowerCase();
-      const l = String(user.roleLabel || '').toLowerCase();
-      return r.includes('admin') || u === 'admin' || l.includes('admin') || r.includes('gm');
+    // MULTI-LINE PR BUILDER ENGINE
+    function addPRLineRow(preset = null) {
+      const defaultMat = materialsData[0] || {};
+      const newLine = preset || {
+        itemCode: defaultMat.code || 'AL-76-SLD-BLK',
+        itemName: defaultMat.name || 'Sliding Frame Outer 76 Series',
+        itemSpecs: defaultMat.specs || 'Alloy 6063-T5 | 1.4mm',
+        quantity: 100,
+        uom: defaultMat.uom || 'KG',
+        unitRate: defaultMat.stdCost || 2.65,
+        extendedTotal: (100 * (defaultMat.stdCost || 2.65))
+      };
+
+      prLinesBuilder.push(newLine);
+      renderPRLinesBuilder();
     }
 
-    function isUserFinanceOrAdmin(user) {
-      if (!user) return false;
-      if (isUserAdmin(user)) return true;
-      const r = String(user.role || '').toLowerCase();
-      const l = String(user.roleLabel || '').toLowerCase();
-      return r.includes('finance') || l.includes('finance');
+    function removePRLineRow(index) {
+      if (prLinesBuilder.length <= 1) {
+        showToast("Minimum Line", "A Purchase Requisition must contain at least one line item.", "error");
+        return;
+      }
+      prLinesBuilder.splice(index, 1);
+      renderPRLinesBuilder();
     }
 
+    function onPRLineSKUSelect(index, code) {
+      const mat = materialsData.find(m => m.code === code);
+      if (!mat) return;
+
+      prLinesBuilder[index].itemCode = mat.code;
+      prLinesBuilder[index].itemName = mat.name;
+      prLinesBuilder[index].itemSpecs = mat.specs;
+      prLinesBuilder[index].uom = mat.uom;
+      prLinesBuilder[index].unitRate = mat.stdCost;
+      prLinesBuilder[index].extendedTotal = prLinesBuilder[index].quantity * mat.stdCost;
+
+      renderPRLinesBuilder();
+    }
+
+    function onPRLineFieldChange(index, field, value) {
+      if (field === 'quantity') {
+        const q = Math.max(1, parseFloat(value) || 0);
+        prLinesBuilder[index].quantity = q;
+        prLinesBuilder[index].extendedTotal = q * prLinesBuilder[index].unitRate;
+      } else if (field === 'unitRate') {
+        const r = Math.max(0, parseFloat(value) || 0);
+        prLinesBuilder[index].unitRate = r;
+        prLinesBuilder[index].extendedTotal = prLinesBuilder[index].quantity * r;
+      } else if (field === 'itemSpecs') {
+        prLinesBuilder[index].itemSpecs = value;
+      } else if (field === 'itemName') {
+        prLinesBuilder[index].itemName = value;
+      }
+
+      // Update line subtotal display without full rerender
+      const lineSubtotalEl = document.getElementById(`pr-line-subtotal-${index}`);
+      if (lineSubtotalEl) {
+        lineSubtotalEl.innerText = `$${prLinesBuilder[index].extendedTotal.toFixed(2)}`;
+      }
+      calculatePRGrandTotal();
+    }
+
+    function calculatePRGrandTotal() {
+      const grandTotal = prLinesBuilder.reduce((sum, it) => sum + (it.extendedTotal || 0), 0);
+      const totalEl = document.getElementById('pr-lines-grand-total');
+      if (totalEl) {
+        totalEl.innerText = `$${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+    }
+
+    function renderPRLinesBuilder() {
+      const container = document.getElementById('pr-lines-builder-container');
+      if (!container) return;
+
+      container.innerHTML = prLinesBuilder.map((line, idx) => {
+        const skuOptions = materialsData.map(m => 
+          `<option value="${m.code}" ${m.code === line.itemCode ? 'selected' : ''}>${m.code} — ${m.name}</option>`
+        ).join('');
+
+        return `
+          <div class="bg-white border border-purple-200/80 rounded-xl p-3 shadow-xs space-y-2 relative">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[10px] font-bold text-purple-900 bg-purple-100 px-2 py-0.5 rounded-full mono">
+                Item Line #${idx + 1}
+              </span>
+              <div class="flex items-center gap-2">
+                <span class="mono font-bold text-emerald-700 text-xs" id="pr-line-subtotal-${idx}">
+                  $${Number(line.extendedTotal).toFixed(2)}
+                </span>
+                <button type="button" onclick="removePRLineRow(${idx})" class="text-slate-400 hover:text-rose-600 p-1 transition" title="Remove Line">
+                  ${ICONS.trash}
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div class="sm:col-span-2">
+                <label class="block text-[10px] text-slate-500 font-medium">Select SKU *</label>
+                <select onchange="onPRLineSKUSelect(${idx}, this.value)" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs mono">
+                  ${skuOptions}
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] text-slate-500 font-medium">Item Description</label>
+                <input type="text" value="${line.itemName}" oninput="onPRLineFieldChange(${idx}, 'itemName', this.value)" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[10px] text-slate-500 font-medium">Technical Specification Reference</label>
+              <input type="text" value="${line.itemSpecs}" oninput="onPRLineFieldChange(${idx}, 'itemSpecs', this.value)" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs">
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 pt-0.5">
+              <div>
+                <label class="block text-[10px] text-slate-500 font-medium">Quantity *</label>
+                <input type="number" min="1" value="${line.quantity}" oninput="onPRLineFieldChange(${idx}, 'quantity', this.value)" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs mono">
+              </div>
+              <div>
+                <label class="block text-[10px] text-slate-500 font-medium">UOM</label>
+                <input type="text" readonly value="${line.uom}" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs mono bg-slate-100 text-slate-600 font-bold">
+              </div>
+              <div>
+                <label class="block text-[10px] text-slate-500 font-medium">Unit Rate ($) *</label>
+                <input type="number" step="0.01" min="0" value="${line.unitRate}" oninput="onPRLineFieldChange(${idx}, 'unitRate', this.value)" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs mono">
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      calculatePRGrandTotal();
+      lucide.createIcons();
+    }
+
+    // PR FILTER & SORT HANDLERS
+    function setPRFilter(filterKey) {
+      activePRFilter = filterKey;
+      
+      const filterKeys = ['all', 'pending-step1', 'pending-step2', 'approved', 'rejected'];
+      filterKeys.forEach(k => {
+        const btn = document.getElementById(`pr-filter-${k}`);
+        if (!btn) return;
+        if (k === filterKey) {
+          btn.className = "pr-filter-btn px-3 py-1.5 rounded-xl font-semibold bg-purple-600 text-white shadow-xs shrink-0 transition flex items-center gap-1.5";
+        } else {
+          btn.className = "pr-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition flex items-center gap-1.5";
+        }
+      });
+
+      renderPRs();
+    }
+
+    function setPRSort(sortKey) {
+      activePRSort = sortKey;
+      renderPRs();
+    }
+
+    function updatePRFilterCounts() {
+      const allCount = prsData.length;
+      const step1Count = prsData.filter(p => !p.step1?.approved && !p.step1?.rejected && !p.status.toLowerCase().includes('reject')).length;
+      const step2Count = prsData.filter(p => p.step1?.approved && !p.step2?.approved && !p.step2?.rejected && !p.status.toLowerCase().includes('reject')).length;
+      const approvedCount = prsData.filter(p => p.step1?.approved && p.step2?.approved).length;
+      const rejectedCount = prsData.filter(p => p.status.toLowerCase().includes('reject') || p.step1?.rejected || p.step2?.rejected).length;
+
+      const cAll = document.getElementById('pr-filter-count-all');
+      const cStep1 = document.getElementById('pr-filter-count-step1');
+      const cStep2 = document.getElementById('pr-filter-count-step2');
+      const cAppr = document.getElementById('pr-filter-count-approved');
+      const cRej = document.getElementById('pr-filter-count-rejected');
+
+      if (cAll) cAll.innerText = allCount;
+      if (cStep1) cStep1.innerText = step1Count;
+      if (cStep2) cStep2.innerText = step2Count;
+      if (cAppr) cAppr.innerText = approvedCount;
+      if (cRej) cRej.innerText = rejectedCount;
+    }
+
+    // RENDER MULTI-LINE PR GALLERY
     function renderPRs() {
       const container = document.getElementById('prs-grid');
       if (!container) return;
 
-      if (!prsData || prsData.length === 0) {
+      updatePRFilterCounts();
+
+      const searchInput = document.getElementById('gallery-search');
+      const term = (searchInput ? searchInput.value : '').toLowerCase().trim();
+
+      let filtered = prsData.filter(rawPr => {
+        const pr = sanitizePR(rawPr);
+        const isRejected = pr.status.toLowerCase().includes('reject') || (pr.step1 && pr.step1.rejected) || (pr.step2 && pr.step2.rejected);
+        const step1Done = Boolean(pr.step1 && pr.step1.approved);
+        const step2Done = Boolean(pr.step2 && pr.step2.approved);
+
+        if (activePRFilter === 'pending-step1') return !step1Done && !isRejected;
+        if (activePRFilter === 'pending-step2') return step1Done && !step2Done && !isRejected;
+        if (activePRFilter === 'approved') return step1Done && step2Done && !isRejected;
+        if (activePRFilter === 'rejected') return isRejected;
+        return true;
+      });
+
+      if (term) {
+        filtered = filtered.filter(pr => {
+          const matchItems = pr.items.some(i => 
+            (i.itemCode || '').toLowerCase().includes(term) ||
+            (i.itemName || '').toLowerCase().includes(term) ||
+            (i.itemSpecs || '').toLowerCase().includes(term)
+          );
+          return matchItems ||
+                 (pr.prNumber || '').toLowerCase().includes(term) ||
+                 (pr.department || '').toLowerCase().includes(term) ||
+                 (pr.requester || '').toLowerCase().includes(term) ||
+                 (pr.bomProject || '').toLowerCase().includes(term);
+        });
+      }
+
+      filtered.sort((a, b) => {
+        if (activePRSort === 'due') {
+          return new Date(a.requiredDate || 0) - new Date(b.requiredDate || 0);
+        } else if (activePRSort === 'budget') {
+          return Number(b.estimatedTotal || 0) - Number(a.estimatedTotal || 0);
+        } else if (activePRSort === 'priority') {
+          const rank = p => {
+            const low = (p.priority || '').toLowerCase();
+            if (low.includes('crit') || low.includes('stop')) return 3;
+            if (low.includes('urg')) return 2;
+            return 1;
+          };
+          return rank(b) - rank(a);
+        }
+        return (b.prNumber || '').localeCompare(a.prNumber || '');
+      });
+
+      if (filtered.length === 0) {
         container.innerHTML = `
           <div class="col-span-full py-12 text-center bg-white rounded-2xl border border-slate-200">
             <div class="w-10 h-10 text-purple-300 mx-auto mb-2 flex items-center justify-center">
               <i data-lucide="file-check" class="w-8 h-8"></i>
             </div>
-            <p class="text-sm font-semibold text-slate-700">No active Purchase Requisitions (PR)</p>
-            <p class="text-xs text-slate-400 mt-1">Click "+ Create New PR" to initiate an official demand docket.</p>
+            <p class="text-sm font-semibold text-slate-700">No matching Purchase Requisitions</p>
+            <p class="text-xs text-slate-400 mt-1">Try switching filter tabs or clearing your search keywords.</p>
           </div>
         `;
+        lucide.createIcons();
         return;
       }
 
       const isStep2Authorized = isUserFinanceOrAdmin(currentUser);
 
-      container.innerHTML = prsData.map(pr => {
-        const step1Done = pr.step1 && pr.step1.approved;
-        const step2Done = pr.step2 && pr.step2.approved;
+      container.innerHTML = filtered.map(rawPr => {
+        const pr = sanitizePR(rawPr);
+        const isRejected = pr.status.toLowerCase().includes('reject') || pr.status.toLowerCase().includes('return') || (pr.step1 && pr.step1.rejected) || (pr.step2 && pr.step2.rejected);
+        const step1Done = Boolean(pr.step1 && pr.step1.approved);
+        const step2Done = Boolean(pr.step2 && pr.step2.approved);
 
-        // Action Buttons based on Step and Authority Level
+        let rejectionCallout = '';
+        if (isRejected) {
+          const rejectedStep = (pr.step2 && pr.step2.rejected) ? pr.step2 : pr.step1;
+          rejectionCallout = `
+            <div class="bg-rose-50 border border-rose-200 rounded-xl p-2.5 text-xs text-rose-800 space-y-1">
+              <div class="flex items-center gap-1.5 font-bold text-rose-900">
+                <i data-lucide="alert-octagon" class="w-3.5 h-3.5 text-rose-600 shrink-0"></i>
+                <span>Returned for Revision</span>
+              </div>
+              <p class="text-[11px] italic leading-tight">"${rejectedStep.notes || 'Please verify specifications and resubmit.'}"</p>
+              <span class="text-[10px] text-rose-600 font-medium block">By: ${rejectedStep.by || 'Reviewer'} (${rejectedStep.date || 'Recently'})</span>
+            </div>
+          `;
+        }
+
         let actionButtons = '';
-        if (!step1Done) {
+        if (isRejected) {
+          actionButtons = `
+            <button onclick="openRevisePRModal('${pr.prNumber}')" class="w-full py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+              <span>Revise &amp; Resubmit PR</span>
+            </button>
+          `;
+        } else if (!step1Done) {
           actionButtons = `
             <button onclick="openApprovalModal('${pr.prNumber}', 1)" class="w-full py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
               <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
@@ -2015,52 +2482,89 @@
           `;
         }
 
+        let step1Text = 'Pending Tech';
+        let step1Dot = 'bg-amber-400 animate-pulse';
+        if (pr.step1 && pr.step1.rejected) {
+          step1Text = '❌ Rejected: ' + (pr.step1.by || 'Tech');
+          step1Dot = 'bg-rose-500';
+        } else if (step1Done) {
+          step1Text = '✓ ' + (pr.step1.by || 'Tech Lead');
+          step1Dot = 'bg-emerald-500';
+        }
+
+        let step2Text = 'Pending Finance';
+        let step2Dot = step1Done ? 'bg-purple-400 animate-pulse' : 'bg-slate-300';
+        if (pr.step2 && pr.step2.rejected) {
+          step2Text = '❌ Rejected: ' + (pr.step2.by || 'Finance');
+          step2Dot = 'bg-rose-500';
+        } else if (step2Done) {
+          step2Text = '✓ ' + (pr.step2.by || 'Finance Head');
+          step2Dot = 'bg-emerald-500';
+        }
+
+        // Multi-line preview list
+        const itemsList = pr.items.slice(0, 2).map(it => `
+          <div class="flex items-center justify-between text-[11px] py-0.5 border-b border-slate-100 last:border-b-0">
+            <span class="text-slate-800 truncate pr-2 font-medium">${it.itemName}</span>
+            <span class="mono text-slate-500 shrink-0 font-semibold">${it.quantity} ${it.uom}</span>
+          </div>
+        `).join('');
+
+        const extraCount = pr.items.length > 2 ? `<span class="text-[10px] text-purple-700 font-semibold block pt-1">+ ${pr.items.length - 2} more item lines</span>` : '';
+
         return `
           <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 card-contain flex flex-col justify-between space-y-3 relative">
             <div>
               <div class="flex items-start justify-between gap-2">
-                <div>
-                  <span class="mono text-xs font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded">${pr.prNumber}</span>
-                  <span class="block text-[10px] text-slate-400 mt-1 truncate">${pr.department}</span>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="mono text-xs font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded">${pr.prNumber}</span>
+                    <span class="text-[10px] font-bold text-purple-900 bg-purple-100 px-1.5 py-0.5 rounded-full">${pr.items.length} Lines</span>
+                  </div>
+                  <span class="block text-[10px] text-slate-500 font-medium mt-1 truncate" title="${pr.department}">${pr.department}</span>
                 </div>
                 <div class="flex items-center gap-1 shrink-0">
                   <span class="text-[10px] px-2 py-0.5 rounded-full border ${pr.priorityColor}">${pr.priority}</span>
-                  <button onclick="promptDelete('pr', '${pr.prNumber}')" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition">
+                  <button onclick="promptDelete('pr', '${pr.prNumber}')" aria-label="Delete PR" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition">
                     ${ICONS.trash}
                   </button>
                 </div>
               </div>
 
-              <h4 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 line-clamp-1" title="${pr.itemName}">${pr.itemName}</h4>
-              <p class="text-[11px] text-slate-500 mt-0.5 line-clamp-1">${pr.itemSpecs}</p>
+              <!-- Lines Preview Box -->
+              <div class="mt-2.5 bg-slate-50 border border-slate-100 rounded-xl p-2.5 space-y-0.5">
+                <span class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Item Schedule:</span>
+                ${itemsList}
+                ${extraCount}
+              </div>
 
               <!-- 2-Step Approval Status Pill -->
-              <div class="mt-2.5 flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full ${step1Done ? 'bg-emerald-500' : 'bg-amber-400 animate-pulse'}"></span>
-                <span class="text-[10px] font-semibold text-slate-600">Step 1: ${step1Done ? '✓ ' + pr.step1.by : 'Pending Tech'}</span>
+              <div class="mt-2.5 flex items-center gap-1.5 flex-wrap">
+                <span class="w-2 h-2 rounded-full ${step1Dot} shrink-0"></span>
+                <span class="text-[10px] font-semibold text-slate-600 truncate max-w-[125px]">Step 1: ${step1Text}</span>
                 <span class="text-slate-300 text-xs">&bull;</span>
-                <span class="w-2 h-2 rounded-full ${step2Done ? 'bg-emerald-500' : (step1Done ? 'bg-purple-400 animate-pulse' : 'bg-slate-300')}"></span>
-                <span class="text-[10px] font-semibold text-slate-600">Step 2: ${step2Done ? '✓ ' + pr.step2.by : 'Pending Finance'}</span>
+                <span class="w-2 h-2 rounded-full ${step2Dot} shrink-0"></span>
+                <span class="text-[10px] font-semibold text-slate-600 truncate max-w-[125px]">Step 2: ${step2Text}</span>
               </div>
             </div>
 
-            <!-- Quantitative Details -->
+            ${rejectionCallout}
+
             <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 space-y-1 text-xs">
               <div class="flex justify-between items-center text-slate-600">
-                <span class="text-[11px]">Quantity:</span>
-                <span class="mono font-bold text-slate-900">${pr.quantity} ${pr.uom}</span>
-              </div>
-              <div class="flex justify-between items-center text-slate-600">
-                <span class="text-[11px]">Estimated Investment:</span>
+                <span class="text-[11px]">Total Requisition Budget:</span>
                 <span class="mono font-bold text-emerald-700">$${Number(pr.estimatedTotal).toFixed(2)}</span>
               </div>
               <div class="flex justify-between items-center text-slate-600">
                 <span class="text-[11px]">Required By:</span>
                 <span class="mono font-medium text-slate-800">${pr.requiredDate}</span>
               </div>
+              <div class="flex justify-between items-center text-slate-600">
+                <span class="text-[11px]">Project:</span>
+                <span class="text-slate-700 truncate font-medium max-w-[140px]">${pr.bomProject}</span>
+              </div>
             </div>
 
-            <!-- Actions Row -->
             <div class="pt-2 border-t border-slate-100 space-y-2">
               ${actionButtons}
               <button onclick="viewPRVoucher('${pr.prNumber}')" class="w-full py-1 text-slate-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg text-[11px] font-medium transition flex items-center justify-center gap-1">
@@ -2198,6 +2702,11 @@
     }
 
     function executeFilterCards() {
+      if (activeGalleryTab === 'prs') {
+        renderPRs();
+        return;
+      }
+
       const searchInput = document.getElementById('gallery-search');
       const catSelect = document.getElementById('category-filter');
       const term = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -2222,7 +2731,7 @@
       const matBadge = document.getElementById('mat-count-badge');
       if (matBadge) matBadge.innerText = materialsData.length;
 
-      const pendingPRs = prsData.filter(p => p.status !== 'Approved' && p.status !== 'Converted to PO').length;
+      const pendingPRs = prsData.filter(p => p.status !== 'Approved' && p.status !== 'Converted to PO' && !p.status.toLowerCase().includes('reject')).length;
       const prPendingHeader = document.getElementById('pr-pending-count');
       if (prPendingHeader) prPendingHeader.innerText = `${pendingPRs} Pending`;
       const prBadge = document.getElementById('pr-count-badge');
@@ -2239,11 +2748,11 @@
       const poBadge = document.getElementById('po-count-badge');
       if (poBadge) poBadge.innerText = pipelineData.length;
 
+      updatePRFilterCounts();
       populateDropdowns();
     }
 
     function populateDropdowns() {
-      // Materials vendor select
       const matSelect = document.getElementById('mat-vendor-select');
       const poSelect = document.getElementById('po-vendor-select');
       if (matSelect) {
@@ -2251,12 +2760,6 @@
       }
       if (poSelect) {
         poSelect.innerHTML = suppliersData.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
-      }
-
-      // PR Material SKU Select
-      const prSkuSelect = document.getElementById('pr-sku-select');
-      if (prSkuSelect) {
-        prSkuSelect.innerHTML = materialsData.map(m => `<option value="${m.code}">${m.code} — ${m.name}</option>`).join('');
       }
     }
 
@@ -2312,7 +2815,6 @@
         const app = getApps().length === 0 ? initializeApp(FIREBASE_CONFIG) : getApp();
         auth = getAuth(app);
 
-        // Explicit target database ID: "default"
         try {
           db = initializeFirestore(app, {
             experimentalForceLongPolling: true
@@ -2365,14 +2867,14 @@
         const batch = writeBatch(db);
 
         materialsData.forEach(m => batch.set(doc(db, 'procurement_materials', m.code), m));
-        prsData.forEach(pr => batch.set(doc(db, 'procurement_prs', pr.prNumber), pr));
+        prsData.forEach(pr => batch.set(doc(db, 'procurement_prs', pr.prNumber), sanitizePR(pr)));
         suppliersData.forEach(s => batch.set(doc(db, 'procurement_suppliers', s.id), s));
         pipelineData.forEach(p => batch.set(doc(db, 'procurement_pipeline', p.poNumber), p));
         usersData.forEach(u => batch.set(doc(db, 'procurement_users', u.username), u));
 
         await batch.commit();
         if (!silent) {
-          showToast("Cloud Synchronized!", `Pushed all catalogs and PRs directly into Firestore 'default'.`);
+          showToast("Cloud Synchronized!", `Pushed all catalogs and multi-line PRs directly into Firestore.`);
           closeModal('cloud-config-modal');
         }
       } catch (err) {
@@ -2395,7 +2897,7 @@
 
       onSnapshot(collection(db, 'procurement_prs'), snap => {
         if (!snap.empty) {
-          prsData = snap.docs.map(d => d.data());
+          prsData = snap.docs.map(d => sanitizePR(d.data()));
           debouncedSave();
           renderPRs();
           updateHeaderKPIs();
@@ -2429,11 +2931,12 @@
       });
     }
 
+    // MULTI-ITEM PR APPROVAL MODAL TRIGGER
     function openApprovalModal(prNumber, step) {
-      const pr = prsData.find(p => p.prNumber === prNumber);
-      if (!pr) return;
+      const rawPr = prsData.find(p => p.prNumber === prNumber);
+      if (!rawPr) return;
+      const pr = sanitizePR(rawPr);
 
-      // Enforcement Gate: Step 2 requires Finance Head or Master Admin
       if (step === 2) {
         const canApproveStep2 = isUserFinanceOrAdmin(currentUser);
         if (!canApproveStep2) {
@@ -2448,13 +2951,17 @@
       const headerEl = document.getElementById('pr-modal-header');
       const titleEl = document.getElementById('pr-modal-title');
       const prNumEl = document.getElementById('pr-modal-pr-num');
-      const submitBtn = document.getElementById('pr-modal-submit-btn');
       const securityNotice = document.getElementById('pr-step2-security-notice');
       const roleSelect = document.getElementById('pr-approver-role');
+      const decisionSelect = document.getElementById('pr-approver-decision');
+      const remarksInput = document.getElementById('pr-approver-remarks');
 
-      if (prNumEl) prNumEl.innerText = `${pr.prNumber} (${pr.itemCode})`;
-      if (document.getElementById('pr-approval-item-name')) {
-        document.getElementById('pr-approval-item-name').innerText = `${pr.itemName} (${pr.quantity} ${pr.uom})`;
+      if (decisionSelect) decisionSelect.value = "Approved";
+      if (remarksInput) remarksInput.value = "";
+
+      if (prNumEl) prNumEl.innerText = `${pr.prNumber} (${pr.items.length} Line Items)`;
+      if (document.getElementById('pr-approval-bom-display')) {
+        document.getElementById('pr-approval-bom-display').innerText = pr.bomProject;
       }
       if (document.getElementById('pr-approval-budget')) {
         document.getElementById('pr-approval-budget').innerText = `$${Number(pr.estimatedTotal).toFixed(2)}`;
@@ -2463,7 +2970,20 @@
         document.getElementById('pr-approval-due').innerText = pr.requiredDate;
       }
 
-      // Pre-fill approver name if user is logged in
+      // Populate Items Breakdown Table
+      const itemsTbody = document.getElementById('pr-approval-items-tbody');
+      if (itemsTbody) {
+        itemsTbody.innerHTML = pr.items.map(it => `
+          <tr class="hover:bg-slate-50">
+            <td class="p-2 mono font-bold text-sky-700">${it.itemCode}</td>
+            <td class="p-2 font-medium text-slate-800">${it.itemName}</td>
+            <td class="p-2 text-right mono font-semibold">${it.quantity} ${it.uom}</td>
+            <td class="p-2 text-right mono text-slate-600">$${Number(it.unitRate).toFixed(2)}</td>
+            <td class="p-2 text-right mono font-bold text-emerald-700">$${Number(it.extendedTotal).toFixed(2)}</td>
+          </tr>
+        `).join('');
+      }
+
       const approverNameInput = document.getElementById('pr-approver-name');
       if (approverNameInput && currentUser) {
         approverNameInput.value = currentUser.fullName || currentUser.name || '';
@@ -2472,7 +2992,6 @@
       if (step === 1) {
         titleEl.innerText = "Step 1: Production & Technical Lead Review";
         if (headerEl) headerEl.className = "bg-amber-700 text-white px-6 py-4 flex items-center justify-between shrink-0";
-        if (submitBtn) submitBtn.className = "px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl shadow-sm";
         if (securityNotice) securityNotice.classList.add('hidden');
         if (roleSelect) {
           roleSelect.innerHTML = `
@@ -2482,9 +3001,8 @@
           roleSelect.value = isUserAdmin(currentUser) ? "Master Admin / General Manager" : "Production Head / Tech Lead";
         }
       } else {
-        titleEl.innerText = "Step 2: Finance Head / Master Admin Final Authorization";
+        titleEl.innerText = "Step 2: Finance Head / Master Admin Authorization";
         if (headerEl) headerEl.className = "bg-purple-900 text-white px-6 py-4 flex items-center justify-between shrink-0";
-        if (submitBtn) submitBtn.className = "px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl shadow-sm";
         if (securityNotice) securityNotice.classList.remove('hidden');
         if (roleSelect) {
           roleSelect.innerHTML = `
@@ -2495,7 +3013,43 @@
         }
       }
 
+      handleDecisionChange();
       openModal('pr-approval-modal');
+    }
+
+    function handleDecisionChange() {
+      const decision = document.getElementById('pr-approver-decision')?.value;
+      const step = parseInt(document.getElementById('pr-approval-target-step')?.value || '1');
+      const submitBtn = document.getElementById('pr-modal-submit-btn');
+      const label = document.getElementById('pr-remarks-label');
+      const hint = document.getElementById('pr-remarks-hint');
+      const remarksTextarea = document.getElementById('pr-approver-remarks');
+
+      if (decision === 'Rejected') {
+        if (label) label.innerHTML = '<span class="text-rose-700 font-bold">Mandatory Reason for Rejection *</span>';
+        if (hint) hint.innerText = "Explain why this requisition is rejected so the requester can revise it.";
+        if (remarksTextarea) {
+          remarksTextarea.required = true;
+          remarksTextarea.placeholder = "e.g. Profile thickness or quantity exceeds BOM allowance. Revise line items.";
+        }
+        if (submitBtn) {
+          submitBtn.className = "px-5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl shadow-sm transition";
+          submitBtn.innerHTML = "Reject &amp; Return Requisition";
+        }
+      } else {
+        if (label) label.innerText = "Signatory Notes & Verification Remarks";
+        if (hint) hint.innerText = "Stamped on the audit voucher docket.";
+        if (remarksTextarea) {
+          remarksTextarea.required = false;
+          remarksTextarea.placeholder = "e.g. Specifications verified against CAD profile and cutting list.";
+        }
+        if (submitBtn) {
+          submitBtn.className = step === 1 
+            ? "px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl shadow-sm transition"
+            : "px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl shadow-sm transition";
+          submitBtn.innerHTML = "Sign &amp; Authorize";
+        }
+      }
     }
 
     function showUnauthorizedStep2Notice() {
@@ -2511,7 +3065,6 @@
       const decision = document.getElementById('pr-approver-decision').value;
       const remarks = document.getElementById('pr-approver-remarks').value.trim();
 
-      // Guard check before processing
       if (step === 2) {
         const canApproveStep2 = isUserFinanceOrAdmin(currentUser);
         if (!canApproveStep2) {
@@ -2521,34 +3074,72 @@
         }
       }
 
+      if (decision === 'Rejected' && !remarks) {
+        showToast("Reason Required", "Please provide a reason for rejecting this requisition.", "error");
+        return;
+      }
+
       const pr = prsData.find(p => p.prNumber === prNumber);
       if (!pr) return;
 
       const now = new Date();
       const timestamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      if (step === 1) {
-        pr.step1 = {
-          approved: true,
-          by: approverName,
-          role: role,
-          date: timestamp,
-          notes: remarks || "Technical specifications and BOM demand verified."
-        };
-        pr.status = "Pending Step 2: Finance Authorization";
-        pr.statusBadge = "bg-purple-50 text-purple-800 border-purple-300 pulse-purple";
-        showToast("Step 1 Endorsed", `Technical review signed by ${approverName}.`);
+      if (decision === 'Rejected') {
+        if (step === 1) {
+          pr.step1 = {
+            approved: false,
+            rejected: true,
+            by: approverName,
+            role: role,
+            date: timestamp,
+            notes: remarks,
+            decision: 'Rejected'
+          };
+          pr.status = "Rejected at Step 1: Technical Review";
+          pr.statusBadge = "bg-rose-50 text-rose-800 border-rose-300 font-bold pulse-rose";
+        } else {
+          pr.step2 = {
+            approved: false,
+            rejected: true,
+            by: approverName,
+            role: role,
+            date: timestamp,
+            notes: remarks,
+            decision: 'Rejected'
+          };
+          pr.status = "Rejected at Step 2: Finance Review";
+          pr.statusBadge = "bg-rose-50 text-rose-800 border-rose-300 font-bold pulse-rose";
+        }
+        showToast("PR Returned for Revision", `${pr.prNumber} rejected by ${approverName}. Requester has been notified.`);
       } else {
-        pr.step2 = {
-          approved: true,
-          by: approverName,
-          role: role,
-          date: timestamp,
-          notes: remarks || "Budget allocated and approved."
-        };
-        pr.status = "Approved";
-        pr.statusBadge = "bg-emerald-50 text-emerald-800 border-emerald-300 font-bold";
-        showToast("Step 2 Authorized", `PR fully authorized by ${approverName} (${role}). Ready for PO conversion.`);
+        if (step === 1) {
+          pr.step1 = {
+            approved: true,
+            rejected: false,
+            by: approverName,
+            role: role,
+            date: timestamp,
+            notes: remarks || "Technical specifications and line schedule verified.",
+            decision: decision
+          };
+          pr.status = "Pending Step 2: Finance Authorization";
+          pr.statusBadge = "bg-purple-50 text-purple-800 border-purple-300 pulse-purple";
+          showToast("Step 1 Endorsed", `Technical review signed by ${approverName}.`);
+        } else {
+          pr.step2 = {
+            approved: true,
+            rejected: false,
+            by: approverName,
+            role: role,
+            date: timestamp,
+            notes: remarks || "Budget allocated and approved for all items.",
+            decision: decision
+          };
+          pr.status = "Approved";
+          pr.statusBadge = "bg-emerald-50 text-emerald-800 border-emerald-300 font-bold";
+          showToast("Step 2 Authorized", `PR fully authorized by ${approverName}. Ready for PO conversion.`);
+        }
       }
 
       closeModal('pr-approval-modal');
@@ -2557,27 +3148,151 @@
       updateHeaderKPIs();
 
       if (db) {
-        setDoc(doc(db, 'procurement_prs', prNumber), pr).catch(e => console.warn(e));
+        setDoc(doc(db, 'procurement_prs', prNumber), sanitizePR(pr)).catch(e => console.warn(e));
+      }
+    }
+
+    // MULTI-ITEM REVISION MODAL
+    let revisionLines = [];
+    function openRevisePRModal(prNumber) {
+      const pr = prsData.find(p => p.prNumber === prNumber);
+      if (!pr) return;
+
+      document.getElementById('revise-target-pr').value = pr.prNumber;
+      document.getElementById('revise-modal-pr-num').innerText = `${pr.prNumber} (${pr.items.length} Lines)`;
+      document.getElementById('revise-due-date').value = pr.requiredDate;
+      document.getElementById('revise-bom').value = pr.bomProject;
+      document.getElementById('revise-changelog').value = "";
+
+      const rejectedStep = (pr.step2 && pr.step2.rejected) ? pr.step2 : pr.step1;
+      const feedbackEl = document.getElementById('revise-previous-feedback');
+      if (feedbackEl) {
+        feedbackEl.innerText = `${rejectedStep.by || 'Reviewer'} (${rejectedStep.role || 'Authority'}): "${rejectedStep.notes || 'Revise specifications and resubmit.'}"`;
+      }
+
+      revisionLines = JSON.parse(JSON.stringify(pr.items));
+      renderRevisionItems();
+      openModal('pr-revision-modal');
+    }
+
+    function renderRevisionItems() {
+      const container = document.getElementById('revise-items-container');
+      if (!container) return;
+
+      container.innerHTML = revisionLines.map((it, idx) => `
+        <div class="bg-white border border-slate-200 rounded-lg p-2.5 space-y-1.5">
+          <div class="flex justify-between items-center text-xs">
+            <span class="mono font-bold text-sky-700">${it.itemCode}</span>
+            <span class="mono font-bold text-emerald-700" id="revise-sub-${idx}">$${Number(it.extendedTotal).toFixed(2)}</span>
+          </div>
+          <input type="text" value="${it.itemName}" oninput="onRevisionItemChange(${idx}, 'itemName', this.value)" class="w-full px-2 py-1 border border-slate-200 rounded text-xs font-semibold">
+          <input type="text" value="${it.itemSpecs}" oninput="onRevisionItemChange(${idx}, 'itemSpecs', this.value)" class="w-full px-2 py-1 border border-slate-200 rounded text-xs text-slate-600">
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <div>
+              <label class="block text-[10px] text-slate-500">Revised Qty (${it.uom})</label>
+              <input type="number" min="1" value="${it.quantity}" oninput="onRevisionItemChange(${idx}, 'quantity', this.value)" class="w-full px-2 py-1 border border-slate-200 rounded text-xs mono">
+            </div>
+            <div>
+              <label class="block text-[10px] text-slate-500">Unit Rate ($)</label>
+              <input type="number" step="0.01" min="0" value="${it.unitRate}" oninput="onRevisionItemChange(${idx}, 'unitRate', this.value)" class="w-full px-2 py-1 border border-slate-200 rounded text-xs mono">
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      calculateRevisionGrandTotal();
+    }
+
+    function onRevisionItemChange(idx, field, value) {
+      if (field === 'quantity') {
+        const q = Math.max(1, parseFloat(value) || 0);
+        revisionLines[idx].quantity = q;
+        revisionLines[idx].extendedTotal = q * revisionLines[idx].unitRate;
+      } else if (field === 'unitRate') {
+        const r = Math.max(0, parseFloat(value) || 0);
+        revisionLines[idx].unitRate = r;
+        revisionLines[idx].extendedTotal = revisionLines[idx].quantity * r;
+      } else if (field === 'itemName') {
+        revisionLines[idx].itemName = value;
+      } else if (field === 'itemSpecs') {
+        revisionLines[idx].itemSpecs = value;
+      }
+
+      const subEl = document.getElementById(`revise-sub-${idx}`);
+      if (subEl) subEl.innerText = `$${revisionLines[idx].extendedTotal.toFixed(2)}`;
+      calculateRevisionGrandTotal();
+    }
+
+    function calculateRevisionGrandTotal() {
+      const grandTotal = revisionLines.reduce((sum, it) => sum + (it.extendedTotal || 0), 0);
+      const display = document.getElementById('revise-est-budget');
+      if (display) {
+        display.innerText = `$${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+    }
+
+    function submitPRRevision(e) {
+      e.preventDefault();
+      const prNumber = document.getElementById('revise-target-pr').value;
+      const pr = prsData.find(p => p.prNumber === prNumber);
+      if (!pr) return;
+
+      const dueDate = document.getElementById('revise-due-date').value;
+      const bom = document.getElementById('revise-bom').value.trim();
+      const changelog = document.getElementById('revise-changelog').value.trim();
+
+      const now = new Date();
+      const timestamp = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      if (!pr.revisions) pr.revisions = [];
+      pr.revisions.unshift({
+        revisionDate: timestamp,
+        revisedBy: currentUser?.fullName || 'Requester',
+        notes: changelog,
+        previousState: pr.status
+      });
+
+      pr.items = JSON.parse(JSON.stringify(revisionLines));
+      pr.estimatedTotal = revisionLines.reduce((sum, it) => sum + (it.extendedTotal || 0), 0);
+      pr.requiredDate = dueDate;
+      pr.bomProject = bom;
+
+      pr.status = "Pending Step 1: Technical Review";
+      pr.statusBadge = "bg-amber-50 text-amber-800 border-amber-300 pulse-amber";
+      pr.step1 = { approved: false, rejected: false, by: "", role: "", date: "", notes: "", decision: "" };
+      pr.step2 = { approved: false, rejected: false, by: "", role: "", date: "", notes: "", decision: "" };
+
+      closeModal('pr-revision-modal');
+      renderPRs();
+      debouncedSave();
+      updateHeaderKPIs();
+      showToast("PR Resubmitted", `${prNumber} revised and returned to Step 1 Technical Review.`);
+
+      if (db) {
+        setDoc(doc(db, 'procurement_prs', prNumber), sanitizePR(pr)).catch(e => console.warn(e));
       }
     }
 
     function convertPRToPO(prNumber) {
-      const pr = prsData.find(p => p.prNumber === prNumber);
-      if (!pr) return;
+      const rawPr = prsData.find(p => p.prNumber === prNumber);
+      if (!rawPr) return;
+      const pr = sanitizePR(rawPr);
 
       if (!pr.step2 || !pr.step2.approved) {
         showToast("Authorization Required", "This PR requires Step 2 Finance Head approval before issuing a PO.", "error");
         return;
       }
 
-      const mat = materialsData.find(m => m.code === pr.itemCode);
-      const vendorName = mat ? mat.supplier : "Asia Aluminum Extrusions Co.";
+      const firstMat = materialsData.find(m => m.code === pr.items[0]?.itemCode);
+      const vendorName = firstMat ? firstMat.supplier : "Asia Aluminum Extrusions Co.";
       const newPONumber = "PO-2026-" + Math.floor(100 + Math.random() * 900);
+
+      const itemsSummary = pr.items.map(it => `${it.itemName} (${it.quantity} ${it.uom})`).join(', ');
 
       const newPO = {
         poNumber: newPONumber,
         vendor: vendorName,
-        items: `${pr.itemName} (${pr.quantity} ${pr.uom})`,
+        items: itemsSummary,
         amount: `$${Number(pr.estimatedTotal).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         rawAmount: Number(pr.estimatedTotal),
         dueDate: pr.requiredDate,
@@ -2585,7 +3300,7 @@
         alert: "On Track",
         alertBadge: "bg-emerald-100 text-emerald-800 border-emerald-300",
         progressPct: 25,
-        dockAction: `Converted from ${pr.prNumber} by ${currentUser?.fullName || 'Procurement'}. Vendor notification pending.`
+        dockAction: `Converted from multi-line ${pr.prNumber} by ${currentUser?.fullName || 'Procurement'}. Vendor notification pending.`
       };
 
       pipelineData.unshift(newPO);
@@ -2601,127 +3316,192 @@
 
       if (db) {
         setDoc(doc(db, 'procurement_pipeline', newPONumber), newPO).catch(e => console.warn(e));
-        setDoc(doc(db, 'procurement_prs', prNumber), pr).catch(e => console.warn(e));
+        setDoc(doc(db, 'procurement_prs', prNumber), sanitizePR(pr)).catch(e => console.warn(e));
       }
     }
 
+    // FORM 01 PRINTABLE VOUCHER (MULTI-LINE SCHEDULE)
     function viewPRVoucher(prNumber) {
-      const pr = prsData.find(p => p.prNumber === prNumber);
-      if (!pr) return;
+      const rawPr = prsData.find(p => p.prNumber === prNumber);
+      if (!rawPr) return;
+      const pr = sanitizePR(rawPr);
 
       const body = document.getElementById('pr-voucher-body');
       if (!body) return;
 
+      const isApproved = pr.status === 'Approved' || pr.status === 'Converted to PO';
+      const isRejected = pr.status.toLowerCase().includes('reject');
+
+      const rowsHtml = pr.items.map((it, idx) => `
+        <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/60'} border-b border-slate-200">
+          <td class="p-2.5 text-center mono text-slate-500 font-semibold">${String(idx + 1).padStart(2, '0')}</td>
+          <td class="p-2.5 mono font-bold text-sky-800">${it.itemCode}</td>
+          <td class="p-2.5">
+            <strong class="text-slate-900 block font-semibold">${it.itemName}</strong>
+            <span class="text-[10px] text-slate-600 leading-tight block mt-0.5">${it.itemSpecs}</span>
+          </td>
+          <td class="p-2.5 text-right mono font-bold text-slate-800">${it.quantity.toLocaleString()} <span class="text-[10px] font-normal text-slate-500">${it.uom}</span></td>
+          <td class="p-2.5 text-right mono text-slate-700">$${Number(it.unitRate).toFixed(2)}</td>
+          <td class="p-2.5 text-right mono font-bold text-slate-900">$${Number(it.extendedTotal).toFixed(2)}</td>
+        </tr>
+      `).join('');
+
+      // Status watermark & badge
+      let statusColor = 'bg-amber-100 text-amber-900 border-amber-300';
+      if (isApproved) statusColor = 'bg-emerald-100 text-emerald-900 border-emerald-300';
+      if (isRejected) statusColor = 'bg-rose-100 text-rose-900 border-rose-300';
+
       body.innerHTML = `
-        <div class="border-b-2 border-slate-900 pb-4 flex justify-between items-start">
-          <div>
-            <h1 class="text-xl font-bold tracking-tight text-slate-950">ALU-GLASS INDUSTRIAL GROUP</h1>
-            <p class="text-xs text-slate-600">Architectural Fenestration Systems &amp; Fabrication Works</p>
-            <p class="text-[10px] text-slate-400 mt-1">SOP Form 01: Official Purchase Requisition &amp; Audit Trail</p>
+        <div class="space-y-5">
+          <!-- Corporate Letterhead -->
+          <div class="border-b-2 border-slate-900 pb-3 flex flex-col sm:flex-row justify-between sm:items-start gap-3">
+            <div class="flex items-start gap-3">
+              <div class="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-lg shrink-0 shadow-sm">
+                AG
+              </div>
+              <div>
+                <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-950 uppercase">ALU-GLASS INDUSTRIAL GROUP</h1>
+                <p class="text-[11px] text-slate-600 font-medium">Architectural Fenestration Systems &bull; Facade Engineering &bull; Material Supply</p>
+                <p class="text-[10px] text-slate-400 font-mono mt-0.5">Document Ref: SOP-PROC-F01 &bull; ISO 9001:2015 Compliant</p>
+              </div>
+            </div>
+            <div class="sm:text-right border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200">
+              <span class="mono text-base font-extrabold text-purple-900 block">${pr.prNumber}</span>
+              <span class="text-[11px] text-slate-500 block">Issued: <strong>${new Date().toLocaleDateString('en-GB')}</strong></span>
+              <span class="inline-block mt-1 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase border ${statusColor}">
+                ${pr.status}
+              </span>
+            </div>
           </div>
-          <div class="text-right">
-            <span class="mono text-base font-bold text-purple-900 block">${pr.prNumber}</span>
-            <span class="text-xs text-slate-500 block">Date: ${pr.requiredDate}</span>
-            <span class="inline-block mt-1 px-2.5 py-0.5 rounded text-[10px] font-bold ${pr.priorityColor}">
-              Priority: ${pr.priority}
-            </span>
-          </div>
-        </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs">
-          <div>
-            <span class="text-[10px] text-slate-400 uppercase block">Originating Dept</span>
-            <strong class="text-slate-800">${pr.department}</strong>
-          </div>
-          <div>
-            <span class="text-[10px] text-slate-400 uppercase block">Requester Signatory</span>
-            <strong class="text-slate-800">${pr.requester}</strong>
-          </div>
-          <div>
-            <span class="text-[10px] text-slate-400 uppercase block">Project / BOM Code</span>
-            <strong class="text-slate-800">${pr.bomProject}</strong>
-          </div>
-          <div>
-            <span class="text-[10px] text-slate-400 uppercase block">Required Delivery</span>
-            <strong class="mono text-slate-800">${pr.requiredDate}</strong>
-          </div>
-        </div>
-
-        <div class="border border-slate-200 rounded-xl overflow-hidden">
-          <table class="w-full text-left text-xs border-collapse">
-            <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
-              <tr>
-                <th class="p-2.5">Item Code</th>
-                <th class="p-2.5">Description &amp; Specifications</th>
-                <th class="p-2.5 text-right">Quantity</th>
-                <th class="p-2.5 text-right">Est. Unit Rate</th>
-                <th class="p-2.5 text-right">Extended Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="p-2.5 mono font-bold text-sky-700">${pr.itemCode}</td>
-                <td class="p-2.5">
-                  <strong class="text-slate-900 block">${pr.itemName}</strong>
-                  <span class="text-[11px] text-slate-500">${pr.itemSpecs}</span>
-                </td>
-                <td class="p-2.5 text-right mono font-semibold">${pr.quantity} ${pr.uom}</td>
-                <td class="p-2.5 text-right mono">$${Number(pr.unitRate).toFixed(2)}</td>
-                <td class="p-2.5 text-right mono font-bold text-emerald-700">$${Number(pr.estimatedTotal).toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- 3-Box Signature Sign-off (Requester, Step 1 Tech, Step 2 Finance) -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-          
-          <!-- Box 1: Originator -->
-          <div class="border border-slate-200 rounded-xl p-3 bg-slate-50 flex flex-col justify-between h-32">
+          <!-- Document Header Metadata Grid -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs">
             <div>
-              <span class="text-[10px] uppercase font-bold text-slate-400 block">1. Originating Requester</span>
-              <strong class="text-slate-900 block text-xs mt-1">${pr.requester}</strong>
-              <span class="text-[10px] text-slate-500">${pr.department}</span>
+              <span class="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">Originating Bay / Dept</span>
+              <strong class="text-slate-800 text-[11px] block mt-0.5">${pr.department}</strong>
             </div>
-            <div class="border-t border-slate-200 pt-1 text-[10px] text-emerald-700 font-medium">
-              ✓ Verified Demand
-            </div>
-          </div>
-
-          <!-- Box 2: Step 1 Tech Head -->
-          <div class="border ${pr.step1?.approved ? 'border-emerald-300 bg-emerald-50/50' : 'border-amber-200 bg-amber-50/40'} rounded-xl p-3 flex flex-col justify-between h-32">
             <div>
-              <span class="text-[10px] uppercase font-bold text-slate-400 block">2. Technical &amp; Production Sign-off</span>
-              ${pr.step1?.approved ? `
-                <strong class="text-slate-900 block text-xs mt-1">${pr.step1.by}</strong>
-                <span class="text-[10px] text-slate-500">${pr.step1.role}</span>
-                <p class="text-[9px] text-slate-600 italic mt-0.5">"${pr.step1.notes}"</p>
-              ` : `
-                <span class="text-amber-800 text-[11px] font-semibold mt-2 block">Pending Tech Review</span>
-              `}
+              <span class="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">Requester Signatory</span>
+              <strong class="text-slate-800 text-[11px] block mt-0.5">${pr.requester}</strong>
             </div>
-            <div class="border-t border-slate-200 pt-1 text-[10px] mono text-slate-500">
-              ${pr.step1?.approved ? pr.step1.date : 'Not Signed'}
-            </div>
-          </div>
-
-          <!-- Box 3: Step 2 Finance Head -->
-          <div class="border ${pr.step2?.approved ? 'border-emerald-300 bg-emerald-50/50' : 'border-purple-200 bg-purple-50/40'} rounded-xl p-3 flex flex-col justify-between h-32">
             <div>
-              <span class="text-[10px] uppercase font-bold text-slate-400 block">3. Finance Dept Head Sign-off</span>
-              ${pr.step2?.approved ? `
-                <strong class="text-slate-900 block text-xs mt-1">${pr.step2.by}</strong>
-                <span class="text-[10px] text-slate-500">${pr.step2.role}</span>
-                <p class="text-[9px] text-slate-600 italic mt-0.5">"${pr.step2.notes}"</p>
-              ` : `
-                <span class="text-purple-800 text-[11px] font-semibold mt-2 block">Pending Budget Release</span>
-              `}
+              <span class="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">Project / BOM Assignment</span>
+              <strong class="text-slate-800 text-[11px] block mt-0.5">${pr.bomProject}</strong>
             </div>
-            <div class="border-t border-slate-200 pt-1 text-[10px] mono text-slate-500">
-              ${pr.step2?.approved ? pr.step2.date : 'Not Signed'}
+            <div>
+              <span class="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">Delivery Due Date</span>
+              <strong class="mono text-slate-900 text-[11px] block mt-0.5">${pr.requiredDate}</strong>
             </div>
           </div>
 
+          <!-- Multi-Line Schedule Table -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200 text-[11px]">
+                <tr>
+                  <th class="p-2.5 text-center w-12">Item</th>
+                  <th class="p-2.5 w-36">Code / SKU</th>
+                  <th class="p-2.5">Item Description &amp; Technical Specs</th>
+                  <th class="p-2.5 text-right w-24">Quantity</th>
+                  <th class="p-2.5 text-right w-24">Unit Rate</th>
+                  <th class="p-2.5 text-right w-28">Extended Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+              <tfoot class="bg-slate-50 border-t-2 border-slate-300 font-bold">
+                <tr>
+                  <td colspan="3" class="p-2.5 text-[10px] text-slate-500 italic">
+                    Total Items Requested: ${pr.items.length} line(s) &bull; Aggregated Units: ${pr.totalUnits.toLocaleString()}
+                  </td>
+                  <td colspan="2" class="p-2.5 text-right text-slate-700 uppercase tracking-wider text-[11px]">
+                    Total Estimated Budget:
+                  </td>
+                  <td class="p-2.5 text-right mono text-emerald-800 text-sm font-extrabold">
+                    $${Number(pr.estimatedTotal).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <!-- 3-Box Sequential Audit Signature Blocks -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            
+            <!-- Box 1: Originator Demand Verification -->
+            <div class="signature-card border border-slate-200 rounded-xl p-3 bg-white flex flex-col justify-between h-36">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] uppercase font-bold text-slate-400">1. Originating Requester</span>
+                  <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">Demand Verified</span>
+                </div>
+                <strong class="text-slate-900 block text-xs mt-1.5">${pr.requester}</strong>
+                <span class="text-[10px] text-slate-500">${pr.department}</span>
+              </div>
+              <div class="border-t border-dashed border-slate-200 pt-1.5 text-[10px] text-slate-400 flex justify-between items-center mono">
+                <span>Sign: <i>Electronically Logged</i></span>
+                <span>Date: ${pr.requiredDate}</span>
+              </div>
+            </div>
+
+            <!-- Box 2: Technical & Production Lead -->
+            <div class="signature-card border ${pr.step1?.rejected ? 'border-rose-300 bg-rose-50/40' : (pr.step1?.approved ? 'border-emerald-300 bg-emerald-50/40' : 'border-amber-200 bg-amber-50/30')} rounded-xl p-3 flex flex-col justify-between h-36">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] uppercase font-bold text-slate-400">2. Technical / Production Lead</span>
+                  ${pr.step1?.rejected ? '<span class="text-[9px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.2 rounded border border-rose-200">Rejected</span>' : (pr.step1?.approved ? '<span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">Endorsed</span>' : '<span class="text-[9px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">Pending Review</span>')}
+                </div>
+                ${pr.step1?.rejected ? `
+                  <strong class="text-rose-700 block text-xs mt-1.5">REJECTED BY: ${pr.step1.by}</strong>
+                  <span class="text-[10px] text-slate-500">${pr.step1.role}</span>
+                  <p class="text-[9px] text-rose-700 italic mt-0.5 line-clamp-2">"${pr.step1.notes}"</p>
+                ` : (pr.step1?.approved ? `
+                  <strong class="text-slate-900 block text-xs mt-1.5">${pr.step1.by}</strong>
+                  <span class="text-[10px] text-slate-500">${pr.step1.role}</span>
+                  <p class="text-[9px] text-slate-600 italic mt-0.5 line-clamp-2">"${pr.step1.notes || 'Specifications and CAD schedule checked.'}"</p>
+                ` : `
+                  <span class="text-amber-800 text-[11px] font-semibold mt-2.5 block italic">Awaiting technical evaluation</span>
+                `)}
+              </div>
+              <div class="border-t border-dashed border-slate-200 pt-1.5 text-[10px] text-slate-400 flex justify-between items-center mono">
+                <span>Sign: <i>${pr.step1?.approved ? '✓ Stamped' : (pr.step1?.rejected ? '✗ Rejected' : '--')}</i></span>
+                <span>${pr.step1?.date || 'Pending'}</span>
+              </div>
+            </div>
+
+            <!-- Box 3: Finance Department Head / Master Admin -->
+            <div class="signature-card border ${pr.step2?.rejected ? 'border-rose-300 bg-rose-50/40' : (pr.step2?.approved ? 'border-emerald-300 bg-emerald-50/40' : 'border-purple-200 bg-purple-50/30')} rounded-xl p-3 flex flex-col justify-between h-36">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] uppercase font-bold text-slate-400">3. Finance Head / Authorization</span>
+                  ${pr.step2?.rejected ? '<span class="text-[9px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.2 rounded border border-rose-200">Budget Denied</span>' : (pr.step2?.approved ? '<span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">Authorized</span>' : '<span class="text-[9px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.2 rounded border border-purple-200">Pending Budget</span>')}
+                </div>
+                ${pr.step2?.rejected ? `
+                  <strong class="text-rose-700 block text-xs mt-1.5">REJECTED BY: ${pr.step2.by}</strong>
+                  <span class="text-[10px] text-slate-500">${pr.step2.role}</span>
+                  <p class="text-[9px] text-rose-700 italic mt-0.5 line-clamp-2">"${pr.step2.notes}"</p>
+                ` : (pr.step2?.approved ? `
+                  <strong class="text-slate-900 block text-xs mt-1.5">${pr.step2.by}</strong>
+                  <span class="text-[10px] text-slate-500">${pr.step2.role}</span>
+                  <p class="text-[9px] text-slate-600 italic mt-0.5 line-clamp-2">"${pr.step2.notes || 'Budget release and cost code approved.'}"</p>
+                ` : `
+                  <span class="text-purple-800 text-[11px] font-semibold mt-2.5 block italic">Awaiting financial release</span>
+                `)}
+              </div>
+              <div class="border-t border-dashed border-slate-200 pt-1.5 text-[10px] text-slate-400 flex justify-between items-center mono">
+                <span>Sign: <i>${pr.step2?.approved ? '✓ Stamped' : (pr.step2?.rejected ? '✗ Denied' : '--')}</i></span>
+                <span>${pr.step2?.date || 'Pending'}</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Compliance Footer & Disclaimer -->
+          <div class="border-t border-slate-200 pt-2 text-[10px] text-slate-400 flex flex-col sm:flex-row justify-between gap-1">
+            <span>&bull; SOP Rule 01: Zero purchasing permitted without fully authorized Form 01 docket.</span>
+            <span>&bull; Verified with ALU-GLASS Procurement Control &bull; Page 1 of 1</span>
+          </div>
         </div>
       `;
 
@@ -2745,7 +3525,6 @@
       const errBox = document.getElementById('login-error-alert');
       if (errBox) errBox.classList.add('hidden');
 
-      // Check Firestore /procurement_users/ first if connected
       let matchedUser = null;
       if (db) {
         try {
@@ -2758,7 +3537,6 @@
         }
       }
 
-      // Fallback to local usersData
       if (!matchedUser) {
         matchedUser = usersData.find(u => u.username.toLowerCase() === username.toLowerCase());
       }
@@ -2771,7 +3549,6 @@
         return;
       }
 
-      // Check if account is revoked
       if (matchedUser.status === 'revoked') {
         if (errBox) {
           errBox.innerText = `Access Denied: Account @${matchedUser.username} has been REVOKED by management. Please contact an Administrator.`;
@@ -2780,7 +3557,6 @@
         return;
       }
 
-      // Login Successful with safe name normalization
       currentUser = matchedUser;
       if (!currentUser.fullName && currentUser.name) {
         currentUser.fullName = currentUser.name;
@@ -2808,7 +3584,6 @@
       const displayName = (currentUser.fullName || currentUser.name || currentUser.username || 'User').trim();
       const initials = (displayName.split(/\s+/).filter(Boolean).map(n => n[0]).join('') || displayName.substring(0, 2) || 'US').substring(0, 2).toUpperCase();
 
-      // Header UI
       const hAvatar = document.getElementById('user-header-avatar');
       const hName = document.getElementById('user-header-name');
       const hRole = document.getElementById('user-header-role');
@@ -2816,7 +3591,6 @@
       if (hName) hName.innerText = displayName;
       if (hRole) hRole.innerText = currentUser.roleLabel || currentUser.role || 'Staff';
 
-      // Sidebar UI
       const sAvatar = document.getElementById('sidebar-user-avatar');
       const sName = document.getElementById('sidebar-user-name');
       const sUname = document.getElementById('sidebar-user-uname');
@@ -2828,7 +3602,6 @@
 
       const userIsAdmin = isUserAdmin(currentUser);
 
-      // Master Admin Header button visibility
       const headerAdminBtn = document.getElementById('header-admin-access-btn');
       if (headerAdminBtn) {
         if (userIsAdmin) {
@@ -2840,13 +3613,11 @@
         }
       }
 
-      // Admin Access card visibility in sidebar
       const accessCard = document.getElementById('sidebar-access-card');
       if (accessCard) {
         accessCard.style.display = userIsAdmin ? 'block' : 'none';
       }
 
-      // Sidebar util fallback access button
       const utilAccessBtn = document.getElementById('sidebar-util-access-btn');
       if (utilAccessBtn) {
         utilAccessBtn.style.display = userIsAdmin ? 'flex' : 'none';
@@ -3026,69 +3797,35 @@
       }
     }
 
-    function autoFillPRFromSKU() {
-      const code = document.getElementById('pr-sku-select').value;
-      const mat = materialsData.find(m => m.code === code);
-      if (!mat) return;
-
-      document.getElementById('pr-item-name').value = mat.name;
-      document.getElementById('pr-item-specs').value = mat.specs;
-      document.getElementById('pr-unit-rate').value = mat.stdCost;
-      document.getElementById('pr-bom-proj').value = mat.details?.productionLink || "General Project";
-      calculatePRBudget();
-    }
-
-    function calculatePRBudget() {
-      const qty = parseFloat(document.getElementById('pr-qty')?.value) || 0;
-      const rate = parseFloat(document.getElementById('pr-unit-rate')?.value) || 0;
-      const total = qty * rate;
-      const display = document.getElementById('pr-est-budget-display');
-      if (display) {
-        display.innerText = `$${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      }
-    }
-
+    // MULTI-LINE PR SUBMISSION
     function submitPR(e) {
       e.preventDefault();
+      if (!prLinesBuilder || prLinesBuilder.length === 0) {
+        showToast("No Line Items", "Please add at least one item line to your requisition.", "error");
+        return;
+      }
+
       const prNumber = document.getElementById('pr-num').value.trim().toUpperCase();
       const department = document.getElementById('pr-department').value;
       const priority = document.getElementById('pr-priority').value;
-      const itemCode = document.getElementById('pr-sku-select').value;
-      const itemName = document.getElementById('pr-item-name').value.trim();
-      const itemSpecs = document.getElementById('pr-item-specs').value.trim();
-      const qty = parseFloat(document.getElementById('pr-qty').value) || 0;
-      const rate = parseFloat(document.getElementById('pr-unit-rate').value) || 0;
       const dueDate = document.getElementById('pr-due-date').value;
       const bom = document.getElementById('pr-bom-proj').value.trim();
 
-      const mat = materialsData.find(m => m.code === itemCode);
-      const uom = mat ? mat.uom : "UNITS";
-      const total = qty * rate;
-
-      let priorityColor = "bg-sky-100 text-sky-800 border-sky-300";
-      if (priority === 'Urgent') priorityColor = "bg-amber-100 text-amber-800 border-amber-300 font-semibold";
-      if (priority === 'Critical Line-Stop') priorityColor = "bg-rose-100 text-rose-800 border-rose-300 font-bold";
-
-      const newPR = {
+      const newPR = sanitizePR({
         prNumber,
-        itemCode,
-        itemName,
-        itemSpecs,
         department,
-        requester: currentUser ? currentUser.fullName : "Purchasing Officer",
+        requester: currentUser ? (currentUser.fullName || currentUser.name || "Purchasing Officer") : "Purchasing Officer",
         requiredDate: dueDate,
-        quantity: qty,
-        uom,
-        unitRate: rate,
-        estimatedTotal: total,
         priority,
-        priorityColor,
+        priorityColor: getPriorityBadgeClass(priority),
         status: "Pending Step 1: Technical Review",
         statusBadge: "bg-amber-50 text-amber-800 border-amber-300 pulse-amber",
         bomProject: bom,
-        step1: { approved: false, by: "", role: "", date: "", notes: "" },
-        step2: { approved: false, by: "", role: "", date: "", notes: "" }
-      };
+        items: JSON.parse(JSON.stringify(prLinesBuilder)),
+        step1: { approved: false, rejected: false, by: "", role: "", date: "", notes: "", decision: "" },
+        step2: { approved: false, rejected: false, by: "", role: "", date: "", notes: "", decision: "" },
+        revisions: []
+      });
 
       prsData.unshift(newPR);
       closeModal('new-entry-modal');
@@ -3097,7 +3834,7 @@
       renderPRs();
       updateHeaderKPIs();
       debouncedSave();
-      showToast("PR Submitted", `Requisition ${prNumber} sent to Step 1 Technical Sign-off.`);
+      showToast("PR Submitted", `Requisition ${prNumber} with ${newPR.items.length} line items submitted.`);
 
       if (db) {
         setDoc(doc(db, 'procurement_prs', prNumber), newPR).catch(e => console.warn(e));
@@ -3265,6 +4002,13 @@
     }
 
     function switchGallery(tab) {
+      activeGalleryTab = tab;
+
+      const catFilterWrapper = document.getElementById('category-filter-wrapper');
+      if (catFilterWrapper) {
+        catFilterWrapper.style.display = tab === 'materials' ? 'block' : 'none';
+      }
+
       ['materials', 'prs', 'suppliers', 'pipeline', 'sop'].forEach(t => {
         const sec = document.getElementById('gallery-' + t);
         if (sec) sec.classList.toggle('hidden', t !== tab);
@@ -3305,7 +4049,10 @@
         const nextPrNum = "PR-2026-" + String(prsData.length + 1).padStart(3, '0');
         const numInput = document.getElementById('pr-num');
         if (numInput) numInput.value = nextPrNum;
-        autoFillPRFromSKU();
+        
+        // Initialize with default line item
+        prLinesBuilder = [];
+        addPRLineRow();
       }
       openModal('new-entry-modal');
     }
@@ -3337,15 +4084,21 @@
     window.runCalculator = runCalculator;
     window.submitMaterial = submitMaterial;
     window.submitPR = submitPR;
-    window.autoFillPRFromSKU = autoFillPRFromSKU;
-    window.calculatePRBudget = calculatePRBudget;
+    window.addPRLineRow = addPRLineRow;
+    window.removePRLineRow = removePRLineRow;
+    window.onPRLineSKUSelect = onPRLineSKUSelect;
+    window.onPRLineFieldChange = onPRLineFieldChange;
     window.submitSupplier = submitSupplier;
     window.submitPO = submitPO;
     window.promptDelete = promptDelete;
     window.viewMaterialDetail = viewMaterialDetail;
     window.openApprovalModal = openApprovalModal;
+    window.handleDecisionChange = handleDecisionChange;
     window.showUnauthorizedStep2Notice = showUnauthorizedStep2Notice;
     window.submitPRApproval = submitPRApproval;
+    window.openRevisePRModal = openRevisePRModal;
+    window.onRevisionItemChange = onRevisionItemChange;
+    window.submitPRRevision = submitPRRevision;
     window.viewPRVoucher = viewPRVoucher;
     window.convertPRToPO = convertPRToPO;
     window.handleLoginSubmit = handleLoginSubmit;
@@ -3355,19 +4108,21 @@
     window.handleCreateUser = handleCreateUser;
     window.changeUserPassword = changeUserPassword;
     window.forceSyncAllToCloud = forceSyncAllToCloud;
+    window.setPRFilter = setPRFilter;
+    window.setPRSort = setPRSort;
 
     window.addEventListener('DOMContentLoaded', () => {
       runCalculator();
 
-      // Default due dates
       const nextWeek = new Date();
       nextWeek.setDate(nextWeek.getDate() + 7);
       const poDue = document.getElementById('po-due');
       const prDue = document.getElementById('pr-due-date');
+      const revDue = document.getElementById('revise-due-date');
       if (poDue) poDue.value = nextWeek.toISOString().split('T')[0];
       if (prDue) prDue.value = nextWeek.toISOString().split('T')[0];
+      if (revDue) revDue.value = nextWeek.toISOString().split('T')[0];
 
-      // Initial Render
       renderMaterials(materialsData);
       renderPRs();
       renderSuppliers();
