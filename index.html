@@ -5,29 +5,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>ALU-GLASS Procurement Management System — Integrated Operations Hub</title>
 
-  <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="js/tailwind-config.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          screens: { 'xs': '420px', '2xl': '1440px', '3xl': '1700px' },
+          colors: {
+            brand: {
+              50: '#f0f7ff', 100: '#e0effe', 500: '#0284c7',
+              600: '#0369a1', 700: '#075985', 800: '#0c4a6e', 900: '#082f49',
+            }
+          }
+        }
+      }
+    }
+  </script>
 
-  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Embedded Design System CSS -->
-  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    :root {
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      text-rendering: optimizeLegibility;
+      background-color: #f8fafc;
+    }
+    .mono { font-family: var(--font-mono); }
+    .glass-nav { background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(14px); }
+    .glass-subnav { background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(10px); }
+    .card-contain {
+      contain: layout style paint;
+      transform: translateZ(0);
+      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.18s ease;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .card-contain:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.03);
+        border-color: #cbd5e1;
+      }
+    }
+    .pulse-amber { animation: pulse-ring-amber 2s infinite; }
+    .pulse-purple { animation: pulse-ring-purple 2s infinite; }
+    .pulse-rose { animation: pulse-ring-rose 2s infinite; }
+    @keyframes pulse-ring-amber { 0%{box-shadow:0 0 0 0 rgba(245,158,11,.6)} 70%{box-shadow:0 0 0 6px rgba(245,158,11,0)} 100%{box-shadow:0 0 0 0 rgba(245,158,11,0)} }
+    @keyframes pulse-ring-purple { 0%{box-shadow:0 0 0 0 rgba(168,85,247,.6)} 70%{box-shadow:0 0 0 6px rgba(168,85,247,0)} 100%{box-shadow:0 0 0 0 rgba(168,85,247,0)} }
+    @keyframes pulse-ring-rose { 0%{box-shadow:0 0 0 0 rgba(225,29,72,.6)} 70%{box-shadow:0 0 0 6px rgba(225,29,72,0)} 100%{box-shadow:0 0 0 0 rgba(225,29,72,0)} }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .pb-safe { padding-bottom: calc(4.5rem + var(--safe-bottom)); }
+    @media print {
+      body * { visibility: hidden; }
+      #pr-docket-modal, #pr-docket-modal * { visibility: visible; }
+      #pr-docket-modal { position: absolute; left: 0; top: 0; width: 100% !important; margin: 0 !important; padding: 0 !important; background: white !important; }
+      .no-print { display: none !important; }
+      #pr-voucher-body { padding: 15mm !important; max-height: none !important; overflow: visible !important; box-shadow: none !important; border: none !important; }
+      table { page-break-inside: avoid; }
+    }
+  </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col pb-safe md:pb-6">
 
-  <!-- TOP APP NAVIGATION HEADER -->
+  <!-- ========== HEADER ========== -->
   <header class="glass-nav border-b border-slate-800 text-white sticky top-0 z-40 shadow-sm">
     <div class="max-w-[1850px] w-full mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-14 sm:h-16 gap-3">
-        
-        <!-- Branding & Logo -->
         <div class="flex items-center gap-3 min-w-0">
           <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-600 to-sky-400 flex items-center justify-center shadow-lg shadow-sky-500/25 shrink-0">
             <i data-lucide="layers" class="w-5 h-5 text-white"></i>
@@ -41,114 +100,68 @@
           </div>
         </div>
 
-        <!-- Telemetry Counters & User Controls -->
         <div class="flex items-center gap-3 sm:gap-4 shrink-0">
-          
-          <!-- Executive KPI Telemetry -->
           <div class="hidden xl:flex items-center gap-6 border-r border-slate-800 pr-5 text-xs">
-            <div>
-              <span class="text-slate-400 block text-[9px] uppercase tracking-wider">Catalog SKUs</span>
-              <span class="font-bold text-slate-100 mono text-xs sm:text-sm" id="sku-count-header">8</span>
-            </div>
-            <div>
-              <span class="text-slate-400 block text-[9px] uppercase tracking-wider">Requisitions</span>
-              <span class="font-bold text-purple-400 mono text-xs sm:text-sm" id="pr-pending-count">2 Pending</span>
-            </div>
-            <div>
-              <span class="text-slate-400 block text-[9px] uppercase tracking-wider">Active Vendors</span>
-              <span class="font-bold text-emerald-400 mono text-xs sm:text-sm" id="vendor-count-header">6 Active</span>
-            </div>
-            <div>
-              <span class="text-slate-400 block text-[9px] uppercase tracking-wider">Open PO Value</span>
-              <span class="font-bold text-sky-400 mono text-xs sm:text-sm" id="po-value-header">$11,302.50</span>
-            </div>
-            <div>
-              <span class="text-slate-400 block text-[9px] uppercase tracking-wider">Dock Receipts</span>
-              <span class="font-bold text-emerald-400 mono text-xs sm:text-sm" id="grn-count-header">0 Logged</span>
-            </div>
-            <div>
-              <span class="text-slate-400 block text-[9px] uppercase tracking-wider">QC / AP Holds</span>
-              <span class="font-bold text-rose-400 mono text-xs sm:text-sm" id="hold-count-header">0 / 0</span>
-            </div>
+            <div><span class="text-slate-400 block text-[9px] uppercase tracking-wider">Catalog SKUs</span><span class="font-bold text-slate-100 mono text-xs sm:text-sm" id="sku-count-header">0</span></div>
+            <div><span class="text-slate-400 block text-[9px] uppercase tracking-wider">Requisitions</span><span class="font-bold text-purple-400 mono text-xs sm:text-sm" id="pr-pending-count">0 Pending</span></div>
+            <div><span class="text-slate-400 block text-[9px] uppercase tracking-wider">Active Vendors</span><span class="font-bold text-emerald-400 mono text-xs sm:text-sm" id="vendor-count-header">0 Active</span></div>
+            <div><span class="text-slate-400 block text-[9px] uppercase tracking-wider">Open PO Value</span><span class="font-bold text-sky-400 mono text-xs sm:text-sm" id="po-value-header">$0.00</span></div>
           </div>
 
-          <!-- + New Entry Action -->
-          <button onclick="openNewEntryModal('material')" aria-label="Create New Entry" class="px-3 py-2 sm:px-4 sm:py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition shadow-sm active:scale-95">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i>
-            <span class="inline">+ New Entry</span>
+          <button onclick="openNewEntryModal('material')" class="px-3 py-2 sm:px-4 sm:py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 transition shadow-sm active:scale-95">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i><span>+ New Entry</span>
           </button>
 
-          <!-- Master Admin Access Control Button (Header Direct Trigger) -->
-          <button onclick="openModal('user-management-modal')" id="header-admin-access-btn" class="flex px-2.5 py-2 sm:px-3 sm:py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg items-center gap-1.5 transition shadow-sm active:scale-95" title="Master Admin Access & Permissions Control">
-            <i data-lucide="shield" class="w-4 h-4 text-indigo-200"></i>
-            <span class="hidden sm:inline">Access Control</span>
+          <button onclick="openModal('user-management-modal')" id="header-admin-access-btn" class="hidden px-2.5 py-2 sm:px-3 sm:py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg items-center gap-1.5 transition shadow-sm active:scale-95" title="Access Control">
+            <i data-lucide="shield" class="w-4 h-4 text-indigo-200"></i><span class="hidden sm:inline">Access Control</span>
           </button>
 
-          <!-- User Profile Trigger Pill (Opens Slide-Over Sidebar) -->
           <button onclick="openSidebar('user-profile-sidebar')" id="header-user-btn" class="flex items-center gap-2.5 px-2.5 py-1.5 bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700 rounded-xl transition text-left cursor-pointer active:scale-95">
-            <div id="user-header-avatar" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-sky-600 text-white font-bold text-xs flex items-center justify-center shadow-inner uppercase shrink-0">
-              AM
-            </div>
+            <div id="user-header-avatar" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-sky-600 text-white font-bold text-xs flex items-center justify-center shadow-inner uppercase shrink-0">--</div>
             <div class="hidden sm:block min-w-0 pr-1">
-              <span id="user-header-name" class="block text-xs font-semibold text-slate-100 truncate max-w-[130px]">Alex Miller</span>
-              <span id="user-header-role" class="block text-[10px] text-sky-400 font-medium truncate capitalize">Administrator</span>
+              <span id="user-header-name" class="block text-xs font-semibold text-slate-100 truncate max-w-[130px]">Not signed in</span>
+              <span id="user-header-role" class="block text-[10px] text-sky-400 font-medium truncate capitalize">—</span>
             </div>
             <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
           </button>
-
         </div>
-
       </div>
     </div>
   </header>
 
-  <!-- GALLERY VIEW NAVIGATION & SEARCH FILTER BAR -->
+  <!-- ========== SUBNAV ========== -->
   <div class="glass-subnav border-b border-slate-200 shadow-sm sticky top-14 sm:top-16 z-30">
     <div class="max-w-[1850px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        
-        <!-- Gallery Mode Navigation Tabs -->
-        <nav class="flex items-center gap-1.5 bg-slate-100/90 p-1 rounded-xl w-full md:w-auto overflow-x-auto no-scrollbar text-xs font-medium" aria-label="Gallery Views">
-          
+        <nav class="flex items-center gap-1.5 bg-slate-100/90 p-1 rounded-xl w-full md:w-auto overflow-x-auto no-scrollbar text-xs font-medium">
           <button onclick="switchGallery('materials')" id="tab-materials" class="tab-btn active-tab px-3.5 py-1.5 rounded-lg flex items-center gap-2 bg-white text-slate-900 shadow-sm shrink-0 transition whitespace-nowrap">
-            <i data-lucide="box" class="w-4 h-4 text-sky-600"></i>
-            <span>Materials</span>
-            <span class="bg-sky-100 text-sky-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="mat-count-badge">8</span>
+            <i data-lucide="box" class="w-4 h-4 text-sky-600"></i><span>Materials</span>
+            <span class="bg-sky-100 text-sky-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="mat-count-badge">0</span>
           </button>
-          
           <button onclick="switchGallery('prs')" id="tab-prs" class="tab-btn px-3.5 py-1.5 rounded-lg flex items-center gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
-            <i data-lucide="file-check" class="w-4 h-4 text-purple-600"></i>
-            <span>Requisitions (PR)</span>
-            <span class="bg-purple-100 text-purple-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="pr-count-badge">3</span>
+            <i data-lucide="file-check" class="w-4 h-4 text-purple-600"></i><span>Requisitions (PR)</span>
+            <span class="bg-purple-100 text-purple-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="pr-count-badge">0</span>
           </button>
-
           <button onclick="switchGallery('suppliers')" id="tab-suppliers" class="tab-btn px-3.5 py-1.5 rounded-lg flex items-center gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
-            <i data-lucide="building-2" class="w-4 h-4 text-slate-500"></i>
-            <span>Vendors</span>
-            <span class="bg-slate-200 text-slate-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="sup-count-badge">6</span>
+            <i data-lucide="building-2" class="w-4 h-4 text-slate-500"></i><span>Vendors</span>
+            <span class="bg-slate-200 text-slate-700 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="sup-count-badge">0</span>
           </button>
-          
           <button onclick="switchGallery('pipeline')" id="tab-pipeline" class="tab-btn px-3.5 py-1.5 rounded-lg flex items-center gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
-            <i data-lucide="truck" class="w-4 h-4 text-slate-500"></i>
-            <span>Logistics &amp; POs</span>
-            <span class="bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="po-count-badge">4</span>
+            <i data-lucide="truck" class="w-4 h-4 text-slate-500"></i><span>Logistics &amp; POs</span>
+            <span class="bg-amber-100 text-amber-800 px-1.5 py-0.2 rounded-full text-[10px] font-semibold" id="po-count-badge">0</span>
           </button>
-
           <button onclick="switchGallery('sop')" id="tab-sop" class="tab-btn px-3.5 py-1.5 rounded-lg flex items-center gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap">
-            <i data-lucide="shield-check" class="w-4 h-4 text-slate-500"></i>
-            <span>SOP Rules</span>
+            <i data-lucide="shield-check" class="w-4 h-4 text-slate-500"></i><span>SOP Rules</span>
           </button>
         </nav>
 
-        <!-- Search & Category Filters -->
         <div class="flex items-center gap-2 w-full md:w-auto">
           <div class="relative flex-1 md:w-64 lg:w-80">
             <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
             <input type="text" id="gallery-search" oninput="filterCards()" placeholder="Search code, specs, vendors, PRs..." class="w-full pl-9 pr-3 py-1.5 bg-slate-50 hover:bg-slate-100 focus:bg-white text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition">
           </div>
-
           <div class="relative shrink-0" id="category-filter-wrapper">
-            <select id="category-filter" onchange="filterCards()" aria-label="Filter by material category" class="bg-slate-50 border border-slate-200 text-xs font-medium rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
+            <select id="category-filter" onchange="filterCards()" class="bg-slate-50 border border-slate-200 text-xs font-medium rounded-lg px-3 py-1.5 text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500/20">
               <option value="all">All Categories</option>
               <option value="aluminum">Aluminum</option>
               <option value="glass">Glass</option>
@@ -157,15 +170,12 @@
             </select>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- MAIN GALLERIES CONTENT CONTAINER -->
   <main class="max-w-[1850px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1">
 
-    <!-- 1. MATERIALS CATALOG GALLERY -->
     <section id="gallery-materials" class="space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -175,31 +185,20 @@
           </h2>
           <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Real-time balances against Reorder Point (ROP), packaging profiles, and standard unit costs.</p>
         </div>
-        
         <div class="flex items-center justify-between sm:justify-end gap-2.5">
           <div class="flex items-center gap-1.5 text-[10px] sm:text-xs">
-            <span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> In Stock
-            </span>
-            <span class="inline-flex items-center gap-1 text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-              <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Low
-            </span>
-            <span class="inline-flex items-center gap-1 text-rose-800 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
-              <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Reorder
-            </span>
+            <span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> In Stock</span>
+            <span class="inline-flex items-center gap-1 text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Low</span>
+            <span class="inline-flex items-center gap-1 text-rose-800 bg-rose-50 px-2 py-0.5 rounded border border-rose-200"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Reorder</span>
           </div>
-
           <button onclick="openNewEntryModal('material')" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 transition shadow-sm shrink-0">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Add SKU</span>
+            <i data-lucide="plus" class="w-4 h-4"></i><span>Add SKU</span>
           </button>
         </div>
       </div>
-
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4" id="materials-grid"></div>
     </section>
 
-    <!-- 2. PURCHASE REQUISITIONS (PR) GALLERY -->
     <section id="gallery-prs" class="space-y-4 hidden">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -207,67 +206,49 @@
             <span>Purchase Requisitions (PR) Operations Hub</span>
             <span class="text-[11px] font-normal text-purple-600 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">SOP Rule 01 &amp; 02: 2-Step Sign-off</span>
           </h2>
-          <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Sequential dual authorization: Step 1 (Technical/Production Review) &rarr; Step 2 (Finance Head Authorization).</p>
+          <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Sequential dual authorization: Step 1 (Technical/Production Review) → Step 2 (Finance Head Authorization).</p>
         </div>
-        
         <button onclick="openNewEntryModal('pr')" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition shadow-sm self-start sm:self-auto">
-          <i data-lucide="plus-circle" class="w-4 h-4"></i>
-          <span>Create New PR</span>
+          <i data-lucide="plus-circle" class="w-4 h-4"></i><span>Create New PR</span>
         </button>
       </div>
 
-      <!-- PR Status Filter Pills & Quick Sorter Bar -->
       <div class="bg-white border border-slate-200 rounded-2xl p-2.5 sm:p-3 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        
-        <!-- Status Filter Pills -->
         <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
           <button onclick="setPRFilter('all')" id="pr-filter-all" class="pr-filter-btn px-3 py-1.5 rounded-xl font-semibold bg-purple-600 text-white shadow-xs shrink-0 transition flex items-center gap-1.5">
-            <span>All PRs</span>
-            <span class="bg-white/20 text-white text-[10px] px-1.5 py-0.2 rounded-full" id="pr-filter-count-all">3</span>
+            <span>All PRs</span><span class="bg-white/20 text-white text-[10px] px-1.5 py-0.2 rounded-full" id="pr-filter-count-all">0</span>
           </button>
-
           <button onclick="setPRFilter('pending-step1')" id="pr-filter-pending-step1" class="pr-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-            <span>Pending Step 1 (Tech)</span>
-            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full" id="pr-filter-count-step1">1</span>
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span><span>Pending Step 1 (Tech)</span>
+            <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full" id="pr-filter-count-step1">0</span>
           </button>
-
           <button onclick="setPRFilter('pending-step2')" id="pr-filter-pending-step2" class="pr-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
-            <span>Pending Step 2 (Finance)</span>
-            <span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full" id="pr-filter-count-step2">1</span>
+            <span class="w-2 h-2 rounded-full bg-purple-500"></span><span>Pending Step 2 (Finance)</span>
+            <span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full" id="pr-filter-count-step2">0</span>
           </button>
-
           <button onclick="setPRFilter('approved')" id="pr-filter-approved" class="pr-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>Approved / Ready</span>
-            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full" id="pr-filter-count-approved">1</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Approved / Ready</span>
+            <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full" id="pr-filter-count-approved">0</span>
           </button>
-
           <button onclick="setPRFilter('rejected')" id="pr-filter-rejected" class="pr-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-            <span>Returned / Rejected</span>
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span><span>Returned / Rejected</span>
             <span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-1.5 py-0.2 rounded-full" id="pr-filter-count-rejected">0</span>
           </button>
         </div>
-
-        <!-- PR Sorting Dropdown -->
         <div class="flex items-center gap-2 shrink-0 self-end lg:self-auto text-xs">
           <span class="text-slate-400 text-[11px] font-medium hidden sm:inline">Sort:</span>
           <select id="pr-sort-select" onchange="setPRSort(this.value)" class="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500/20">
             <option value="newest">Newest First</option>
             <option value="due">Due Date (Soonest)</option>
             <option value="budget">Estimated Budget (Highest)</option>
-            <option value="priority">Priority (Critical &rarr; Routine)</option>
+            <option value="priority">Priority (Critical → Routine)</option>
           </select>
         </div>
-
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4" id="prs-grid"></div>
     </section>
 
-    <!-- 3. VENDOR DIRECTORY GALLERY -->
     <section id="gallery-suppliers" class="space-y-4 hidden">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -278,15 +259,12 @@
           <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Weighted across Price (25%), Quality (25%), OTIF Delivery (20%), Specs (15%), Credit (10%), and Service (5%).</p>
         </div>
         <button onclick="openNewEntryModal('supplier')" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shadow-sm self-start sm:self-auto">
-          <i data-lucide="plus" class="w-4 h-4"></i>
-          <span>Register Vendor</span>
+          <i data-lucide="plus" class="w-4 h-4"></i><span>Register Vendor</span>
         </button>
       </div>
-
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="suppliers-grid"></div>
     </section>
 
-    <!-- 4. OPEN PO & LOGISTICS PIPELINE GALLERY -->
     <section id="gallery-pipeline" class="space-y-4 hidden">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -297,357 +275,216 @@
         </div>
         <div class="flex items-center gap-2 self-start sm:self-auto">
           <button onclick="openNewEntryModal('po')" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shadow-sm">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Issue PO</span>
+            <i data-lucide="plus" class="w-4 h-4"></i><span>Issue PO</span>
           </button>
-          <div class="text-[11px] sm:text-xs mono font-semibold text-slate-600 bg-white border border-slate-200 px-3 py-1 rounded-lg">
-            Dock: <span class="text-sky-600 font-bold" id="dock-today-count">2 Today</span>
-          </div>
         </div>
       </div>
-
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4" id="pipeline-grid"></div>
     </section>
 
-    <!-- 5. SOP & GOVERNANCE GALLERY -->
     <section id="gallery-sop" class="space-y-5 hidden">
       <div>
         <h2 class="text-sm sm:text-base font-bold text-slate-900">Standard Operating Procedures &amp; Official Forms</h2>
         <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Core internal controls, financial delegation thresholds, and 3-way matching rules.</p>
       </div>
-
       <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-5 text-white shadow-sm border border-slate-700">
         <div class="flex items-center gap-2 mb-3 text-sky-400">
           <i data-lucide="shield-check" class="w-5 h-5"></i>
           <h3 class="text-xs font-bold uppercase tracking-wider">The 10 Non-Negotiable Procurement Rules</h3>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
-            <span class="text-sky-400 font-bold block mb-1">01. PR First</span>
-            No PR = Zero purchase. Demands must trace to BOM.
-          </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
-            <span class="text-sky-400 font-bold block mb-1">02. 2-Step Sign-off</span>
-            Orders must be authorized by Tech Lead and Finance Head.
-          </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
-            <span class="text-sky-400 font-bold block mb-1">03. Dual Sourcing</span>
-            Never single-source critical aluminum dies or float glass.
-          </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
-            <span class="text-sky-400 font-bold block mb-1">04. QC Gate</span>
-            Delivered cargo quarantined until QC passes inspection.
-          </div>
-          <div class="bg-white/5 border border-white/10 rounded-xl p-3">
-            <span class="text-sky-400 font-bold block mb-1">05. 3-Way Match</span>
-            PO Rate = GRN Qty = Invoice before payment release.
-          </div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3"><span class="text-sky-400 font-bold block mb-1">01. PR First</span>No PR = Zero purchase. Demands must trace to BOM.</div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3"><span class="text-sky-400 font-bold block mb-1">02. 2-Step Sign-off</span>Orders must be authorized by Tech Lead and Finance Head.</div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3"><span class="text-sky-400 font-bold block mb-1">03. Dual Sourcing</span>Never single-source critical aluminum dies or float glass.</div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3"><span class="text-sky-400 font-bold block mb-1">04. QC Gate</span>Delivered cargo quarantined until QC passes inspection.</div>
+          <div class="bg-white/5 border border-white/10 rounded-xl p-3"><span class="text-sky-400 font-bold block mb-1">05. 3-Way Match</span>PO Rate = GRN Qty = Invoice before payment release.</div>
         </div>
       </div>
-
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="sop-grid"></div>
     </section>
 
   </main>
 
-  <!-- RIGHT SLIDE-OVER DRAWER: USER PROFILE, CLOUD STATUS & ACCESS CONTROL -->
+  <!-- ========== SIDEBAR ========== -->
   <div id="user-profile-sidebar" class="fixed inset-0 z-50 hidden">
-    <div onclick="closeSidebar('user-profile-sidebar')" class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300"></div>
-    
-    <div class="absolute inset-y-0 right-0 max-w-md w-full bg-white shadow-2xl flex flex-col border-l border-slate-200 transform transition-transform duration-300 ease-in-out">
-      
-      <!-- Drawer Header -->
+    <div onclick="closeSidebar('user-profile-sidebar')" class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"></div>
+    <div class="absolute inset-y-0 right-0 max-w-md w-full bg-white shadow-2xl flex flex-col border-l border-slate-200">
       <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-xs">
-            <i data-lucide="user-check" class="w-4 h-4"></i>
-          </div>
-          <div>
-            <h3 class="font-bold text-sm">User Profile &amp; Workspace</h3>
-            <p class="text-[11px] text-slate-400">Identity &amp; Governance Center</p>
-          </div>
+          <div class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-xs"><i data-lucide="user-check" class="w-4 h-4"></i></div>
+          <div><h3 class="font-bold text-sm">User Profile &amp; Workspace</h3><p class="text-[11px] text-slate-400">Identity &amp; Governance Center</p></div>
         </div>
-        <button onclick="closeSidebar('user-profile-sidebar')" class="text-slate-400 hover:text-white p-1 rounded-lg">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button onclick="closeSidebar('user-profile-sidebar')" class="text-slate-400 hover:text-white p-1 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-
-      <!-- Drawer Content -->
       <div class="p-5 space-y-4 overflow-y-auto flex-1 text-xs">
-        
-        <!-- Active User Profile Card -->
         <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex items-center gap-3.5">
-          <div id="sidebar-user-avatar" class="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 text-white font-bold text-base flex items-center justify-center shadow-md uppercase shrink-0">
-            AM
-          </div>
+          <div id="sidebar-user-avatar" class="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 text-white font-bold text-base flex items-center justify-center shadow-md uppercase shrink-0">--</div>
           <div class="min-w-0 flex-1">
             <div class="flex items-center justify-between">
-              <h4 id="sidebar-user-name" class="font-bold text-sm text-slate-900 truncate">Alex Miller</h4>
-              <span id="sidebar-user-role-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800 border border-sky-300 capitalize">Administrator</span>
+              <h4 id="sidebar-user-name" class="font-bold text-sm text-slate-900 truncate">Not signed in</h4>
+              <span id="sidebar-user-role-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800 border border-sky-300 capitalize">—</span>
             </div>
-            <p id="sidebar-user-uname" class="text-slate-500 text-[11px] mono mt-0.5">@admin</p>
-            <p class="text-[10px] text-emerald-600 font-medium flex items-center gap-1 mt-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Active Operational Session
-            </p>
+            <p id="sidebar-user-uname" class="text-slate-500 text-[11px] mono mt-0.5">@—</p>
+            <p class="text-[10px] text-emerald-600 font-medium flex items-center gap-1 mt-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Active Operational Session</p>
           </div>
         </div>
 
-        <!-- Cloud Connection Status Card -->
         <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-4 text-white border border-slate-700 shadow-sm space-y-3">
           <div class="flex items-center justify-between">
-            <span class="font-semibold text-slate-200 text-xs flex items-center gap-2">
-              <i data-lucide="cloud" class="w-4 h-4 text-sky-400"></i> Cloud Database Backend
-            </span>
+            <span class="font-semibold text-slate-200 text-xs flex items-center gap-2"><i data-lucide="server" class="w-4 h-4 text-sky-400"></i> MySQL API Backend</span>
             <span id="sidebar-cloud-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Cloud Synced
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Connected
             </span>
           </div>
-
           <div class="grid grid-cols-2 gap-2 text-[11px] bg-white/5 rounded-xl p-2.5 border border-white/10">
-            <div>
-              <span class="text-slate-400 block text-[9px] uppercase">Target Instance</span>
-              <span class="mono font-semibold text-sky-300">default</span>
-            </div>
-            <div>
-              <span class="text-slate-400 block text-[9px] uppercase">Project ID</span>
-              <span class="mono font-semibold text-slate-200 truncate block">purchasing-system</span>
-            </div>
-            <div>
-              <span class="text-slate-400 block text-[9px] uppercase">Region</span>
-              <span class="text-slate-300">asia-southeast1</span>
-            </div>
-            <div>
-              <span class="text-slate-400 block text-[9px] uppercase">Transport</span>
-              <span class="text-emerald-400">Long-Polling</span>
-            </div>
+            <div><span class="text-slate-400 block text-[9px] uppercase">API Base</span><span class="mono font-semibold text-sky-300" id="sidebar-api-base">—</span></div>
+            <div><span class="text-slate-400 block text-[9px] uppercase">Database</span><span class="mono font-semibold text-slate-200 truncate block" id="sidebar-db-name">—</span></div>
+            <div><span class="text-slate-400 block text-[9px] uppercase">Transport</span><span class="text-emerald-400">HTTP/JSON</span></div>
+            <div><span class="text-slate-400 block text-[9px] uppercase">Auth</span><span class="text-emerald-400">Bearer Token</span></div>
           </div>
-
           <div class="flex items-center justify-between pt-1">
-            <span class="text-[10px] text-slate-400 mono" id="sidebar-uid-display">Live server data (refreshes every 20 s)</span>
-            <button onclick="forceSyncAllToCloud()" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-[10px] font-semibold flex items-center gap-1 transition">
-              <i data-lucide="refresh-cw" class="w-3 h-3"></i> Sync Now
+            <span class="text-[10px] text-slate-400 mono" id="sidebar-uid-display">—</span>
+            <button onclick="reloadAll()" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-[10px] font-semibold flex items-center gap-1 transition">
+              <i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh
             </button>
           </div>
         </div>
 
-        <!-- Access Control Command Center Box -->
-        <div id="sidebar-access-card" class="bg-sky-50 border border-sky-100 rounded-2xl p-4 space-y-2.5">
+        <div id="sidebar-access-card" class="bg-sky-50 border border-sky-100 rounded-2xl p-4 space-y-2.5 hidden">
           <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2 text-sky-900 font-bold">
-              <i data-lucide="shield" class="w-4 h-4 text-sky-600"></i>
-              <span>Access &amp; Account Control</span>
-            </div>
+            <div class="flex items-center gap-2 text-sky-900 font-bold"><i data-lucide="shield" class="w-4 h-4 text-sky-600"></i><span>Access &amp; Account Control</span></div>
             <span class="text-[10px] font-bold text-sky-700 bg-sky-200/60 px-2 py-0.5 rounded-full">Admin Only</span>
           </div>
           <p class="text-[11px] text-slate-600">Authorize team members, set roles, reset passwords, or revoke access instantly.</p>
-          
           <button onclick="closeSidebar('user-profile-sidebar'); openModal('user-management-modal');" class="w-full py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl text-xs shadow-sm flex items-center justify-center gap-1.5 transition active:scale-95">
-            <i data-lucide="users" class="w-4 h-4"></i>
-            <span>Open Access Control Center</span>
+            <i data-lucide="users" class="w-4 h-4"></i><span>Open Access Control Center</span>
           </button>
         </div>
 
-        <!-- Quick Utilities Box -->
         <div class="space-y-2">
           <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Workspace Utilities</span>
-          
-          <button onclick="closeSidebar('user-profile-sidebar'); openModal('user-management-modal');" id="sidebar-util-access-btn" class="w-full p-2.5 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl flex items-center justify-between transition text-indigo-900 font-semibold">
-            <div class="flex items-center gap-2">
-              <i data-lucide="shield-check" class="w-4 h-4 text-indigo-600"></i>
-              <span class="text-xs">Access &amp; Permissions Manager</span>
-            </div>
-            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-indigo-400"></i>
-          </button>
-
           <button onclick="closeSidebar('user-profile-sidebar'); openModal('quick-calc-modal');" class="w-full p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl flex items-center justify-between transition text-slate-700">
-            <div class="flex items-center gap-2">
-              <i data-lucide="calculator" class="w-4 h-4 text-sky-600"></i>
-              <span class="font-semibold text-xs">Landed Cost Engine (TCO)</span>
-            </div>
+            <div class="flex items-center gap-2"><i data-lucide="calculator" class="w-4 h-4 text-sky-600"></i><span class="font-semibold text-xs">Landed Cost Engine (TCO)</span></div>
             <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
           </button>
-
-          
         </div>
-
       </div>
-
-      <!-- Drawer Footer: Prominent Sign Out Button -->
       <div class="p-4 bg-slate-50 border-t border-slate-200 shrink-0">
         <button onclick="handleLogout()" class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition active:scale-95">
-          <i data-lucide="log-out" class="w-4 h-4"></i>
-          <span>Sign Out of Operational Hub</span>
+          <i data-lucide="log-out" class="w-4 h-4"></i><span>Sign Out of Operational Hub</span>
         </button>
       </div>
-
     </div>
   </div>
 
-  <!-- MODAL: LOGIN / AUTHENTICATION GATE -->
+  <!-- ========== LOGIN ========== -->
   <div id="login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col my-auto">
-      
       <div class="bg-slate-900 text-white p-6 text-center space-y-2 relative">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/30 mx-auto">
-          <i data-lucide="lock" class="w-6 h-6 text-white"></i>
-        </div>
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/30 mx-auto"><i data-lucide="lock" class="w-6 h-6 text-white"></i></div>
         <h3 class="font-bold text-base sm:text-lg">ALU-GLASS Sourcing Hub</h3>
         <p class="text-xs text-slate-400">Enterprise Fenestration Procurement Gateway</p>
       </div>
-
       <form onsubmit="handleLoginSubmit(event)" class="p-6 space-y-4 text-xs">
         <div id="login-error-alert" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium"></div>
-
         <div>
           <label class="block font-medium text-slate-700 mb-1">Username / Account ID *</label>
-          <input type="text" id="login-uname" required placeholder="e.g. admin or purchasing" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500">
+          <input type="text" id="login-uname" required placeholder="e.g. admin or purchasing" autocomplete="username" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500">
         </div>
-
         <div>
           <label class="block font-medium text-slate-700 mb-1">Password *</label>
-          <input type="password" id="login-pass" required placeholder="••••••••" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500">
+          <input type="password" id="login-pass" required placeholder="••••••••" autocomplete="current-password" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs mono focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500">
         </div>
-
-        <button type="submit" class="w-full py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl text-xs shadow-sm transition active:scale-95">
-          Sign In to System
-        </button>
-
-        
+        <button type="submit" class="w-full py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-xl text-xs shadow-sm transition active:scale-95">Sign In to System</button>
+        <p class="text-[10px] text-slate-400 text-center pt-2 border-t border-slate-200">
+          Contact your Master Admin to obtain credentials. First-run admin password is printed once on server startup.
+        </p>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: ACCOUNT ACCESS & PERMISSIONS CONTROL (ADMIN ONLY) -->
+  <!-- ========== USER MANAGEMENT ========== -->
   <div id="user-management-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
-      
       <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
           <i data-lucide="shield" class="w-5 h-5 text-sky-400"></i>
-          <div>
-            <h3 class="font-bold text-sm">Account Access &amp; Permissions Manager</h3>
-            <p class="text-[11px] text-slate-400">Direct Firestore User Registry (/procurement_users/)</p>
-          </div>
+          <div><h3 class="font-bold text-sm">Account Access &amp; Permissions Manager</h3><p class="text-[11px] text-slate-400">MySQL user registry (/users)</p></div>
         </div>
-        <button onclick="closeModal('user-management-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button onclick="closeModal('user-management-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-
       <div class="p-6 space-y-5 overflow-y-auto flex-1 text-xs">
-        
         <form onsubmit="handleCreateUser(event)" class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
-          <h4 class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
-            <i data-lucide="user-plus" class="w-4 h-4 text-emerald-600"></i> Register New Staff Account
-          </h4>
+          <h4 class="font-bold text-slate-800 text-xs flex items-center gap-1.5"><i data-lucide="user-plus" class="w-4 h-4 text-emerald-600"></i> Register New Staff Account</h4>
           <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
-            <div>
-              <label class="block font-medium text-slate-700 mb-1">Username *</label>
-              <input type="text" id="new-user-uname" required placeholder="e.g. somnang" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs mono">
-            </div>
-            <div>
-              <label class="block font-medium text-slate-700 mb-1">Legal Full Name *</label>
-              <input type="text" id="new-user-fullname" required placeholder="e.g. Somnang Seng" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs">
-            </div>
-            <div>
-              <label class="block font-medium text-slate-700 mb-1">Assigned Role *</label>
+            <div><label class="block font-medium text-slate-700 mb-1">Username *</label><input type="text" id="new-user-uname" required placeholder="e.g. somnang" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs mono"></div>
+            <div><label class="block font-medium text-slate-700 mb-1">Legal Full Name *</label><input type="text" id="new-user-fullname" required placeholder="e.g. Somnang Seng" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs"></div>
+            <div><label class="block font-medium text-slate-700 mb-1">Assigned Role *</label>
               <select id="new-user-role" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs">
                 <option value="purchasing">Purchasing Officer</option>
                 <option value="engineer">Production / Tech Lead</option>
                 <option value="finance">Finance Dept Head</option>
-                <option value="warehouse">Warehouse Clerk</option>
                 <option value="admin">Administrator / GM</option>
               </select>
             </div>
-            <div>
-              <label class="block font-medium text-slate-700 mb-1">Initial Password *</label>
-              <input type="text" id="new-user-pass" required placeholder="pass123" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs mono">
-            </div>
+            <div><label class="block font-medium text-slate-700 mb-1">Initial Password *</label><input type="text" id="new-user-pass" required placeholder="min 8 chars" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs mono"></div>
           </div>
           <div class="flex justify-end">
-            <button type="submit" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg text-xs shadow-sm transition">
-              Create User in Database
-            </button>
+            <button type="submit" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg text-xs shadow-sm transition">Create User</button>
           </div>
         </form>
 
         <div class="border border-slate-200 rounded-xl overflow-hidden shadow-xs">
           <table class="w-full text-left border-collapse text-xs">
             <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
-              <tr>
-                <th class="p-3">Username</th>
-                <th class="p-3">Full Legal Name</th>
-                <th class="p-3">Role</th>
-                <th class="p-3">Access Status</th>
-                <th class="p-3 text-right">Actions</th>
-              </tr>
+              <tr><th class="p-3">Username</th><th class="p-3">Full Legal Name</th><th class="p-3">Role</th><th class="p-3">Access Status</th><th class="p-3 text-right">Actions</th></tr>
             </thead>
             <tbody id="user-accounts-tbody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </div>
-
       <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end shrink-0">
         <button onclick="closeModal('user-management-modal')" class="px-4 py-1.5 bg-slate-900 text-white font-semibold rounded-lg text-xs">Done</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: DYNAMIC 2-STEP PR APPROVAL & REJECTION SIGN-OFF (WITH MULTI-ITEM PREVIEW) -->
+  <!-- ========== PR APPROVAL ========== -->
   <div id="pr-approval-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
-      
       <div id="pr-modal-header" class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
           <i data-lucide="check-square" class="w-5 h-5 text-purple-400"></i>
-          <div>
-            <h3 class="font-bold text-sm" id="pr-modal-title">PR Sign-off Authorization</h3>
-            <p class="text-[11px] text-slate-400 mono" id="pr-modal-pr-num">PR-2026-001</p>
-          </div>
+          <div><h3 class="font-bold text-sm" id="pr-modal-title">PR Sign-off Authorization</h3><p class="text-[11px] text-slate-400 mono" id="pr-modal-pr-num">PR-0000-000</p></div>
         </div>
-        <button onclick="closeModal('pr-approval-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button onclick="closeModal('pr-approval-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-
       <form onsubmit="submitPRApproval(event)" class="p-6 space-y-4 text-xs overflow-y-auto flex-1">
         <input type="hidden" id="pr-approval-target-pr">
         <input type="hidden" id="pr-approval-target-step">
-
-        <!-- Multi-Item Line Summary Box -->
         <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2">
           <div class="flex justify-between items-center text-slate-600">
             <span class="font-semibold text-slate-700">Project / Demand:</span>
-            <span class="font-bold text-slate-900" id="pr-approval-bom-display">SD-100</span>
+            <span class="font-bold text-slate-900" id="pr-approval-bom-display">—</span>
           </div>
-          
           <div class="border border-slate-200 rounded-lg overflow-hidden bg-white">
             <table class="w-full text-left text-xs border-collapse">
               <thead class="bg-slate-100 text-slate-600 text-[11px]">
-                <tr>
-                  <th class="p-2">Item Code</th>
-                  <th class="p-2">Description</th>
-                  <th class="p-2 text-right">Qty</th>
-                  <th class="p-2 text-right">Unit Rate</th>
-                  <th class="p-2 text-right">Subtotal</th>
-                </tr>
+                <tr><th class="p-2">Item Code</th><th class="p-2">Description</th><th class="p-2 text-right">Qty</th><th class="p-2 text-right">Unit Rate</th><th class="p-2 text-right">Subtotal</th></tr>
               </thead>
               <tbody id="pr-approval-items-tbody" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
-
           <div class="flex justify-between items-center text-xs pt-1">
             <span class="text-slate-500">Required By: <strong class="mono text-slate-800" id="pr-approval-due">--</strong></span>
             <span class="text-slate-700 font-semibold">Grand Estimated Total: <strong class="mono text-emerald-700 text-sm font-bold" id="pr-approval-budget">$0.00</strong></span>
           </div>
         </div>
-
         <div>
           <label class="block font-medium text-slate-700 mb-1">Approver Full Name (Direct Signatory) *</label>
-          <input type="text" id="pr-approver-name" required placeholder="e.g. Alex Miller or Somnang Seng" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500">
+          <input type="text" id="pr-approver-name" required placeholder="Auto-filled from session" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500">
           <p class="text-[10px] text-slate-400 mt-1">This name will be permanently stamped on the official audit voucher docket.</p>
         </div>
-
         <div>
           <label class="block font-medium text-slate-700 mb-1">Signatory Title / Designation *</label>
           <select id="pr-approver-role" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-medium">
@@ -656,76 +493,50 @@
             <option value="Master Admin / General Manager">Master Admin / General Manager</option>
           </select>
         </div>
-
         <div id="pr-step2-security-notice" class="hidden p-2.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-[11px] flex items-center gap-2">
           <i data-lucide="shield-alert" class="w-4 h-4 text-purple-600 shrink-0"></i>
           <span><strong>Authorized Clearance:</strong> Step 2 final sign-off is restricted to <strong>Finance Dept Head</strong> and <strong>Master Admin</strong>.</span>
         </div>
-
         <div>
           <label class="block font-medium text-slate-700 mb-1">Authorization Decision *</label>
           <select id="pr-approver-decision" onchange="handleDecisionChange()" class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-emerald-800 bg-emerald-50 border-emerald-200">
             <option value="Approved">Endorse &amp; Approve</option>
-            <option value="Approved with Conditions">Approve with Conditions</option>
             <option value="Rejected">❌ Reject / Return for Revision</option>
           </select>
         </div>
-
         <div>
           <label class="block font-medium text-slate-700 mb-1" id="pr-remarks-label">Signatory Notes &amp; Verification Remarks</label>
-          <textarea id="pr-approver-remarks" rows="2.5" placeholder="e.g. Specifications and tolerances verified against CAD schedule." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs"></textarea>
+          <textarea id="pr-approver-remarks" rows="2" placeholder="e.g. Specifications and tolerances verified against CAD schedule." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs"></textarea>
           <p class="text-[10px] text-slate-400 mt-1" id="pr-remarks-hint">Required when rejecting to explain reasons to the requester.</p>
         </div>
-
         <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
           <button type="button" onclick="closeModal('pr-approval-modal')" class="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50">Cancel</button>
-          <button type="submit" id="pr-modal-submit-btn" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl shadow-sm transition">
-            Sign &amp; Authorize
-          </button>
+          <button type="submit" id="pr-modal-submit-btn" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl shadow-sm transition">Sign &amp; Authorize</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: REVISE & RESUBMIT REQUISITION (MULTI-LINE READY) -->
+  <!-- ========== PR REVISION ========== -->
   <div id="pr-revision-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
       <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2.5">
           <i data-lucide="edit-3" class="w-5 h-5 text-amber-400"></i>
-          <div>
-            <h3 class="font-bold text-sm">Revise &amp; Resubmit Requisition</h3>
-            <p class="text-[11px] text-slate-400 mono" id="revise-modal-pr-num">PR-2026-001</p>
-          </div>
+          <div><h3 class="font-bold text-sm">Revise &amp; Resubmit Requisition</h3><p class="text-[11px] text-slate-400 mono" id="revise-modal-pr-num">PR-0000-000</p></div>
         </div>
-        <button onclick="closeModal('pr-revision-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button onclick="closeModal('pr-revision-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-
       <form onsubmit="submitPRRevision(event)" class="p-6 space-y-3.5 text-xs overflow-y-auto flex-1">
         <input type="hidden" id="revise-target-pr">
-
         <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-rose-800 space-y-1">
-          <div class="flex items-center gap-1.5 font-bold text-rose-900">
-            <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-600 shrink-0"></i>
-            <span>Approver Feedback to Address:</span>
-          </div>
+          <div class="flex items-center gap-1.5 font-bold text-rose-900"><i data-lucide="alert-octagon" class="w-4 h-4 text-rose-600 shrink-0"></i><span>Approver Feedback to Address:</span></div>
           <p class="text-[11px] italic" id="revise-previous-feedback">Loading notes...</p>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Required Delivery Date *</label>
-            <input type="date" id="revise-due-date" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Project / BOM Assignment *</label>
-            <input type="text" id="revise-bom" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-          </div>
+          <div><label class="block font-medium text-slate-700 mb-1">Required Delivery Date *</label><input type="date" id="revise-due-date" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Project / BOM Assignment *</label><input type="text" id="revise-bom" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
         </div>
-
-        <!-- Editable Line Items Schedule -->
         <div>
           <label class="block font-medium text-slate-700 mb-1">Requisition Line Items</label>
           <div class="border border-slate-200 rounded-xl overflow-hidden bg-slate-50 p-2.5 space-y-2">
@@ -736,46 +547,32 @@
             </div>
           </div>
         </div>
-
         <div>
           <label class="block font-medium text-slate-700 mb-1">Revision Changelog Notes *</label>
-          <textarea id="revise-changelog" required rows="2" placeholder="e.g. Corrected profile thickness and adjusted quantities to fit revised facade schedule." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs"></textarea>
+          <textarea id="revise-changelog" required rows="2" placeholder="e.g. Corrected profile thickness and adjusted quantities." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs"></textarea>
         </div>
-
         <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
           <button type="button" onclick="closeModal('pr-revision-modal')" class="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50">Cancel</button>
-          <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl shadow-sm transition">
-            Resubmit to Step 1 Review
-          </button>
+          <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl shadow-sm transition">Resubmit to Step 1 Review</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: OFFICIAL PR DOCKET & PRINT VOUCHER (MULTI-LINE INVOICE READY) -->
+  <!-- ========== PR DOCKET ========== -->
   <div id="pr-docket-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[95vh]">
-      
       <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shrink-0 no-print">
         <div class="flex items-center gap-2.5">
           <i data-lucide="printer" class="w-5 h-5 text-purple-400"></i>
-          <div>
-            <h3 class="font-bold text-sm">Official Purchase Requisition Voucher</h3>
-            <p class="text-[11px] text-slate-400">Printable Form 01 Multi-Line Demand Docket</p>
-          </div>
+          <div><h3 class="font-bold text-sm">Official Purchase Requisition Voucher</h3><p class="text-[11px] text-slate-400">Printable Form 01 Multi-Line Demand Docket</p></div>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="window.print()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
-            <i data-lucide="printer" class="w-4 h-4"></i> Print Form
-          </button>
-          <button onclick="closeModal('pr-docket-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg">
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
+          <button onclick="window.print()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition"><i data-lucide="printer" class="w-4 h-4"></i> Print Form</button>
+          <button onclick="closeModal('pr-docket-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
       </div>
-
       <div id="pr-voucher-body" class="p-6 sm:p-8 space-y-6 overflow-y-auto flex-1 text-slate-800 text-xs"></div>
-
       <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-between items-center shrink-0 no-print">
         <span class="text-[11px] text-slate-500">Internal Audit Compliance: Standard Form 01 (Multi-Item Docket)</span>
         <button onclick="closeModal('pr-docket-modal')" class="px-4 py-1.5 bg-slate-900 text-white font-semibold rounded-lg text-xs">Close</button>
@@ -783,47 +580,27 @@
     </div>
   </div>
 
-  <!-- MODAL: DIRECT DATA ENTRY -->
+  <!-- ========== NEW ENTRY ========== -->
   <div id="new-entry-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-3xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
-      
       <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
           <i data-lucide="plus-circle" class="w-5 h-5 text-emerald-400"></i>
-          <div>
-            <h3 class="font-bold text-sm">Direct Operations Entry</h3>
-            <p class="text-[11px] text-slate-400">Create Material SKU, Multi-Line PR, Vendor, or PO</p>
-          </div>
+          <div><h3 class="font-bold text-sm">Direct Operations Entry</h3><p class="text-[11px] text-slate-400">Create Material SKU, Multi-Line PR, Vendor, or PO</p></div>
         </div>
-        <button onclick="closeModal('new-entry-modal')" class="text-slate-400 hover:text-white p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button onclick="closeModal('new-entry-modal')" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-
       <div class="flex border-b border-slate-200 px-6 bg-slate-50 text-xs font-medium overflow-x-auto no-scrollbar shrink-0">
-        <button type="button" id="entry-tab-material" onclick="switchEntryTab('material')" class="px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
-          <i data-lucide="box" class="w-3.5 h-3.5"></i> Material SKU
-        </button>
-        <button type="button" id="entry-tab-pr" onclick="switchEntryTab('pr')" class="px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
-          <i data-lucide="file-check" class="w-3.5 h-3.5 text-purple-600"></i> Purchase Requisition (PR)
-        </button>
-        <button type="button" id="entry-tab-supplier" onclick="switchEntryTab('supplier')" class="px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
-          <i data-lucide="building-2" class="w-3.5 h-3.5"></i> Register Vendor
-        </button>
-        <button type="button" id="entry-tab-po" onclick="switchEntryTab('po')" class="px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap">
-          <i data-lucide="truck" class="w-3.5 h-3.5"></i> Issue PO
-        </button>
+        <button type="button" id="entry-tab-material" onclick="switchEntryTab('material')" class="px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap"><i data-lucide="box" class="w-3.5 h-3.5"></i> Material SKU</button>
+        <button type="button" id="entry-tab-pr" onclick="switchEntryTab('pr')" class="px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap"><i data-lucide="file-check" class="w-3.5 h-3.5 text-purple-600"></i> Purchase Requisition (PR)</button>
+        <button type="button" id="entry-tab-supplier" onclick="switchEntryTab('supplier')" class="px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap"><i data-lucide="building-2" class="w-3.5 h-3.5"></i> Register Vendor</button>
+        <button type="button" id="entry-tab-po" onclick="switchEntryTab('po')" class="px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap"><i data-lucide="truck" class="w-3.5 h-3.5"></i> Issue PO</button>
       </div>
 
-      <!-- FORM 1: ADD MATERIAL SKU -->
       <form id="form-add-material" onsubmit="submitMaterial(event)" class="p-6 space-y-3.5 text-xs overflow-y-auto flex-1">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">SKU / Item Code *</label>
-            <input type="text" id="mat-code" required placeholder="e.g. AL-80-CASEMENT" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Category *</label>
+          <div><label class="block font-medium text-slate-700 mb-1">SKU / Item Code *</label><input type="text" id="mat-code" required placeholder="e.g. AL-80-CASEMENT" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Category *</label>
             <select id="mat-category" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
               <option value="aluminum">Aluminum Profile</option>
               <option value="glass">Architectural Glass</option>
@@ -832,73 +609,40 @@
             </select>
           </div>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div class="sm:col-span-2">
-            <label class="block font-medium text-slate-700 mb-1">Material Name *</label>
-            <input type="text" id="mat-name" required placeholder="e.g. Sliding Outer Track Heavy" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Unit of Measure (UOM) *</label>
-            <input type="text" id="mat-uom" required placeholder="KG, SQM, PCS, M" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs uppercase mono">
-          </div>
+          <div class="sm:col-span-2"><label class="block font-medium text-slate-700 mb-1">Material Name *</label><input type="text" id="mat-name" required placeholder="e.g. Sliding Outer Track Heavy" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">UOM *</label><input type="text" id="mat-uom" required placeholder="KG, SQM, PCS" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs uppercase mono"></div>
         </div>
-
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Technical Specification *</label>
-          <input type="text" id="mat-specs" required placeholder="Alloy 6063-T5 | 1.4mm | Powder Coated Matte Black RAL9005" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-        </div>
-
+        <div><label class="block font-medium text-slate-700 mb-1">Technical Specification *</label><input type="text" id="mat-specs" required placeholder="Alloy 6063-T5 | 1.4mm | Matte Black RAL9005" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Current Stock</label>
-            <input type="number" id="mat-stock" required value="100" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Safety Stock</label>
-            <input type="number" id="mat-safety" required value="50" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Reorder Point</label>
-            <input type="number" id="mat-rop" required value="150" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Std Cost ($)</label>
-            <input type="number" step="0.01" id="mat-cost" required value="2.80" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
+          <div><label class="block font-medium text-slate-700 mb-1">Current Stock</label><input type="number" step="any" id="mat-stock" required value="100" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Safety Stock</label><input type="number" step="any" id="mat-safety" required value="50" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Reorder Point</label><input type="number" step="any" id="mat-rop" required value="150" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Std Cost ($)</label><input type="number" step="0.01" id="mat-cost" required value="2.80" class="w-full px-2.5 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Approved Vendor</label>
-            <select id="mat-vendor-select" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></select>
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">BOM / Production Link</label>
-            <input type="text" id="mat-bom" placeholder="e.g. SD-100 Sliding Patio Series" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-          </div>
+          <div><label class="block font-medium text-slate-700 mb-1">Approved Vendor</label><select id="mat-vendor-select" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></select></div>
+          <div><label class="block font-medium text-slate-700 mb-1">BOM / Production Link</label><input type="text" id="mat-bom" placeholder="e.g. SD-100 Sliding Patio Series" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
         </div>
-
         <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
           <button type="button" onclick="closeModal('new-entry-modal')" class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
           <button type="submit" class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg shadow-sm">Save Material SKU</button>
         </div>
       </form>
 
-      <!-- FORM 2: CREATE MULTI-LINE PURCHASE REQUISITION (PR) -->
       <form id="form-add-pr" onsubmit="submitPR(event)" class="p-6 space-y-4 text-xs overflow-y-auto flex-1 hidden">
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label class="block font-medium text-slate-700 mb-1">Requisition No. *</label>
-            <input type="text" id="pr-num" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase font-bold text-purple-700 bg-purple-50">
+            <label class="block font-medium text-slate-700 mb-1">Requisition No.</label>
+            <input type="text" id="pr-num-display" readonly value="Assigned by server (PR-YYYY-NNN)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono font-bold text-purple-700 bg-purple-50">
           </div>
           <div>
             <label class="block font-medium text-slate-700 mb-1">Originating Department *</label>
             <select id="pr-department" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
               <option value="Production - Fabrication Line A">Production Line A</option>
-              <option value="Production - CNC &amp; Glazing Bay">CNC &amp; Glazing Bay</option>
+              <option value="Production - CNC & Glazing Bay">CNC &amp; Glazing Bay</option>
               <option value="Site Installation Team">Site Installation Team</option>
-              <option value="Quality &amp; R&amp;D">Quality &amp; R&amp;D</option>
+              <option value="Quality & R&D">Quality &amp; R&amp;D</option>
             </select>
           </div>
           <div>
@@ -909,130 +653,65 @@
               <option value="Critical Line-Stop">Critical (Line-stop risk)</option>
             </select>
           </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Required Delivery Date *</label>
-            <input type="date" id="pr-due-date" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
         </div>
-
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Project Assignment / Work Order *</label>
-          <input type="text" id="pr-bom-proj" required placeholder="e.g. SD-100 Sliding System - Tower A Facade" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label class="block font-medium text-slate-700 mb-1">Required Delivery Date *</label><input type="date" id="pr-due-date" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Project Assignment / Work Order *</label><input type="text" id="pr-bom-proj" required placeholder="e.g. SD-100 Sliding System - Tower A" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
         </div>
-
-        <!-- Dynamic Multi-Line Items Builder -->
         <div class="border border-purple-200 rounded-xl overflow-hidden bg-purple-50/30 p-3 space-y-2.5">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-purple-950 text-xs flex items-center gap-1.5">
-              <i data-lucide="list-plus" class="w-4 h-4 text-purple-700"></i>
-              <span>Requisition Line Items Schedule</span>
-            </span>
-            <button type="button" onclick="addPRLineRow()" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-[11px] font-semibold flex items-center gap-1 transition shadow-xs">
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-              <span>Add Line Item</span>
-            </button>
+            <span class="font-bold text-purple-950 text-xs flex items-center gap-1.5"><i data-lucide="list-plus" class="w-4 h-4 text-purple-700"></i><span>Requisition Line Items Schedule</span></span>
+            <button type="button" onclick="addPRLineRow()" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-[11px] font-semibold flex items-center gap-1 transition shadow-xs"><i data-lucide="plus" class="w-3.5 h-3.5"></i><span>Add Line Item</span></button>
           </div>
-
           <div class="space-y-2" id="pr-lines-builder-container"></div>
-
           <div class="flex justify-between items-center pt-2 border-t border-purple-200">
             <span class="text-slate-600 font-medium">Requisition Total Budget:</span>
             <span class="mono font-bold text-purple-950 text-base" id="pr-lines-grand-total">$0.00</span>
           </div>
         </div>
-
         <div class="pt-2 border-t border-slate-200 flex justify-end gap-2">
           <button type="button" onclick="closeModal('new-entry-modal')" class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
           <button type="submit" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg shadow-sm">Submit PR to Sign-off Gate</button>
         </div>
       </form>
 
-      <!-- FORM 3: REGISTER SUPPLIER -->
       <form id="form-add-supplier" onsubmit="submitSupplier(event)" class="p-6 space-y-3.5 text-xs overflow-y-auto flex-1 hidden">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Supplier Code / ID *</label>
-            <input type="text" id="sup-id" required placeholder="VND-GLS-08" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase">
-          </div>
-          <div class="sm:col-span-2">
-            <label class="block font-medium text-slate-700 mb-1">Company / Supplier Name *</label>
-            <input type="text" id="sup-name" required placeholder="e.g. Apex Tempered Glass Co., Ltd." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-          </div>
+          <div><label class="block font-medium text-slate-700 mb-1">Supplier Code / ID *</label><input type="text" id="sup-id" required placeholder="VND-GLS-08" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase"></div>
+          <div class="sm:col-span-2"><label class="block font-medium text-slate-700 mb-1">Company / Supplier Name *</label><input type="text" id="sup-name" required placeholder="e.g. Apex Tempered Glass Co., Ltd." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Category Provided *</label>
-            <input type="text" id="sup-cat" required placeholder="e.g. Architectural Glass" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">ASL Tier</label>
+          <div><label class="block font-medium text-slate-700 mb-1">Category Provided *</label><input type="text" id="sup-cat" required placeholder="e.g. Architectural Glass" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">ASL Tier</label>
             <select id="sup-tier" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
               <option value="Tier 1: Preferred">Tier 1: Preferred</option>
               <option value="Tier 2: Conditional">Tier 2: Conditional</option>
             </select>
           </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Scorecard (0-100)</label>
-            <input type="number" id="sup-score" min="1" max="100" value="88" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
+          <div><label class="block font-medium text-slate-700 mb-1">Scorecard (0-100)</label><input type="number" id="sup-score" min="1" max="100" value="88" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Payment Terms</label>
-            <input type="text" id="sup-terms" required value="Net 30 Days" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Lead Time</label>
-            <input type="text" id="sup-lead" required value="7 Days" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Historical OTIF %</label>
-            <input type="text" id="sup-otif" required value="96.5%" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-          </div>
+          <div><label class="block font-medium text-slate-700 mb-1">Payment Terms</label><input type="text" id="sup-terms" required value="Net 30 Days" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Lead Time</label><input type="text" id="sup-lead" required value="7 Days" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Historical OTIF %</label><input type="text" id="sup-otif" value="96.5%" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
         </div>
-
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Sales Contact &amp; Phone</label>
-          <input type="text" id="sup-contact" required placeholder="e.g. John Doe (+855 12 345 678)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-        </div>
-
+        <div><label class="block font-medium text-slate-700 mb-1">Sales Contact &amp; Phone</label><input type="text" id="sup-contact" required placeholder="e.g. John Doe (+855 12 345 678)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
         <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
           <button type="button" onclick="closeModal('new-entry-modal')" class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
           <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg shadow-sm">Register Vendor</button>
         </div>
       </form>
 
-      <!-- FORM 4: ISSUE PO -->
       <form id="form-add-po" onsubmit="submitPO(event)" class="p-6 space-y-3.5 text-xs overflow-y-auto flex-1 hidden">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">PO Number *</label>
-            <input type="text" id="po-num" required placeholder="PO-2026-101" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Vendor *</label>
-            <select id="po-vendor-select" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></select>
-          </div>
+          <div><label class="block font-medium text-slate-700 mb-1">PO Number *</label><input type="text" id="po-num" required placeholder="PO-2026-101" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono uppercase"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Vendor *</label><select id="po-vendor-select" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></select></div>
         </div>
-
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Items Description &amp; Quantity *</label>
-          <input type="text" id="po-items" required placeholder="e.g. AL-76 Black Sliding Outer (1,500 KG)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-        </div>
-
+        <div><label class="block font-medium text-slate-700 mb-1">Items Description &amp; Quantity *</label><input type="text" id="po-items" required placeholder="e.g. AL-76 Black Sliding Outer (1,500 KG)" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Total PO Value ($) *</label>
-            <input type="number" step="0.01" id="po-val" required placeholder="3975.00" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Delivery Due Date *</label>
-            <input type="date" id="po-due" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Initial Status</label>
+          <div><label class="block font-medium text-slate-700 mb-1">Total PO Value ($) *</label><input type="number" step="0.01" id="po-val" required placeholder="3975.00" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Delivery Due Date *</label><input type="date" id="po-due" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Initial Status</label>
             <select id="po-status" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
               <option value="Order Confirmed">Order Confirmed</option>
               <option value="In Transit">In Transit</option>
@@ -1041,12 +720,7 @@
             </select>
           </div>
         </div>
-
-        <div>
-          <label class="block font-medium text-slate-700 mb-1">Dock Expediting Action Note</label>
-          <input type="text" id="po-action" placeholder="e.g. Splicing inspection scheduled with QC on arrival" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs">
-        </div>
-
+        <div><label class="block font-medium text-slate-700 mb-1">Dock Expediting Action Note</label><input type="text" id="po-action" placeholder="e.g. Splicing inspection scheduled with QC on arrival" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs"></div>
         <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
           <button type="button" onclick="closeModal('new-entry-modal')" class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
           <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg shadow-sm">Issue PO Docket</button>
@@ -1055,101 +729,62 @@
     </div>
   </div>
 
-  <!-- MODAL: TRUE LANDED COST ENGINE -->
+  <!-- ========== LANDED COST ========== -->
   <div id="quick-calc-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
       <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
           <i data-lucide="calculator" class="w-5 h-5 text-sky-400"></i>
-          <div>
-            <h3 class="font-bold text-sm">True Landed Cost Engine</h3>
-            <p class="text-[11px] text-slate-400">Total Cost of Ownership (TCO) Calculator</p>
-          </div>
+          <div><h3 class="font-bold text-sm">True Landed Cost Engine</h3><p class="text-[11px] text-slate-400">Total Cost of Ownership (TCO) Calculator</p></div>
         </div>
-        <button onclick="closeModal('quick-calc-modal')" class="text-slate-400 hover:text-white p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button onclick="closeModal('quick-calc-modal')" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-
       <div class="p-6 space-y-3.5 text-xs overflow-y-auto flex-1">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Order Quantity (Units/KG)</label>
-            <input type="number" id="calc-qty" value="1000" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Base Unit Price ($)</label>
-            <input type="number" step="0.01" id="calc-price" value="2.50" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
+          <div><label class="block font-medium text-slate-700 mb-1">Order Quantity (Units/KG)</label><input type="number" id="calc-qty" value="1000" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Base Unit Price ($)</label><input type="number" step="0.01" id="calc-price" value="2.50" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Discount %</label>
-            <input type="number" step="0.1" id="calc-discount" value="3.0" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Freight Total ($)</label>
-            <input type="number" id="calc-freight" value="150" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
-          <div>
-            <label class="block font-medium text-slate-700 mb-1">Handling / Duty ($)</label>
-            <input type="number" id="calc-other" value="50" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono">
-          </div>
+          <div><label class="block font-medium text-slate-700 mb-1">Discount %</label><input type="number" step="0.1" id="calc-discount" value="3.0" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Freight Total ($)</label><input type="number" id="calc-freight" value="150" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
+          <div><label class="block font-medium text-slate-700 mb-1">Handling / Duty ($)</label><input type="number" id="calc-other" value="50" oninput="runCalculator()" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs mono"></div>
         </div>
-
         <div class="bg-sky-50 border border-sky-100 rounded-xl p-4 mt-2">
-          <div class="flex justify-between items-center mb-1 text-slate-600">
-            <span>Nominal Base Price:</span>
-            <span class="mono font-semibold" id="calc-res-base">$2.50 / unit</span>
-          </div>
-          <div class="flex justify-between items-center mb-2 text-slate-600">
-            <span>Freight &amp; Surcharge:</span>
-            <span class="mono font-semibold text-amber-700" id="calc-res-overhead">+$0.20 / unit</span>
-          </div>
+          <div class="flex justify-between items-center mb-1 text-slate-600"><span>Nominal Base Price:</span><span class="mono font-semibold" id="calc-res-base">$2.50 / unit</span></div>
+          <div class="flex justify-between items-center mb-2 text-slate-600"><span>Freight &amp; Surcharge:</span><span class="mono font-semibold text-amber-700" id="calc-res-overhead">+$0.20 / unit</span></div>
           <div class="border-t border-sky-200 pt-2 flex justify-between items-center">
             <span class="font-bold text-sky-950 text-sm">True Landed Cost:</span>
             <span class="mono font-bold text-sky-700 text-base" id="calc-res-landed">$2.625 / unit</span>
           </div>
         </div>
       </div>
-
       <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 text-right shrink-0">
         <button onclick="closeModal('quick-calc-modal')" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold px-4 py-2 rounded-lg">Done</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: SPECIFICATION DOCKET -->
+  <!-- ========== SPEC DOCKET ========== -->
   <div id="spec-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
       <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-2">
           <i data-lucide="file-text" class="w-5 h-5 text-sky-400"></i>
-          <div>
-            <h3 class="font-bold text-sm truncate" id="spec-modal-title">Item Specification Docket</h3>
-            <p class="text-[11px] text-slate-400 mono" id="spec-modal-subtitle">SKU: AL-76-SLD-BLK</p>
-          </div>
+          <div><h3 class="font-bold text-sm truncate" id="spec-modal-title">Item Specification Docket</h3><p class="text-[11px] text-slate-400 mono" id="spec-modal-subtitle">—</p></div>
         </div>
-        <button onclick="closeModal('spec-modal')" class="text-slate-400 hover:text-white p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+        <button onclick="closeModal('spec-modal')" class="text-slate-400 hover:text-white p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
-
       <div class="p-6 space-y-4 text-xs overflow-y-auto flex-1" id="spec-modal-content"></div>
-
       <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end shrink-0">
         <button onclick="closeModal('spec-modal')" class="bg-slate-900 text-white text-xs font-semibold px-4 py-2 rounded-lg">Close Docket</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: DELETE CONFIRMATION -->
+  <!-- ========== DELETE ========== -->
   <div id="delete-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-slate-100 text-center space-y-3">
-      <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
-        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
-      </div>
+      <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto"><i data-lucide="alert-triangle" class="w-5 h-5"></i></div>
       <h3 class="font-bold text-slate-900 text-sm" id="del-modal-title">Confirm Deletion</h3>
       <p class="text-xs text-slate-500" id="del-modal-msg">Are you sure you want to remove this record?</p>
       <div class="flex items-center justify-center gap-2 pt-2">
@@ -1159,79 +794,1436 @@
     </div>
   </div>
 
-  <!-- MODAL: CLOUD CONFIG / DIAGNOSTICS -->
-  <div id="cloud-config-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col my-auto max-h-[92vh]">
-      <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shrink-0">
-        <div class="flex items-center gap-2">
-          <i data-lucide="cloud" class="w-5 h-5 text-sky-400"></i>
-          <div>
-            <h3 class="font-bold text-sm">Cloud Connection Diagnostics</h3>
-            <p class="text-[11px] text-slate-400">Target Database: instance "default"</p>
-          </div>
-        </div>
-        <button onclick="closeModal('cloud-config-modal')" class="text-slate-400 hover:text-white p-1">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <div class="p-6 space-y-3.5 text-xs overflow-y-auto flex-1">
-        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-emerald-800 space-y-1">
-          <span class="font-bold flex items-center gap-1.5 text-xs">
-            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Direct Database Target Configured:
-          </span>
-          <p class="text-[11px] leading-relaxed">
-            Requests are explicitly directed to <code>databases/default</code> in project <code>purchasing-system-b7ef2</code> via long-polling transport.
-          </p>
-        </div>
-
-        <button onclick="forceSyncAllToCloud()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl text-xs shadow-sm flex items-center justify-center gap-1.5">
-          <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-          <span>Push All Master Catalogs to Firestore</span>
-        </button>
-      </div>
-
-      <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end shrink-0">
-        <button onclick="closeModal('cloud-config-modal')" class="px-4 py-1.5 bg-slate-900 text-white font-semibold rounded-lg text-xs">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none max-w-sm"></div>
 
-  <!-- JAVASCRIPT SYSTEM ENGINE -->
-  <!-- Application scripts: classic scripts sharing one scope, so the ORDER below matters. -->
-  <script src="js/icons.js" defer></script>
-  <script src="js/pr-model.js" defer></script>
-  <script src="js/sop-data.js" defer></script>
-  <script src="js/state.js" defer></script>
-  <script src="js/view-materials.js" defer></script>
-  <script src="js/pr-builder.js" defer></script>
-  <script src="js/view-prs.js" defer></script>
-  <script src="js/views.js" defer></script>
-  <script src="js/ui.js" defer></script>
-  <script src="js/api.js" defer></script>
-  <script src="js/mappers.js" defer></script>
-  <script src="js/sync.js" defer></script>
-  <script src="js/pr-approval.js" defer></script>
-  <script src="js/pr-revision.js" defer></script>
-  <script src="js/pr-docket.js" defer></script>
-  <script src="js/logistics.js" defer></script>
-  <script src="js/auth-users.js" defer></script>
-  <script src="js/forms.js" defer></script>
-  <script src="js/delete-detail.js" defer></script>
-  <script src="js/navigation.js" defer></script>
-  <script src="js/calculator.js" defer></script>
-  <script src="js/main.js" defer></script>
-  <script>
-    // Self-check: if the application scripts did not load, say so instead of showing an empty page.
-    window.addEventListener('load', function () {
-      if (typeof refreshAll === 'function') return;
-      var d = document.createElement('div');
-      d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#9f1239;color:#fff;font:600 14px sans-serif;padding:12px 16px';
-      d.textContent = 'The application scripts did not load. Start the app with "python backend_server.py" from the project folder (it needs the css/ and js/ folders next to it) and open http://localhost:8000/ - do not open index.html directly.';
-      document.body.appendChild(d);
+  <!-- ========== APP SCRIPT ========== -->
+  <script type="module">
+    // ---------- inline SVG icon library ----------
+    const ICONS = {
+      box: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>`,
+      shield: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>`,
+      settings: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+      key: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>`,
+      disc: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>`,
+      trash: `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`,
+      eye: `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`
+    };
+    function getCardIcon(name) {
+      return ICONS[name] || ICONS.box;
+    }
+
+    function getPriorityBadgeClass(priority) {
+      const p = String(priority || '').toLowerCase();
+      if (p.includes('crit') || p.includes('stop')) return 'bg-rose-100 text-rose-800 border-rose-300 font-bold';
+      if (p.includes('urg')) return 'bg-amber-100 text-amber-800 border-amber-300 font-semibold';
+      return 'bg-sky-100 text-sky-800 border-sky-300 font-medium';
+    }
+
+    // ---------- API CLIENT ----------
+    const API_BASE = window.location.origin;
+    let AUTH_TOKEN = sessionStorage.getItem('alu_token') || null;
+
+    async function api(method, path, body = null) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (AUTH_TOKEN) headers['Authorization'] = `Bearer ${AUTH_TOKEN}`;
+      let res;
+      try {
+        res = await fetch(`${API_BASE}/api${path}`, {
+          method,
+          headers,
+          body: body ? JSON.stringify(body) : undefined,
+        });
+      } catch (e) {
+        throw new Error('Network error — is the server running?');
+      }
+      const text = await res.text();
+      let data = {};
+      try { data = text ? JSON.parse(text) : {}; } catch { data = { error: text || 'Bad response' }; }
+      if (res.status === 401) {
+        handleLogout();
+        throw new Error(data.error || 'Session expired');
+      }
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      return data;
+    }
+
+    // ---------- state ----------
+    let materialsData = [];
+    let prsData = [];
+    let suppliersData = [];
+    let pipelineData = [];
+    let currentUser = null;
+
+    let activeGalleryTab = 'materials';
+    let activePRFilter = 'all';
+    let activePRSort = 'newest';
+    let prLinesBuilder = [];
+    let revisionLines = [];
+    let pendingDelete = null;
+
+    // ---------- shape mapping ----------
+    function mapMaterial(m) {
+      return {
+        code: m.code, category: m.category,
+        categoryLabel: m.category.charAt(0).toUpperCase() + m.category.slice(1),
+        name: m.name, specs: m.specs, uom: m.uom,
+        currentStock: Number(m.current_stock),
+        safetyStock: Number(m.safety_stock),
+        reorderPoint: Number(m.reorder_point),
+        stdCost: Number(m.std_cost),
+        supplier: m.supplier, status: m.status,
+        imageBg: {
+          aluminum: 'from-slate-700 to-slate-900',
+          glass:    'from-teal-700 to-cyan-900',
+          hardware: 'from-amber-700 to-stone-900',
+          sealant:  'from-emerald-800 to-slate-900',
+        }[m.category] || 'from-sky-700 to-slate-900',
+        icon: 'box',
+        details: {
+          tolerance: m.tolerance || 'Standard',
+          packaging: m.packaging || 'Production export packaging',
+          usageRate: m.usage_rate || '—',
+          leadTime:  m.lead_time  || '—',
+          productionLink: m.bom_link || 'General Assembly',
+        },
+      };
+    }
+    function mapSupplier(s) {
+      const tierColor = String(s.tier).includes('Tier 1')
+        ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+        : 'bg-amber-100 text-amber-800 border-amber-300';
+      return {
+        id: s.id, name: s.name, category: s.category, tier: s.tier, tierColor,
+        score: s.score, paymentTerms: s.payment_terms, leadTime: s.lead_time,
+        contact: s.contact, otif: s.otif, qcRate: s.qc_rate,
+      };
+    }
+    function mapPO(p) {
+      const overdue = (p.days_overdue || 0) > 0;
+      return {
+        poNumber: p.po_number, vendor: p.vendor, items: p.items,
+        amount: `$${Number(p.amount_usd).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`,
+        rawAmount: Number(p.amount_usd),
+        dueDate: p.due_date, status: p.status, alert: p.alert,
+        alertBadge: overdue
+          ? 'bg-rose-100 text-rose-800 border-rose-300 font-bold'
+          : (p.status === 'Delayed'
+              ? 'bg-amber-100 text-amber-800 border-amber-300'
+              : 'bg-emerald-100 text-emerald-800 border-emerald-300'),
+        progressPct: p.progress_pct,
+        dockAction: p.dock_action || '',
+      };
+    }
+    function mapPR(p) {
+      const isRejected = String(p.status).toLowerCase().includes('reject');
+      const isApproved = p.status === 'Approved' || p.status === 'Converted to PO';
+      const isStep2 = String(p.status).includes('Step 2');
+      return {
+        prNumber: p.pr_number, department: p.department, requester: p.requester,
+        requiredDate: p.required_date, priority: p.priority,
+        priorityColor: getPriorityBadgeClass(p.priority),
+        status: p.status,
+        statusBadge: isRejected
+          ? 'bg-rose-50 text-rose-800 border-rose-300 font-bold pulse-rose'
+          : (isApproved
+              ? 'bg-emerald-50 text-emerald-800 border-emerald-300 font-bold'
+              : (isStep2
+                  ? 'bg-purple-50 text-purple-800 border-purple-300 pulse-purple'
+                  : 'bg-amber-50 text-amber-800 border-amber-300 pulse-amber')),
+        bomProject: p.bom_project,
+        items: (p.items || []).map(i => ({
+          itemCode: i.item_code, itemName: i.item_name, itemSpecs: i.item_specs,
+          quantity: Number(i.quantity), uom: i.uom, unitRate: Number(i.unit_rate),
+          extendedTotal: Number(i.extended_total),
+        })),
+        estimatedTotal: Number(p.estimated_total),
+        totalUnits: (p.items || []).reduce((s, i) => s + Number(i.quantity), 0),
+        step1: p.step1, step2: p.step2,
+        revisions: p.revisions || [],
+        poNumbers: p.po_numbers || [],
+        requestedBy: p.requested_by || null,
+      };
+    }
+
+    // ---------- API loaders ----------
+    async function loadMaterials() {
+      const rows = await api('GET', '/materials');
+      materialsData = rows.map(mapMaterial);
+      executeFilterCards();
+      updateHeaderKPIs();
+    }
+    async function loadSuppliers() {
+      const rows = await api('GET', '/suppliers');
+      suppliersData = rows.map(mapSupplier);
+      renderSuppliers();
+      updateHeaderKPIs();
+    }
+    async function loadPipeline() {
+      const rows = await api('GET', '/orders');
+      pipelineData = rows.map(mapPO);
+      renderPipeline();
+      updateHeaderKPIs();
+    }
+    async function loadPRs() {
+      const rows = await api('GET', '/prs');
+      prsData = rows.map(mapPR);
+      renderPRs();
+      updateHeaderKPIs();
+    }
+    async function reloadAll() {
+      try {
+        await Promise.all([loadMaterials(), loadSuppliers(), loadPipeline(), loadPRs()]);
+      } catch (e) {
+        console.warn('reloadAll:', e.message);
+      }
+    }
+
+    // ---------- sidebar telemetry ----------
+    function updateSidebarCloudTelemetry() {
+      const base = document.getElementById('sidebar-api-base');
+      if (base) base.innerText = API_BASE.replace(/^https?:\/\//, '');
+      const db = document.getElementById('sidebar-db-name');
+      if (db) db.innerText = 'alu_glass_procurement';
+      const uid = document.getElementById('sidebar-uid-display');
+      if (uid && currentUser) uid.innerText = `Session: @${currentUser.username}`;
+      const badge = document.getElementById('sidebar-cloud-badge');
+      if (badge) {
+        badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Connected';
+        badge.className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5';
+      }
+    }
+
+    // ---------- RENDER: MATERIALS ----------
+    function renderMaterials(items = materialsData) {
+      const container = document.getElementById('materials-grid');
+      if (!container) return;
+      if (!items || items.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center bg-white rounded-2xl border border-slate-200">
+            <div class="w-10 h-10 text-slate-300 mx-auto mb-2 flex items-center justify-center">${ICONS.box}</div>
+            <p class="text-sm font-semibold text-slate-700">No matching materials found</p>
+            <p class="text-xs text-slate-400 mt-1">Try adjusting search terms or category filters.</p>
+          </div>`;
+        return;
+      }
+      container.innerHTML = items.map(m => {
+        let badge;
+        if (m.status === 'reorder') {
+          badge = '<span class="bg-rose-100 text-rose-800 border border-rose-300 px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span>Reorder</span>';
+        } else if (m.status === 'low') {
+          badge = '<span class="bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded text-[10px] font-bold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Low</span>';
+        } else {
+          badge = '<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded text-[10px] font-semibold flex items-center gap-1 shrink-0"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>In Stock</span>';
+        }
+        const pct = Math.min(100, Math.round((m.currentStock / (m.reorderPoint || 1)) * 100));
+        const barColor = pct < 50 ? 'bg-rose-500' : (pct < 100 ? 'bg-amber-500' : 'bg-emerald-500');
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 card-contain flex flex-col justify-between space-y-3 relative">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <div class="w-8 h-8 rounded-lg bg-gradient-to-br ${m.imageBg} text-white flex items-center justify-center shrink-0 shadow-xs">${getCardIcon(m.icon)}</div>
+                  <div class="min-w-0">
+                    <span class="mono text-[10px] font-bold text-sky-700 uppercase truncate block">${m.code}</span>
+                    <span class="block text-[10px] text-slate-400 capitalize truncate">${m.categoryLabel}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  ${badge}
+                  <button onclick="promptDelete('material','${m.code}')" aria-label="Delete SKU" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition">${ICONS.trash}</button>
+                </div>
+              </div>
+              <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 line-clamp-1" title="${m.name}">${m.name}</h3>
+              <p class="text-[11px] text-slate-500 mt-1 line-clamp-2" title="${m.specs}">${m.specs}</p>
+            </div>
+            <div class="space-y-1.5 bg-slate-50 border border-slate-100 rounded-xl p-2.5">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-500 text-[11px]">Stock Balance:</span>
+                <span class="mono font-bold text-slate-800">${m.currentStock} <span class="font-normal text-slate-400 text-[10px]">${m.uom}</span></span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-1.5 overflow-hidden">
+                <div class="${barColor} h-1.5 rounded-full transition-all duration-300" style="width:${pct}%"></div>
+              </div>
+              <div class="flex justify-between items-center text-[10px] text-slate-400 pt-0.5">
+                <span>ROP: <strong class="mono text-slate-600">${m.reorderPoint} ${m.uom}</strong></span>
+                <span>Safety: <strong class="mono text-slate-600">${m.safetyStock} ${m.uom}</strong></span>
+              </div>
+            </div>
+            <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+              <div><span class="text-[10px] text-slate-400 uppercase block">Std Cost</span><span class="mono font-bold text-emerald-700 text-xs sm:text-sm">$${Number(m.stdCost).toFixed(2)}</span></div>
+              <button onclick="viewMaterialDetail('${m.code}')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-slate-700 rounded-lg font-medium text-[11px] transition flex items-center gap-1 active:scale-95">${ICONS.eye}<span>Docket</span></button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // ---------- RENDER: PRs ----------
+    function updatePRFilterCounts() {
+      const all = prsData.length;
+      const step1 = prsData.filter(p => !p.step1?.approved && !p.step1?.rejected && !String(p.status).toLowerCase().includes('reject')).length;
+      const step2 = prsData.filter(p => p.step1?.approved && !p.step2?.approved && !p.step2?.rejected && !String(p.status).toLowerCase().includes('reject')).length;
+      const approved = prsData.filter(p => p.step1?.approved && p.step2?.approved).length;
+      const rejected = prsData.filter(p => String(p.status).toLowerCase().includes('reject') || p.step1?.rejected || p.step2?.rejected).length;
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+      set('pr-filter-count-all', all);
+      set('pr-filter-count-step1', step1);
+      set('pr-filter-count-step2', step2);
+      set('pr-filter-count-approved', approved);
+      set('pr-filter-count-rejected', rejected);
+    }
+
+    function renderPRs() {
+      const container = document.getElementById('prs-grid');
+      if (!container) return;
+      updatePRFilterCounts();
+
+      const term = (document.getElementById('gallery-search')?.value || '').toLowerCase().trim();
+      let filtered = prsData.filter(pr => {
+        const isRejected = String(pr.status).toLowerCase().includes('reject') || pr.step1?.rejected || pr.step2?.rejected;
+        const step1Done = !!pr.step1?.approved;
+        const step2Done = !!pr.step2?.approved;
+        if (activePRFilter === 'pending-step1') return !step1Done && !isRejected;
+        if (activePRFilter === 'pending-step2') return step1Done && !step2Done && !isRejected;
+        if (activePRFilter === 'approved') return step1Done && step2Done && !isRejected;
+        if (activePRFilter === 'rejected') return isRejected;
+        return true;
+      });
+      if (term) {
+        filtered = filtered.filter(pr => {
+          const inItems = pr.items.some(i =>
+            (i.itemCode || '').toLowerCase().includes(term) ||
+            (i.itemName || '').toLowerCase().includes(term) ||
+            (i.itemSpecs || '').toLowerCase().includes(term));
+          return inItems ||
+                 (pr.prNumber || '').toLowerCase().includes(term) ||
+                 (pr.department || '').toLowerCase().includes(term) ||
+                 (pr.requester || '').toLowerCase().includes(term) ||
+                 (pr.bomProject || '').toLowerCase().includes(term);
+        });
+      }
+      filtered.sort((a, b) => {
+        if (activePRSort === 'due') return new Date(a.requiredDate) - new Date(b.requiredDate);
+        if (activePRSort === 'budget') return b.estimatedTotal - a.estimatedTotal;
+        if (activePRSort === 'priority') {
+          const rank = p => {
+            const low = String(p.priority).toLowerCase();
+            if (low.includes('crit') || low.includes('stop')) return 3;
+            if (low.includes('urg')) return 2;
+            return 1;
+          };
+          return rank(b) - rank(a);
+        }
+        return (b.prNumber || '').localeCompare(a.prNumber || '');
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center bg-white rounded-2xl border border-slate-200">
+            <div class="w-10 h-10 text-purple-300 mx-auto mb-2 flex items-center justify-center"><i data-lucide="file-check" class="w-8 h-8"></i></div>
+            <p class="text-sm font-semibold text-slate-700">No matching Purchase Requisitions</p>
+            <p class="text-xs text-slate-400 mt-1">Try switching filter tabs or clearing your search keywords.</p>
+          </div>`;
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      const canStep2 = isUserFinanceOrAdmin(currentUser);
+      container.innerHTML = filtered.map(pr => {
+        const isRejected = String(pr.status).toLowerCase().includes('reject') || pr.step1?.rejected || pr.step2?.rejected;
+        const step1Done = !!pr.step1?.approved;
+        const step2Done = !!pr.step2?.approved;
+
+        let rejectionCallout = '';
+        if (isRejected) {
+          const rs = (pr.step2?.rejected) ? pr.step2 : pr.step1;
+          rejectionCallout = `
+            <div class="bg-rose-50 border border-rose-200 rounded-xl p-2.5 text-xs text-rose-800 space-y-1">
+              <div class="flex items-center gap-1.5 font-bold text-rose-900"><i data-lucide="alert-octagon" class="w-3.5 h-3.5 text-rose-600 shrink-0"></i><span>Returned for Revision</span></div>
+              <p class="text-[11px] italic leading-tight">"${rs?.notes || 'Please verify specifications and resubmit.'}"</p>
+              <span class="text-[10px] text-rose-600 font-medium block">By: ${rs?.by || 'Reviewer'} (${rs?.date || 'Recently'})</span>
+            </div>`;
+        }
+
+        let actionButtons = '';
+        if (isRejected) {
+          actionButtons = `<button onclick="openRevisePRModal('${pr.prNumber}')" class="w-full py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i><span>Revise &amp; Resubmit PR</span></button>`;
+        } else if (!step1Done) {
+          actionButtons = `<button onclick="openApprovalModal('${pr.prNumber}', 1)" class="w-full py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i><span>Step 1: Tech Approval</span></button>`;
+        } else if (!step2Done) {
+          if (canStep2) {
+            actionButtons = `<button onclick="openApprovalModal('${pr.prNumber}', 2)" class="w-full py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i><span>Step 2: Finance / Admin Sign-off</span></button>`;
+          } else {
+            actionButtons = `<button type="button" onclick="showUnauthorizedStep2Notice()" class="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-lg font-semibold text-xs transition flex items-center justify-center gap-1.5 border border-slate-200 cursor-not-allowed"><i data-lucide="lock" class="w-3.5 h-3.5 text-slate-400"></i><span>🔒 Step 2: Finance / Admin Only</span></button>`;
+          }
+        } else if (pr.status !== 'Converted to PO') {
+          actionButtons = `<button onclick="convertPRToPO('${pr.prNumber}')" class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95"><i data-lucide="arrow-right-circle" class="w-3.5 h-3.5"></i><span>Convert to PO</span></button>`;
+        } else {
+          actionButtons = `<div class="w-full py-1.5 bg-slate-100 text-slate-500 rounded-lg font-semibold text-xs text-center border border-slate-200">✓ PO Issued</div>`;
+        }
+
+        let step1Text = 'Pending Tech', step1Dot = 'bg-amber-400 animate-pulse';
+        if (pr.step1?.rejected) { step1Text = '❌ Rejected: ' + (pr.step1.by || 'Tech'); step1Dot = 'bg-rose-500'; }
+        else if (step1Done) { step1Text = '✓ ' + (pr.step1.by || 'Tech Lead'); step1Dot = 'bg-emerald-500'; }
+        let step2Text = 'Pending Finance', step2Dot = step1Done ? 'bg-purple-400 animate-pulse' : 'bg-slate-300';
+        if (pr.step2?.rejected) { step2Text = '❌ Rejected: ' + (pr.step2.by || 'Finance'); step2Dot = 'bg-rose-500'; }
+        else if (step2Done) { step2Text = '✓ ' + (pr.step2.by || 'Finance Head'); step2Dot = 'bg-emerald-500'; }
+
+        const itemsList = pr.items.slice(0, 2).map(it => `
+          <div class="flex items-center justify-between text-[11px] py-0.5 border-b border-slate-100 last:border-b-0">
+            <span class="text-slate-800 truncate pr-2 font-medium">${it.itemName}</span>
+            <span class="mono text-slate-500 shrink-0 font-semibold">${it.quantity} ${it.uom}</span>
+          </div>`).join('');
+        const extra = pr.items.length > 2 ? `<span class="text-[10px] text-purple-700 font-semibold block pt-1">+ ${pr.items.length - 2} more item lines</span>` : '';
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 card-contain flex flex-col justify-between space-y-3 relative">
+            <div>
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5">
+                    <span class="mono text-xs font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded">${pr.prNumber}</span>
+                    <span class="text-[10px] font-bold text-purple-900 bg-purple-100 px-1.5 py-0.5 rounded-full">${pr.items.length} Lines</span>
+                  </div>
+                  <span class="block text-[10px] text-slate-500 font-medium mt-1 truncate" title="${pr.department}">${pr.department}</span>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  <span class="text-[10px] px-2 py-0.5 rounded-full border ${pr.priorityColor}">${pr.priority}</span>
+                  <button onclick="promptDelete('pr','${pr.prNumber}')" aria-label="Delete PR" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition">${ICONS.trash}</button>
+                </div>
+              </div>
+              <div class="mt-2.5 bg-slate-50 border border-slate-100 rounded-xl p-2.5 space-y-0.5">
+                <span class="text-[9px] uppercase font-bold text-slate-400 block mb-1">Item Schedule:</span>
+                ${itemsList}${extra}
+              </div>
+              <div class="mt-2.5 flex items-center gap-1.5 flex-wrap">
+                <span class="w-2 h-2 rounded-full ${step1Dot} shrink-0"></span>
+                <span class="text-[10px] font-semibold text-slate-600 truncate max-w-[125px]">Step 1: ${step1Text}</span>
+                <span class="text-slate-300 text-xs">&bull;</span>
+                <span class="w-2 h-2 rounded-full ${step2Dot} shrink-0"></span>
+                <span class="text-[10px] font-semibold text-slate-600 truncate max-w-[125px]">Step 2: ${step2Text}</span>
+              </div>
+            </div>
+            ${rejectionCallout}
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 space-y-1 text-xs">
+              <div class="flex justify-between items-center text-slate-600"><span class="text-[11px]">Total Requisition Budget:</span><span class="mono font-bold text-emerald-700">$${Number(pr.estimatedTotal).toFixed(2)}</span></div>
+              <div class="flex justify-between items-center text-slate-600"><span class="text-[11px]">Required By:</span><span class="mono font-medium text-slate-800">${pr.requiredDate}</span></div>
+              <div class="flex justify-between items-center text-slate-600"><span class="text-[11px]">Project:</span><span class="text-slate-700 truncate font-medium max-w-[140px]">${pr.bomProject || '—'}</span></div>
+            </div>
+            <div class="pt-2 border-t border-slate-100 space-y-2">
+              ${actionButtons}
+              <button onclick="viewPRVoucher('${pr.prNumber}')" class="w-full py-1 text-slate-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg text-[11px] font-medium transition flex items-center justify-center gap-1"><i data-lucide="file-text" class="w-3.5 h-3.5"></i><span>View Official Voucher Docket</span></button>
+            </div>
+          </div>`;
+      }).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // ---------- RENDER: SUPPLIERS ----------
+    function renderSuppliers() {
+      const container = document.getElementById('suppliers-grid');
+      if (!container) return;
+      if (!suppliersData.length) {
+        container.innerHTML = `<div class="col-span-full py-12 text-center bg-white rounded-2xl border border-slate-200"><p class="text-sm font-semibold text-slate-700">No vendors registered yet</p></div>`;
+        return;
+      }
+      container.innerHTML = suppliersData.map(sup => `
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 card-contain flex flex-col justify-between space-y-3.5 relative">
+          <div>
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <span class="mono text-[10px] text-slate-400 uppercase font-semibold block">${sup.id}</span>
+                <h3 class="font-bold text-slate-900 text-xs sm:text-sm mt-0.5 truncate">${sup.name}</h3>
+                <span class="text-xs text-sky-700 font-medium truncate block">${sup.category}</span>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${sup.tierColor}">${sup.tier}</span>
+                <button onclick="promptDelete('supplier','${sup.id}')" aria-label="Delete Vendor" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition">${ICONS.trash}</button>
+              </div>
+            </div>
+            <div class="mt-3.5 grid grid-cols-3 gap-2 text-center bg-slate-50 border border-slate-100 rounded-xl p-2.5">
+              <div><span class="text-[9px] text-slate-400 uppercase block">Score</span><span class="mono font-bold text-sm text-slate-900">${sup.score}<span class="text-[10px] font-normal text-slate-400">/100</span></span></div>
+              <div><span class="text-[9px] text-slate-400 uppercase block">OTIF</span><span class="mono font-bold text-sm text-emerald-600">${sup.otif || '—'}</span></div>
+              <div><span class="text-[9px] text-slate-400 uppercase block">QC Rate</span><span class="mono font-bold text-sm text-sky-600">${sup.qcRate || '—'}</span></div>
+            </div>
+          </div>
+          <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <span class="truncate">💳 ${sup.paymentTerms}</span>
+            <span class="shrink-0">⏱️ ${sup.leadTime}</span>
+          </div>
+        </div>`).join('');
+    }
+
+    // ---------- RENDER: PIPELINE ----------
+    function renderPipeline() {
+      const container = document.getElementById('pipeline-grid');
+      if (!container) return;
+      if (!pipelineData.length) {
+        container.innerHTML = `<div class="col-span-full py-12 text-center bg-white rounded-2xl border border-slate-200"><p class="text-sm font-semibold text-slate-700">No open POs</p></div>`;
+        return;
+      }
+      container.innerHTML = pipelineData.map(po => `
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 card-contain flex flex-col justify-between space-y-3 relative">
+          <div>
+            <div class="flex items-center justify-between gap-2">
+              <span class="mono text-xs font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded shrink-0">${po.poNumber}</span>
+              <div class="flex items-center gap-1 shrink-0">
+                <span class="text-[10px] px-2 py-0.5 rounded-full border ${po.alertBadge}">${po.alert}</span>
+                <button onclick="promptDelete('po','${po.poNumber}')" aria-label="Delete PO" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1 rounded transition">${ICONS.trash}</button>
+              </div>
+            </div>
+            <h4 class="font-bold text-slate-900 text-xs sm:text-sm mt-2 truncate">${po.vendor}</h4>
+            <p class="text-xs text-slate-600 mt-0.5 font-medium line-clamp-1">${po.items}</p>
+          </div>
+          <div class="space-y-1">
+            <div class="flex justify-between text-[11px] text-slate-500">
+              <span>Status: <strong class="text-slate-800">${po.status}</strong></span>
+              <span class="mono font-semibold">${po.progressPct}%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-sky-600 h-1.5 rounded-full transition-all duration-300" style="width:${po.progressPct}%"></div>
+            </div>
+          </div>
+          <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-xs text-slate-700">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Expediting Action:</span>
+            <p class="text-[11px] line-clamp-2">${po.dockAction || '—'}</p>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+            <span class="mono font-bold text-slate-900 text-xs sm:text-sm">${po.amount}</span>
+            <span class="text-slate-500 flex items-center gap-1 text-[11px]">📅 ${po.dueDate}</span>
+          </div>
+        </div>`).join('');
+    }
+
+    // ---------- RENDER: SOP ----------
+    const sopData = [
+      { id: "FORM-01", title: "Purchase Requisition (PR)", type: "Standard Form", role: "Production / Sales", desc: "Captures project BOM requirement, stock balance, and needed fabrication date before purchasing.", fields: "PR No, Item Code, Detailed Spec, Quantity, Required Date, Approved Signatures" },
+      { id: "FORM-02", title: "RFQ & Landed Cost Analysis", type: "Evaluation Sheet", role: "Purchasing Officer", desc: "Compares 3 vendor bids calculating freight, discounts, handling, and Net Landed Cost per unit.", fields: "Supplier IDs, Base Price, Discount %, Shipping Cost, Duties, Net Landed Unit Cost" },
+      { id: "FORM-03", title: "Official Purchase Order (PO)", type: "Legal Contract", role: "Purchasing Manager", desc: "Binding procurement order with precise tolerances, delivery dates, packing rules, and penalty terms.", fields: "PO ID, Full Spec Codes, Unit Rate, Total Value, Payment Term, Financial Approval" },
+      { id: "FORM-04", title: "Goods Receiving Note (GRN)", type: "Warehouse Gate", role: "Warehouse Inward", desc: "Logs actual count, carton condition, and physical receipts at the dock prior to ERP entry.", fields: "GRN No, PO No, Vendor Delivery Slip, Received Qty, Damaged Units, Receiver Sign" },
+      { id: "FORM-05", title: "QC Non-Conformance & RMA", type: "Quality Gate", role: "QC Inspection", desc: "Quarantines defective profiles or scratched glass and initiates vendor claims for credit notes.", fields: "Defect Description, Photos, Discrepant Qty, Disposition (Scrap/Return/Credit)" },
+      { id: "SOP-MATCH", title: "3-Way Match & Disbursement", type: "Finance SOP", role: "Accounts Payable", desc: "Reconciles PO Rate = GRN Accepted Qty = Invoice Amount. Zero payments without verified match.", fields: "Matched PO, Signed GRN, Verified Tax Invoice, Payment Voucher ID" },
+    ];
+    function renderSOP() {
+      const container = document.getElementById('sop-grid');
+      if (!container) return;
+      container.innerHTML = sopData.map(sop => `
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-4 card-contain flex flex-col justify-between space-y-3">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="mono text-[10px] font-bold text-sky-700 bg-sky-50 border border-sky-200 px-2 py-0.5 rounded">${sop.id}</span>
+              <span class="text-[10px] text-slate-500 font-medium">${sop.type}</span>
+            </div>
+            <h4 class="font-bold text-slate-900 text-xs sm:text-sm mt-2">${sop.title}</h4>
+            <p class="text-xs text-slate-600 mt-1">${sop.desc}</p>
+          </div>
+          <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-[11px] text-slate-500">
+            <span class="font-semibold text-slate-700 block mb-0.5">Required Fields:</span><span>${sop.fields}</span>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Custodian: <strong class="text-slate-600">${sop.role}</strong></span>
+            <span class="text-sky-600 font-medium">Standard Form</span>
+          </div>
+        </div>`).join('');
+    }
+
+    // ---------- filter ----------
+    let searchDebounce = null;
+    function filterCards() {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(executeFilterCards, 60);
+    }
+    function executeFilterCards() {
+      if (activeGalleryTab === 'prs') { renderPRs(); return; }
+      const term = (document.getElementById('gallery-search')?.value || '').toLowerCase().trim();
+      const category = document.getElementById('category-filter')?.value || 'all';
+      const filtered = materialsData.filter(m => {
+        const matchesTerm = !term ||
+          (m.name || '').toLowerCase().includes(term) ||
+          (m.code || '').toLowerCase().includes(term) ||
+          (m.specs || '').toLowerCase().includes(term) ||
+          (m.supplier || '').toLowerCase().includes(term);
+        const matchesCategory = category === 'all' || m.category === category;
+        return matchesTerm && matchesCategory;
+      });
+      renderMaterials(filtered);
+    }
+
+    // ---------- KPIs ----------
+    function updateHeaderKPIs() {
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+      set('sku-count-header', materialsData.length);
+      set('mat-count-badge', materialsData.length);
+      const pendingPRs = prsData.filter(p => p.status !== 'Approved' && p.status !== 'Converted to PO' && !String(p.status).toLowerCase().includes('reject')).length;
+      set('pr-pending-count', `${pendingPRs} Pending`);
+      set('pr-count-badge', prsData.length);
+      set('vendor-count-header', `${suppliersData.length} Active`);
+      set('sup-count-badge', suppliersData.length);
+      const totalPO = pipelineData.reduce((sum, item) => sum + (Number(item.rawAmount) || 0), 0);
+      set('po-value-header', `$${totalPO.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+      set('po-count-badge', pipelineData.length);
+      updatePRFilterCounts();
+      populateDropdowns();
+    }
+
+    function populateDropdowns() {
+      const matSel = document.getElementById('mat-vendor-select');
+      const poSel = document.getElementById('po-vendor-select');
+      const opts = suppliersData.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+      if (matSel) matSel.innerHTML = opts;
+      if (poSel) poSel.innerHTML = opts;
+    }
+
+    // ---------- MODAL helpers ----------
+    function openModal(id) { document.getElementById(id)?.classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id)?.classList.add('hidden'); }
+    function openSidebar(id) { document.getElementById(id)?.classList.remove('hidden'); }
+    function closeSidebar(id) { document.getElementById(id)?.classList.add('hidden'); }
+
+    function showToast(title, message, type = 'success') {
+      const c = document.getElementById('toast-container');
+      if (!c) return;
+      const bg = type === 'success' ? 'bg-emerald-900 border-emerald-700 text-emerald-100' : 'bg-rose-900 border-rose-700 text-rose-100';
+      const t = document.createElement('div');
+      t.className = `p-3 rounded-xl border shadow-xl flex items-start gap-2 text-xs transition transform translate-y-2 opacity-0 pointer-events-auto ${bg}`;
+      t.innerHTML = `<div class="flex-1 min-w-0"><strong class="block font-semibold text-white truncate">${title}</strong><span class="text-[11px] opacity-90 break-words">${message}</span></div>`;
+      c.appendChild(t);
+      requestAnimationFrame(() => t.classList.remove('translate-y-2', 'opacity-0'));
+      setTimeout(() => { t.classList.add('opacity-0', 'translate-y-2'); setTimeout(() => t.remove(), 250); }, 4000);
+    }
+
+    // ---------- ROLE HELPERS ----------
+    function isUserAdmin(user) {
+      if (!user) return false;
+      const r = String(user.role || '').toLowerCase();
+      const l = String(user.roleLabel || '').toLowerCase();
+      return r === 'admin' || l.includes('admin') || l.includes('gm');
+    }
+    function isUserFinanceOrAdmin(user) {
+      if (!user) return false;
+      if (isUserAdmin(user)) return true;
+      const r = String(user.role || '').toLowerCase();
+      return r === 'finance';
+    }
+
+    // ---------- AUTH ----------
+    async function executeLogin(username, password) {
+      const errBox = document.getElementById('login-error-alert');
+      if (errBox) errBox.classList.add('hidden');
+      try {
+        const data = await api('POST', '/login', { username, password });
+        AUTH_TOKEN = data.token;
+        sessionStorage.setItem('alu_token', AUTH_TOKEN);
+        currentUser = {
+          username: data.user.username,
+          fullName:  data.user.full_name,
+          role:      data.user.role,
+          roleLabel: data.user.role_label,
+        };
+        closeModal('login-modal');
+        applyUserProfileUI();
+        await reloadAll();
+        showToast('Access Granted', `Welcome back, ${currentUser.fullName}!`);
+      } catch (e) {
+        if (errBox) { errBox.innerText = e.message; errBox.classList.remove('hidden'); }
+      }
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const u = document.getElementById('login-uname').value.trim().toLowerCase();
+      const p = document.getElementById('login-pass').value;
+      executeLogin(u, p);
+    }
+
+    function handleLogout() {
+      AUTH_TOKEN = null;
+      sessionStorage.removeItem('alu_token');
+      currentUser = null;
+      closeSidebar('user-profile-sidebar');
+      openModal('login-modal');
+      document.getElementById('user-header-name').innerText = 'Not signed in';
+      document.getElementById('user-header-role').innerText = '—';
+      document.getElementById('user-header-avatar').innerText = '--';
+      showToast('Signed Out', 'Session ended.');
+    }
+
+    function applyUserProfileUI() {
+      if (!currentUser) { openModal('login-modal'); return; }
+      const display = (currentUser.fullName || currentUser.username || 'User').trim();
+      const initials = (display.split(/\s+/).filter(Boolean).map(n => n[0]).join('') || display.substring(0, 2) || 'US').substring(0, 2).toUpperCase();
+      document.getElementById('user-header-avatar').innerText = initials;
+      document.getElementById('user-header-name').innerText = display;
+      document.getElementById('user-header-role').innerText = currentUser.roleLabel || currentUser.role || 'Staff';
+      document.getElementById('sidebar-user-avatar').innerText = initials;
+      document.getElementById('sidebar-user-name').innerText = display;
+      document.getElementById('sidebar-user-uname').innerText = `@${currentUser.username}`;
+      document.getElementById('sidebar-user-role-badge').innerText = currentUser.roleLabel || currentUser.role || 'Staff';
+
+      const userIsAdmin = isUserAdmin(currentUser);
+      const headerAdminBtn = document.getElementById('header-admin-access-btn');
+      if (headerAdminBtn) {
+        headerAdminBtn.classList.toggle('hidden', !userIsAdmin);
+        headerAdminBtn.classList.toggle('flex', userIsAdmin);
+      }
+      document.getElementById('sidebar-access-card').classList.toggle('hidden', !userIsAdmin);
+      updateSidebarCloudTelemetry();
+      renderPRs();
+    }
+
+    // ---------- USERS (admin) ----------
+    async function renderUsersTable() {
+      if (!isUserAdmin(currentUser)) return;
+      const tbody = document.getElementById('user-accounts-tbody');
+      if (!tbody) return;
+      try {
+        const users = await api('GET', '/users');
+        tbody.innerHTML = users.map(u => {
+          const isAllowed = u.status === 'allowed';
+          const isSelf = currentUser && currentUser.username === u.username;
+          return `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="p-3 mono font-bold text-sky-700">@${u.username}</td>
+              <td class="p-3 font-semibold text-slate-800">${u.full_name}</td>
+              <td class="p-3 text-slate-600">${u.role_label}</td>
+              <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isAllowed ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-rose-100 text-rose-800 border border-rose-300'}">${isAllowed ? '● Allowed' : '● Revoked'}</span></td>
+              <td class="p-3 text-right space-x-1.5">
+                ${isSelf ? '<span class="text-[10px] text-slate-400 italic">Current Session</span>' : `
+                  <button onclick="toggleUserStatus('${u.username}','${u.status}')" class="px-2.5 py-1 rounded text-[10px] font-semibold transition ${isAllowed ? 'bg-rose-100 text-rose-700 hover:bg-rose-200' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'}">${isAllowed ? 'Revoke Access' : 'Allow Access'}</button>
+                  <button onclick="changeUserPassword('${u.username}')" class="px-2.5 py-1 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">Password</button>
+                `}
+              </td>
+            </tr>`;
+        }).join('');
+      } catch (e) { console.warn('renderUsersTable:', e.message); }
+    }
+
+    async function toggleUserStatus(username, currentStatus) {
+      try {
+        await api('POST', '/users', { username, status: currentStatus === 'allowed' ? 'revoked' : 'allowed' });
+        await renderUsersTable();
+        showToast('Access Updated', `@${username} → ${currentStatus === 'allowed' ? 'revoked' : 'allowed'}`);
+      } catch (e) { showToast('Cannot Update', e.message, 'error'); }
+    }
+
+    async function handleCreateUser(e) {
+      e.preventDefault();
+      const username = document.getElementById('new-user-uname').value.trim().toLowerCase();
+      const full_name = document.getElementById('new-user-fullname').value.trim();
+      const role = document.getElementById('new-user-role').value;
+      const password = document.getElementById('new-user-pass').value;
+      try {
+        await api('POST', '/users', { username, full_name, role, password });
+        e.target.reset();
+        await renderUsersTable();
+        showToast('User Created', `@${username} provisioned.`);
+      } catch (err) { showToast('Cannot Create User', err.message, 'error'); }
+    }
+
+    async function changeUserPassword(username) {
+      const newPass = prompt(`Enter new password for @${username} (min 8 chars):`);
+      if (!newPass || newPass.length < 8) return;
+      try {
+        await api('POST', '/users', { username, password: newPass });
+        showToast('Password Saved', `Password for @${username} updated.`);
+      } catch (e) { showToast('Cannot Update Password', e.message, 'error'); }
+    }
+
+    // ---------- MULTI-LINE PR BUILDER ----------
+    function addPRLineRow(preset = null) {
+      const defaultMat = materialsData[0] || {};
+      const newLine = preset || {
+        itemCode: defaultMat.code || 'AL-76-SLD-BLK',
+        itemName: defaultMat.name || 'Sliding Frame Outer 76 Series',
+        itemSpecs: defaultMat.specs || 'Alloy 6063-T5 | 1.4mm',
+        quantity: 100,
+        uom: defaultMat.uom || 'KG',
+        unitRate: defaultMat.stdCost || 2.65,
+        extendedTotal: 100 * (defaultMat.stdCost || 2.65),
+      };
+      prLinesBuilder.push(newLine);
+      renderPRLinesBuilder();
+    }
+    function removePRLineRow(index) {
+      if (prLinesBuilder.length <= 1) { showToast('Minimum Line', 'At least one line item is required.', 'error'); return; }
+      prLinesBuilder.splice(index, 1);
+      renderPRLinesBuilder();
+    }
+    function onPRLineSKUSelect(index, code) {
+      const mat = materialsData.find(m => m.code === code);
+      if (!mat) return;
+      prLinesBuilder[index].itemCode = mat.code;
+      prLinesBuilder[index].itemName = mat.name;
+      prLinesBuilder[index].itemSpecs = mat.specs;
+      prLinesBuilder[index].uom = mat.uom;
+      prLinesBuilder[index].unitRate = mat.stdCost;
+      prLinesBuilder[index].extendedTotal = prLinesBuilder[index].quantity * mat.stdCost;
+      renderPRLinesBuilder();
+    }
+    function onPRLineFieldChange(index, field, value) {
+      if (field === 'quantity') {
+        const q = Math.max(1, parseFloat(value) || 0);
+        prLinesBuilder[index].quantity = q;
+        prLinesBuilder[index].extendedTotal = q * prLinesBuilder[index].unitRate;
+      } else if (field === 'unitRate') {
+        const r = Math.max(0, parseFloat(value) || 0);
+        prLinesBuilder[index].unitRate = r;
+        prLinesBuilder[index].extendedTotal = prLinesBuilder[index].quantity * r;
+      } else if (field === 'itemSpecs') prLinesBuilder[index].itemSpecs = value;
+      else if (field === 'itemName') prLinesBuilder[index].itemName = value;
+      const el = document.getElementById(`pr-line-subtotal-${index}`);
+      if (el) el.innerText = `$${prLinesBuilder[index].extendedTotal.toFixed(2)}`;
+      calculatePRGrandTotal();
+    }
+    function calculatePRGrandTotal() {
+      const t = prLinesBuilder.reduce((s, it) => s + (it.extendedTotal || 0), 0);
+      const el = document.getElementById('pr-lines-grand-total');
+      if (el) el.innerText = `$${t.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    function renderPRLinesBuilder() {
+      const container = document.getElementById('pr-lines-builder-container');
+      if (!container) return;
+      if (!materialsData.length) {
+        container.innerHTML = '<div class="text-xs text-slate-500 italic p-3">Add material SKUs first before creating a PR.</div>';
+        return;
+      }
+      container.innerHTML = prLinesBuilder.map((line, idx) => {
+        const skuOptions = materialsData.map(m => `<option value="${m.code}" ${m.code === line.itemCode ? 'selected' : ''}>${m.code} — ${m.name}</option>`).join('');
+        return `
+          <div class="bg-white border border-purple-200/80 rounded-xl p-3 shadow-xs space-y-2 relative">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[10px] font-bold text-purple-900 bg-purple-100 px-2 py-0.5 rounded-full mono">Item Line #${idx + 1}</span>
+              <div class="flex items-center gap-2">
+                <span class="mono font-bold text-emerald-700 text-xs" id="pr-line-subtotal-${idx}">$${Number(line.extendedTotal).toFixed(2)}</span>
+                <button type="button" onclick="removePRLineRow(${idx})" class="text-slate-400 hover:text-rose-600 p-1 transition">${ICONS.trash}</button>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div class="sm:col-span-2"><label class="block text-[10px] text-slate-500 font-medium">Select SKU *</label>
+                <select onchange="onPRLineSKUSelect(${idx}, this.value)" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs mono">${skuOptions}</select>
+              </div>
+              <div><label class="block text-[10px] text-slate-500 font-medium">Item Description</label>
+                <input type="text" value="${line.itemName}" oninput="onPRLineFieldChange(${idx},'itemName',this.value)" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs">
+              </div>
+            </div>
+            <div><label class="block text-[10px] text-slate-500 font-medium">Technical Specification Reference</label>
+              <input type="text" value="${line.itemSpecs}" oninput="onPRLineFieldChange(${idx},'itemSpecs',this.value)" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs">
+            </div>
+            <div class="grid grid-cols-3 gap-2 pt-0.5">
+              <div><label class="block text-[10px] text-slate-500 font-medium">Quantity *</label>
+                <input type="number" step="any" min="0.000001" value="${line.quantity}" oninput="onPRLineFieldChange(${idx},'quantity',this.value)" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs mono">
+              </div>
+              <div><label class="block text-[10px] text-slate-500 font-medium">UOM</label>
+                <input type="text" readonly value="${line.uom}" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs mono bg-slate-100 text-slate-600 font-bold">
+              </div>
+              <div><label class="block text-[10px] text-slate-500 font-medium">Unit Rate ($) *</label>
+                <input type="number" step="0.01" min="0" value="${line.unitRate}" oninput="onPRLineFieldChange(${idx},'unitRate',this.value)" class="w-full px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs mono">
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+      calculatePRGrandTotal();
+    }
+
+    // ---------- PR FILTER / SORT ----------
+    function setPRFilter(filterKey) {
+      activePRFilter = filterKey;
+      ['all', 'pending-step1', 'pending-step2', 'approved', 'rejected'].forEach(k => {
+        const btn = document.getElementById(`pr-filter-${k}`);
+        if (!btn) return;
+        btn.className = (k === filterKey)
+          ? "pr-filter-btn px-3 py-1.5 rounded-xl font-semibold bg-purple-600 text-white shadow-xs shrink-0 transition flex items-center gap-1.5"
+          : "pr-filter-btn px-3 py-1.5 rounded-xl font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 shrink-0 transition flex items-center gap-1.5";
+      });
+      renderPRs();
+    }
+    function setPRSort(sortKey) { activePRSort = sortKey; renderPRs(); }
+
+    // ---------- PR APPROVAL ----------
+    function openApprovalModal(prNumber, step) {
+      const pr = prsData.find(p => p.prNumber === prNumber);
+      if (!pr) return;
+      if (step === 2 && !isUserFinanceOrAdmin(currentUser)) {
+        showToast('Authorization Restricted', 'Step 2 requires Finance Head or Master Admin.', 'error');
+        return;
+      }
+      document.getElementById('pr-approval-target-pr').value = prNumber;
+      document.getElementById('pr-approval-target-step').value = step;
+      document.getElementById('pr-modal-pr-num').innerText = `${pr.prNumber} (${pr.items.length} Line Items)`;
+      document.getElementById('pr-approval-bom-display').innerText = pr.bomProject || '—';
+      document.getElementById('pr-approval-budget').innerText = `$${Number(pr.estimatedTotal).toFixed(2)}`;
+      document.getElementById('pr-approval-due').innerText = pr.requiredDate;
+      document.getElementById('pr-approval-items-tbody').innerHTML = pr.items.map(it => `
+        <tr class="hover:bg-slate-50">
+          <td class="p-2 mono font-bold text-sky-700">${it.itemCode}</td>
+          <td class="p-2 font-medium text-slate-800">${it.itemName}</td>
+          <td class="p-2 text-right mono font-semibold">${it.quantity} ${it.uom}</td>
+          <td class="p-2 text-right mono text-slate-600">$${Number(it.unitRate).toFixed(2)}</td>
+          <td class="p-2 text-right mono font-bold text-emerald-700">$${Number(it.extendedTotal).toFixed(2)}</td>
+        </tr>`).join('');
+      document.getElementById('pr-approver-name').value = currentUser?.fullName || '';
+      document.getElementById('pr-approver-decision').value = 'Approved';
+      document.getElementById('pr-approver-remarks').value = '';
+
+      const header = document.getElementById('pr-modal-header');
+      const title  = document.getElementById('pr-modal-title');
+      const notice = document.getElementById('pr-step2-security-notice');
+      const role   = document.getElementById('pr-approver-role');
+      if (step === 1) {
+        title.innerText = 'Step 1: Production & Technical Lead Review';
+        header.className = 'bg-amber-700 text-white px-6 py-4 flex items-center justify-between shrink-0';
+        notice.classList.add('hidden');
+        role.innerHTML = `
+          <option value="Production Head / Tech Lead">Production Head / Project Tech Lead</option>
+          <option value="Master Admin / General Manager">Master Admin / General Manager</option>`;
+        role.value = isUserAdmin(currentUser) ? 'Master Admin / General Manager' : 'Production Head / Tech Lead';
+      } else {
+        title.innerText = 'Step 2: Finance Head / Master Admin Authorization';
+        header.className = 'bg-purple-900 text-white px-6 py-4 flex items-center justify-between shrink-0';
+        notice.classList.remove('hidden');
+        role.innerHTML = `
+          <option value="Finance Department Head">Finance Department Head</option>
+          <option value="Master Admin / General Manager">Master Admin / General Manager</option>`;
+        role.value = isUserAdmin(currentUser) ? 'Master Admin / General Manager' : 'Finance Department Head';
+      }
+      handleDecisionChange();
+      openModal('pr-approval-modal');
+    }
+
+    function handleDecisionChange() {
+      const decision = document.getElementById('pr-approver-decision').value;
+      const step = parseInt(document.getElementById('pr-approval-target-step').value || '1');
+      const submitBtn = document.getElementById('pr-modal-submit-btn');
+      const label = document.getElementById('pr-remarks-label');
+      const hint = document.getElementById('pr-remarks-hint');
+      const rem = document.getElementById('pr-approver-remarks');
+      if (decision === 'Rejected') {
+        label.innerHTML = '<span class="text-rose-700 font-bold">Mandatory Reason for Rejection *</span>';
+        hint.innerText = 'Explain why this requisition is rejected so the requester can revise it.';
+        rem.required = true;
+        rem.placeholder = 'e.g. Profile thickness or quantity exceeds BOM allowance. Revise line items.';
+        submitBtn.className = 'px-5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl shadow-sm transition';
+        submitBtn.innerHTML = 'Reject &amp; Return Requisition';
+      } else {
+        label.innerText = 'Signatory Notes & Verification Remarks';
+        hint.innerText = 'Stamped on the audit voucher docket.';
+        rem.required = false;
+        rem.placeholder = 'e.g. Specifications verified against CAD profile and cutting list.';
+        submitBtn.className = step === 1
+          ? 'px-5 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl shadow-sm transition'
+          : 'px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-xl shadow-sm transition';
+        submitBtn.innerHTML = 'Sign &amp; Authorize';
+      }
+    }
+
+    function showUnauthorizedStep2Notice() {
+      showToast('Access Restricted', 'Step 2 sign-off requires Finance Department Head or Master Admin clearance.', 'error');
+    }
+
+    async function submitPRApproval(e) {
+      e.preventDefault();
+      const prNumber = document.getElementById('pr-approval-target-pr').value;
+      const step = parseInt(document.getElementById('pr-approval-target-step').value);
+      const decision = document.getElementById('pr-approver-decision').value;
+      const remarks = document.getElementById('pr-approver-remarks').value.trim();
+      if (step === 2 && !isUserFinanceOrAdmin(currentUser)) {
+        showToast('Authorization Restricted', 'Only Finance Head or Master Admin can authorize Step 2.', 'error');
+        return;
+      }
+      if (decision === 'Rejected' && !remarks) {
+        showToast('Reason Required', 'Please provide a reason for rejecting.', 'error');
+        return;
+      }
+      try {
+        await api('POST', `/prs/${prNumber}/approve`, {
+          step,
+          decision: decision === 'Rejected' ? 'Rejected' : 'Approved',
+          remarks,
+        });
+        closeModal('pr-approval-modal');
+        await loadPRs();
+        showToast('Decision Recorded', `${prNumber} ${decision}.`);
+      } catch (err) { showToast('Cannot Record Decision', err.message, 'error'); }
+    }
+
+    // ---------- PR REVISION ----------
+    function openRevisePRModal(prNumber) {
+      const pr = prsData.find(p => p.prNumber === prNumber);
+      if (!pr) return;
+      document.getElementById('revise-target-pr').value = pr.prNumber;
+      document.getElementById('revise-modal-pr-num').innerText = `${pr.prNumber} (${pr.items.length} Lines)`;
+      document.getElementById('revise-due-date').value = pr.requiredDate;
+      document.getElementById('revise-bom').value = pr.bomProject || '';
+      document.getElementById('revise-changelog').value = '';
+      const rs = (pr.step2?.rejected) ? pr.step2 : pr.step1;
+      document.getElementById('revise-previous-feedback').innerText =
+        `${rs?.by || 'Reviewer'} (${rs?.role || 'Authority'}): "${rs?.notes || 'Revise specifications and resubmit.'}"`;
+      revisionLines = JSON.parse(JSON.stringify(pr.items));
+      renderRevisionItems();
+      openModal('pr-revision-modal');
+    }
+    function renderRevisionItems() {
+      const c = document.getElementById('revise-items-container');
+      if (!c) return;
+      c.innerHTML = revisionLines.map((it, idx) => `
+        <div class="bg-white border border-slate-200 rounded-lg p-2.5 space-y-1.5">
+          <div class="flex justify-between items-center text-xs">
+            <span class="mono font-bold text-sky-700">${it.itemCode}</span>
+            <span class="mono font-bold text-emerald-700" id="revise-sub-${idx}">$${Number(it.extendedTotal).toFixed(2)}</span>
+          </div>
+          <input type="text" value="${it.itemName}" oninput="onRevisionItemChange(${idx},'itemName',this.value)" class="w-full px-2 py-1 border border-slate-200 rounded text-xs font-semibold">
+          <input type="text" value="${it.itemSpecs}" oninput="onRevisionItemChange(${idx},'itemSpecs',this.value)" class="w-full px-2 py-1 border border-slate-200 rounded text-xs text-slate-600">
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <div><label class="block text-[10px] text-slate-500">Revised Qty (${it.uom})</label>
+              <input type="number" step="any" min="0.000001" value="${it.quantity}" oninput="onRevisionItemChange(${idx},'quantity',this.value)" class="w-full px-2 py-1 border border-slate-200 rounded text-xs mono">
+            </div>
+            <div><label class="block text-[10px] text-slate-500">Unit Rate ($)</label>
+              <input type="number" step="0.01" min="0" value="${it.unitRate}" oninput="onRevisionItemChange(${idx},'unitRate',this.value)" class="w-full px-2 py-1 border border-slate-200 rounded text-xs mono">
+            </div>
+          </div>
+        </div>`).join('');
+      calculateRevisionGrandTotal();
+    }
+    function onRevisionItemChange(idx, field, value) {
+      if (field === 'quantity') {
+        const q = Math.max(0.000001, parseFloat(value) || 0);
+        revisionLines[idx].quantity = q;
+        revisionLines[idx].extendedTotal = q * revisionLines[idx].unitRate;
+      } else if (field === 'unitRate') {
+        const r = Math.max(0, parseFloat(value) || 0);
+        revisionLines[idx].unitRate = r;
+        revisionLines[idx].extendedTotal = revisionLines[idx].quantity * r;
+      } else if (field === 'itemName') revisionLines[idx].itemName = value;
+      else if (field === 'itemSpecs') revisionLines[idx].itemSpecs = value;
+      const el = document.getElementById(`revise-sub-${idx}`);
+      if (el) el.innerText = `$${revisionLines[idx].extendedTotal.toFixed(2)}`;
+      calculateRevisionGrandTotal();
+    }
+    function calculateRevisionGrandTotal() {
+      const t = revisionLines.reduce((s, it) => s + (it.extendedTotal || 0), 0);
+      const el = document.getElementById('revise-est-budget');
+      if (el) el.innerText = `$${t.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    async function submitPRRevision(e) {
+      e.preventDefault();
+      const prNumber = document.getElementById('revise-target-pr').value;
+      const dueDate = document.getElementById('revise-due-date').value;
+      const bom = document.getElementById('revise-bom').value.trim();
+      const changelog = document.getElementById('revise-changelog').value.trim();
+      if (!changelog) { showToast('Changelog Required', 'Describe your changes.', 'error'); return; }
+      try {
+        await api('PUT', `/prs/${prNumber}`, {
+          required_date: dueDate,
+          bom_project: bom,
+          changelog,
+          items: revisionLines.map(l => ({
+            item_code: l.itemCode, item_name: l.itemName, item_specs: l.itemSpecs,
+            quantity: l.quantity, uom: l.uom, unit_rate: l.unitRate,
+          })),
+        });
+        closeModal('pr-revision-modal');
+        await loadPRs();
+        showToast('PR Resubmitted', `${prNumber} back at Step 1.`);
+      } catch (err) { showToast('Cannot Revise', err.message, 'error'); }
+    }
+
+    // ---------- CONVERT TO PO ----------
+    async function convertPRToPO(prNumber) {
+      const pr = prsData.find(p => p.prNumber === prNumber);
+      if (!pr?.step2?.approved) {
+        showToast('Authorization Required', 'This PR requires Step 2 approval before issuing a PO.', 'error');
+        return;
+      }
+      try {
+        const result = await api('POST', `/prs/${prNumber}/convert`, {});
+        await Promise.all([loadPRs(), loadPipeline()]);
+        switchGallery('pipeline');
+        const pos = (result.purchase_orders || []).map(p => p.po_number).join(', ') || 'new PO(s)';
+        showToast('PO Issued', `Created: ${pos}`);
+      } catch (err) { showToast('Cannot Convert', err.message, 'error'); }
+    }
+
+    // ---------- VOUCHER ----------
+    function viewPRVoucher(prNumber) {
+      const pr = prsData.find(p => p.prNumber === prNumber);
+      if (!pr) return;
+      const body = document.getElementById('pr-voucher-body');
+      const isApproved = pr.status === 'Approved' || pr.status === 'Converted to PO';
+      const isRejected = String(pr.status).toLowerCase().includes('reject');
+      const rows = pr.items.map((it, idx) => `
+        <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/60'} border-b border-slate-200">
+          <td class="p-2.5 text-center mono text-slate-500 font-semibold">${String(idx + 1).padStart(2, '0')}</td>
+          <td class="p-2.5 mono font-bold text-sky-800">${it.itemCode}</td>
+          <td class="p-2.5"><strong class="text-slate-900 block font-semibold">${it.itemName}</strong><span class="text-[10px] text-slate-600 leading-tight block mt-0.5">${it.itemSpecs}</span></td>
+          <td class="p-2.5 text-right mono font-bold text-slate-800">${it.quantity.toLocaleString()} <span class="text-[10px] font-normal text-slate-500">${it.uom}</span></td>
+          <td class="p-2.5 text-right mono text-slate-700">$${Number(it.unitRate).toFixed(2)}</td>
+          <td class="p-2.5 text-right mono font-bold text-slate-900">$${Number(it.extendedTotal).toFixed(2)}</td>
+        </tr>`).join('');
+      let statusColor = 'bg-amber-100 text-amber-900 border-amber-300';
+      if (isApproved) statusColor = 'bg-emerald-100 text-emerald-900 border-emerald-300';
+      if (isRejected) statusColor = 'bg-rose-100 text-rose-900 border-rose-300';
+      body.innerHTML = `
+        <div class="space-y-5">
+          <div class="border-b-2 border-slate-900 pb-3 flex flex-col sm:flex-row justify-between sm:items-start gap-3">
+            <div class="flex items-start gap-3">
+              <div class="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-lg shrink-0 shadow-sm">AG</div>
+              <div>
+                <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-950 uppercase">ALU-GLASS INDUSTRIAL GROUP</h1>
+                <p class="text-[11px] text-slate-600 font-medium">Architectural Fenestration Systems &bull; Facade Engineering &bull; Material Supply</p>
+                <p class="text-[10px] text-slate-400 font-mono mt-0.5">Document Ref: SOP-PROC-F01 &bull; ISO 9001:2015 Compliant</p>
+              </div>
+            </div>
+            <div class="sm:text-right border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200">
+              <span class="mono text-base font-extrabold text-purple-900 block">${pr.prNumber}</span>
+              <span class="text-[11px] text-slate-500 block">Issued: <strong>${new Date().toLocaleDateString('en-GB')}</strong></span>
+              <span class="inline-block mt-1 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase border ${statusColor}">${pr.status}</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs">
+            <div><span class="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">Originating Bay / Dept</span><strong class="text-slate-800 text-[11px] block mt-0.5">${pr.department}</strong></div>
+            <div><span class="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">Requester Signatory</span><strong class="text-slate-800 text-[11px] block mt-0.5">${pr.requester}</strong></div>
+            <div><span class="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">Project / BOM Assignment</span><strong class="text-slate-800 text-[11px] block mt-0.5">${pr.bomProject || '—'}</strong></div>
+            <div><span class="text-[9px] uppercase tracking-wider font-bold text-slate-400 block">Delivery Due Date</span><strong class="mono text-slate-900 text-[11px] block mt-0.5">${pr.requiredDate}</strong></div>
+          </div>
+          <div class="border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200 text-[11px]">
+                <tr>
+                  <th class="p-2.5 text-center w-12">Item</th>
+                  <th class="p-2.5 w-36">Code / SKU</th>
+                  <th class="p-2.5">Item Description &amp; Technical Specs</th>
+                  <th class="p-2.5 text-right w-24">Quantity</th>
+                  <th class="p-2.5 text-right w-24">Unit Rate</th>
+                  <th class="p-2.5 text-right w-28">Extended Total</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+              <tfoot class="bg-slate-50 border-t-2 border-slate-300 font-bold">
+                <tr>
+                  <td colspan="3" class="p-2.5 text-[10px] text-slate-500 italic">Total Items: ${pr.items.length} line(s) &bull; Aggregated Units: ${pr.totalUnits.toLocaleString()}</td>
+                  <td colspan="2" class="p-2.5 text-right text-slate-700 uppercase tracking-wider text-[11px]">Total Estimated Budget:</td>
+                  <td class="p-2.5 text-right mono text-emerald-800 text-sm font-extrabold">$${Number(pr.estimatedTotal).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div class="border border-slate-200 rounded-xl p-3 bg-white flex flex-col justify-between h-36">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] uppercase font-bold text-slate-400">1. Originating Requester</span>
+                  <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">Demand Verified</span>
+                </div>
+                <strong class="text-slate-900 block text-xs mt-1.5">${pr.requester}</strong>
+                <span class="text-[10px] text-slate-500">${pr.department}</span>
+              </div>
+              <div class="border-t border-dashed border-slate-200 pt-1.5 text-[10px] text-slate-400 flex justify-between items-center mono">
+                <span>Sign: <i>Electronically Logged</i></span><span>Date: ${pr.requiredDate}</span>
+              </div>
+            </div>
+            <div class="border ${pr.step1?.rejected ? 'border-rose-300 bg-rose-50/40' : (pr.step1?.approved ? 'border-emerald-300 bg-emerald-50/40' : 'border-amber-200 bg-amber-50/30')} rounded-xl p-3 flex flex-col justify-between h-36">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] uppercase font-bold text-slate-400">2. Technical / Production Lead</span>
+                  ${pr.step1?.rejected ? '<span class="text-[9px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.2 rounded border border-rose-200">Rejected</span>' : (pr.step1?.approved ? '<span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">Endorsed</span>' : '<span class="text-[9px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">Pending Review</span>')}
+                </div>
+                ${pr.step1?.rejected ? `<strong class="text-rose-700 block text-xs mt-1.5">REJECTED BY: ${pr.step1.by}</strong><span class="text-[10px] text-slate-500">${pr.step1.role}</span><p class="text-[9px] text-rose-700 italic mt-0.5 line-clamp-2">"${pr.step1.notes}"</p>`
+                  : (pr.step1?.approved ? `<strong class="text-slate-900 block text-xs mt-1.5">${pr.step1.by}</strong><span class="text-[10px] text-slate-500">${pr.step1.role}</span><p class="text-[9px] text-slate-600 italic mt-0.5 line-clamp-2">"${pr.step1.notes || 'Specifications verified.'}"</p>`
+                    : `<span class="text-amber-800 text-[11px] font-semibold mt-2.5 block italic">Awaiting technical evaluation</span>`)}
+              </div>
+              <div class="border-t border-dashed border-slate-200 pt-1.5 text-[10px] text-slate-400 flex justify-between items-center mono">
+                <span>Sign: <i>${pr.step1?.approved ? '✓ Stamped' : (pr.step1?.rejected ? '✗ Rejected' : '--')}</i></span><span>${pr.step1?.date || 'Pending'}</span>
+              </div>
+            </div>
+            <div class="border ${pr.step2?.rejected ? 'border-rose-300 bg-rose-50/40' : (pr.step2?.approved ? 'border-emerald-300 bg-emerald-50/40' : 'border-purple-200 bg-purple-50/30')} rounded-xl p-3 flex flex-col justify-between h-36">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="text-[9px] uppercase font-bold text-slate-400">3. Finance Head / Authorization</span>
+                  ${pr.step2?.rejected ? '<span class="text-[9px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.2 rounded border border-rose-200">Budget Denied</span>' : (pr.step2?.approved ? '<span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">Authorized</span>' : '<span class="text-[9px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.2 rounded border border-purple-200">Pending Budget</span>')}
+                </div>
+                ${pr.step2?.rejected ? `<strong class="text-rose-700 block text-xs mt-1.5">REJECTED BY: ${pr.step2.by}</strong><span class="text-[10px] text-slate-500">${pr.step2.role}</span><p class="text-[9px] text-rose-700 italic mt-0.5 line-clamp-2">"${pr.step2.notes}"</p>`
+                  : (pr.step2?.approved ? `<strong class="text-slate-900 block text-xs mt-1.5">${pr.step2.by}</strong><span class="text-[10px] text-slate-500">${pr.step2.role}</span><p class="text-[9px] text-slate-600 italic mt-0.5 line-clamp-2">"${pr.step2.notes || 'Budget released.'}"</p>`
+                    : `<span class="text-purple-800 text-[11px] font-semibold mt-2.5 block italic">Awaiting financial release</span>`)}
+              </div>
+              <div class="border-t border-dashed border-slate-200 pt-1.5 text-[10px] text-slate-400 flex justify-between items-center mono">
+                <span>Sign: <i>${pr.step2?.approved ? '✓ Stamped' : (pr.step2?.rejected ? '✗ Denied' : '--')}</i></span><span>${pr.step2?.date || 'Pending'}</span>
+              </div>
+            </div>
+          </div>
+          <div class="border-t border-slate-200 pt-2 text-[10px] text-slate-400 flex flex-col sm:flex-row justify-between gap-1">
+            <span>&bull; SOP Rule 01: Zero purchasing permitted without fully authorized Form 01 docket.</span>
+            <span>&bull; Verified with ALU-GLASS Procurement Control &bull; Page 1 of 1</span>
+          </div>
+        </div>`;
+      openModal('pr-docket-modal');
+    }
+
+    // ---------- FORM SUBMISSIONS ----------
+    async function submitMaterial(e) {
+      e.preventDefault();
+      const code = document.getElementById('mat-code').value.trim().toUpperCase();
+      try {
+        await api('POST', '/materials', {
+          code,
+          category: document.getElementById('mat-category').value,
+          name: document.getElementById('mat-name').value.trim(),
+          specs: document.getElementById('mat-specs').value.trim(),
+          uom: document.getElementById('mat-uom').value.trim().toUpperCase(),
+          current_stock: parseFloat(document.getElementById('mat-stock').value) || 0,
+          safety_stock:  parseFloat(document.getElementById('mat-safety').value) || 0,
+          reorder_point: parseFloat(document.getElementById('mat-rop').value) || 0,
+          std_cost:      parseFloat(document.getElementById('mat-cost').value) || 0,
+          supplier: document.getElementById('mat-vendor-select').value,
+          bom_link: document.getElementById('mat-bom').value.trim() || 'General Assembly',
+        });
+        closeModal('new-entry-modal');
+        e.target.reset();
+        switchGallery('materials');
+        await loadMaterials();
+        showToast('SKU Added', `${code} created.`);
+      } catch (err) { showToast('Cannot Add SKU', err.message, 'error'); }
+    }
+
+    async function submitPR(e) {
+      e.preventDefault();
+      if (!prLinesBuilder.length) {
+        showToast('No Line Items', 'Add at least one item line.', 'error');
+        return;
+      }
+      try {
+        const created = await api('POST', '/prs', {
+          department: document.getElementById('pr-department').value,
+          priority: document.getElementById('pr-priority').value,
+          required_date: document.getElementById('pr-due-date').value,
+          bom_project: document.getElementById('pr-bom-proj').value.trim(),
+          items: prLinesBuilder.map(l => ({
+            item_code: l.itemCode,
+            item_name: l.itemName,
+            item_specs: l.itemSpecs,
+            quantity: l.quantity,
+            uom: l.uom,
+            unit_rate: l.unitRate,
+          })),
+        });
+        closeModal('new-entry-modal');
+        e.target.reset();
+        prLinesBuilder = [];
+        switchGallery('prs');
+        await loadPRs();
+        showToast('PR Submitted', `${created.pr_number} routed to Step 1.`);
+      } catch (err) { showToast('Cannot Create PR', err.message, 'error'); }
+    }
+
+    async function submitSupplier(e) {
+      e.preventDefault();
+      try {
+        await api('POST', '/suppliers', {
+          id: document.getElementById('sup-id').value.trim().toUpperCase(),
+          name: document.getElementById('sup-name').value.trim(),
+          category: document.getElementById('sup-cat').value.trim(),
+          tier: document.getElementById('sup-tier').value,
+          score: parseInt(document.getElementById('sup-score').value) || 85,
+          payment_terms: document.getElementById('sup-terms').value.trim(),
+          lead_time: document.getElementById('sup-lead').value.trim(),
+          contact: document.getElementById('sup-contact').value.trim(),
+          otif: document.getElementById('sup-otif').value.trim() || null,
+        });
+        closeModal('new-entry-modal');
+        e.target.reset();
+        switchGallery('suppliers');
+        await loadSuppliers();
+        showToast('Vendor Added', 'Registered on ASL.');
+      } catch (err) { showToast('Cannot Register Vendor', err.message, 'error'); }
+    }
+
+    async function submitPO(e) {
+      e.preventDefault();
+      try {
+        await api('POST', '/orders', {
+          po_number: document.getElementById('po-num').value.trim().toUpperCase(),
+          vendor: document.getElementById('po-vendor-select').value,
+          items: document.getElementById('po-items').value.trim(),
+          amount_usd: parseFloat(document.getElementById('po-val').value) || 0,
+          due_date: document.getElementById('po-due').value,
+          status: document.getElementById('po-status').value,
+          dock_action: document.getElementById('po-action').value.trim() || 'PO dispatched to vendor.',
+        });
+        closeModal('new-entry-modal');
+        e.target.reset();
+        switchGallery('pipeline');
+        await loadPipeline();
+        showToast('PO Issued', 'Order dispatched.');
+      } catch (err) { showToast('Cannot Issue PO', err.message, 'error'); }
+    }
+
+    // ---------- DELETE ----------
+    function promptDelete(type, key) {
+      pendingDelete = { type, key };
+      document.getElementById('del-modal-title').innerText = `Delete ${key}`;
+      document.getElementById('del-modal-msg').innerText = `Remove this ${type} record immediately?`;
+      document.getElementById('del-confirm-btn').onclick = executeDelete;
+      openModal('delete-modal');
+    }
+    async function executeDelete() {
+      if (!pendingDelete) return;
+      const { type, key } = pendingDelete;
+      const path = {
+        material: `/materials/${encodeURIComponent(key)}`,
+        supplier: `/suppliers/${encodeURIComponent(key)}`,
+        po:       `/orders/${encodeURIComponent(key)}`,
+        pr:       `/prs/${encodeURIComponent(key)}`,
+      }[type];
+      try {
+        await api('DELETE', path);
+        closeModal('delete-modal');
+        await reloadAll();
+        showToast('Deleted', `${key} removed.`);
+      } catch (err) { showToast('Cannot Delete', err.message, 'error'); }
+      pendingDelete = null;
+    }
+
+    // ---------- SPEC DOCKET ----------
+    function viewMaterialDetail(code) {
+      const item = materialsData.find(m => m.code === code);
+      if (!item) return;
+      document.getElementById('spec-modal-title').innerText = item.name;
+      document.getElementById('spec-modal-subtitle').innerText = `SKU: ${item.code} | Category: ${item.categoryLabel}`;
+      document.getElementById('spec-modal-content').innerHTML = `
+        <div class="space-y-3">
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1.5">
+            <span class="font-bold text-slate-800 text-[10px] uppercase block">Technical Specifications</span>
+            <p class="text-slate-700 font-medium">${item.specs}</p>
+            <div class="pt-1.5 border-t border-slate-200 grid grid-cols-2 gap-2 text-[11px] text-slate-500">
+              <span>Tolerance: <strong class="text-slate-700">${item.details.tolerance}</strong></span>
+              <span>Packaging: <strong class="text-slate-700">${item.details.packaging}</strong></span>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-2"><span class="text-[9px] text-slate-400 uppercase block">Balance</span><span class="mono font-bold text-slate-900">${item.currentStock} ${item.uom}</span></div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-2"><span class="text-[9px] text-slate-400 uppercase block">Reorder Pt</span><span class="mono font-bold text-amber-700">${item.reorderPoint} ${item.uom}</span></div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-2"><span class="text-[9px] text-slate-400 uppercase block">Std Cost</span><span class="mono font-bold text-emerald-700">$${Number(item.stdCost).toFixed(2)}</span></div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-[11px]">
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-2"><span class="text-[9px] text-slate-400 uppercase block">Usage Rate</span><span class="font-semibold text-slate-800">${item.details.usageRate}</span></div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-2"><span class="text-[9px] text-slate-400 uppercase block">Lead Time</span><span class="font-semibold text-slate-800">${item.details.leadTime}</span></div>
+          </div>
+        </div>`;
+      openModal('spec-modal');
+    }
+
+    // ---------- NAVIGATION ----------
+    function switchGallery(tab) {
+      activeGalleryTab = tab;
+      const catW = document.getElementById('category-filter-wrapper');
+      if (catW) catW.style.display = (tab === 'materials') ? 'block' : 'none';
+      ['materials', 'prs', 'suppliers', 'pipeline', 'sop'].forEach(t => {
+        document.getElementById('gallery-' + t)?.classList.toggle('hidden', t !== tab);
+        const btn = document.getElementById('tab-' + t);
+        if (btn) {
+          btn.className = (t === tab)
+            ? 'tab-btn active-tab px-3.5 py-1.5 rounded-lg flex items-center gap-2 bg-white text-slate-900 shadow-sm shrink-0 transition whitespace-nowrap'
+            : 'tab-btn px-3.5 py-1.5 rounded-lg flex items-center gap-2 text-slate-600 hover:text-slate-900 shrink-0 transition whitespace-nowrap';
+        }
+      });
+      if (tab === 'materials') renderMaterials(materialsData);
+      if (tab === 'prs') renderPRs();
+      if (tab === 'suppliers') renderSuppliers();
+      if (tab === 'pipeline') renderPipeline();
+      if (tab === 'sop') renderSOP();
+    }
+
+    function switchEntryTab(type) {
+      ['material', 'pr', 'supplier', 'po'].forEach(t => {
+        document.getElementById('form-add-' + t)?.classList.toggle('hidden', t !== type);
+        const btn = document.getElementById('entry-tab-' + t);
+        if (btn) {
+          btn.className = (t === type)
+            ? 'px-4 py-2.5 border-b-2 border-sky-600 text-sky-700 font-semibold flex items-center gap-1.5 shrink-0 transition whitespace-nowrap'
+            : 'px-4 py-2.5 border-b-2 border-transparent text-slate-600 hover:text-slate-900 flex items-center gap-1.5 shrink-0 transition whitespace-nowrap';
+        }
+      });
+    }
+
+    function openNewEntryModal(tab = 'material') {
+      populateDropdowns();
+      switchEntryTab(tab);
+      if (tab === 'pr') {
+        prLinesBuilder = [];
+        addPRLineRow();
+      }
+      openModal('new-entry-modal');
+    }
+
+    function runCalculator() {
+      const qty = parseFloat(document.getElementById('calc-qty')?.value) || 1;
+      const price = parseFloat(document.getElementById('calc-price')?.value) || 0;
+      const discPct = parseFloat(document.getElementById('calc-discount')?.value) || 0;
+      const freight = parseFloat(document.getElementById('calc-freight')?.value) || 0;
+      const other = parseFloat(document.getElementById('calc-other')?.value) || 0;
+      const netBase = price * (1 - (discPct / 100));
+      const overhead = (freight + other) / qty;
+      const landed = netBase + overhead;
+      const setT = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+      setT('calc-res-base', `$${price.toFixed(2)} (-${discPct}%)`);
+      setT('calc-res-overhead', `+$${overhead.toFixed(3)} / unit`);
+      setT('calc-res-landed', `$${landed.toFixed(3)} / unit`);
+    }
+
+    // ---------- BOOTSTRAP ----------
+    function setDefaultDates() {
+      const nextWeek = new Date();
+      nextWeek.setDate(nextWeek.getDate() + 7);
+      const iso = nextWeek.toISOString().split('T')[0];
+      ['po-due', 'pr-due-date', 'revise-due-date'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = iso;
+      });
+    }
+
+    async function bootstrapSession() {
+      if (!AUTH_TOKEN) {
+        openModal('login-modal');
+        return;
+      }
+      try {
+        const me = await api('GET', '/me');
+        currentUser = {
+          username: me.username,
+          fullName: me.full_name,
+          role: me.role,
+          roleLabel: me.role_label,
+        };
+        applyUserProfileUI();
+        await reloadAll();
+        if (isUserAdmin(currentUser)) renderUsersTable();
+      } catch (e) {
+        AUTH_TOKEN = null;
+        sessionStorage.removeItem('alu_token');
+        openModal('login-modal');
+      }
+    }
+
+    // ---------- GLOBAL BRIDGE ----------
+    Object.assign(window, {
+      openModal, closeModal, openSidebar, closeSidebar,
+      switchGallery, switchEntryTab, openNewEntryModal,
+      filterCards, runCalculator,
+      submitMaterial, submitPR, submitSupplier, submitPO,
+      addPRLineRow, removePRLineRow, onPRLineSKUSelect, onPRLineFieldChange,
+      promptDelete, viewMaterialDetail,
+      openApprovalModal, handleDecisionChange, showUnauthorizedStep2Notice, submitPRApproval,
+      openRevisePRModal, onRevisionItemChange, submitPRRevision,
+      viewPRVoucher, convertPRToPO,
+      handleLoginSubmit, handleLogout,
+      toggleUserStatus, handleCreateUser, changeUserPassword,
+      setPRFilter, setPRSort,
+      reloadAll, bootstrapSession,
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      runCalculator();
+      setDefaultDates();
+      await bootstrapSession();
+      if (window.lucide) lucide.createIcons();
     });
   </script>
 </body>
