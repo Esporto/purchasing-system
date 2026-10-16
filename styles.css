@@ -1,0 +1,136 @@
+:root {
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+  background-color: #f8fafc;
+}
+
+.mono { font-family: var(--font-mono); }
+
+.glass-nav {
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.glass-subnav {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.card-contain {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.18s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-contain:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08), 0 4px 8px -2px rgba(15, 23, 42, 0.03);
+    border-color: #cbd5e1;
+  }
+}
+
+.pulse-amber { animation: pulse-ring-amber 2s infinite; }
+.pulse-purple { animation: pulse-ring-purple 2s infinite; }
+.pulse-emerald { animation: pulse-ring-emerald 2s infinite; }
+.pulse-rose { animation: pulse-ring-rose 2s infinite; }
+
+@keyframes pulse-ring-amber {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6); }
+  70% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+@keyframes pulse-ring-purple {
+  0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.6); }
+  70% { box-shadow: 0 0 0 6px rgba(168, 85, 247, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
+}
+@keyframes pulse-ring-emerald {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+  70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+@keyframes pulse-ring-rose {
+  0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.6); }
+  70% { box-shadow: 0 0 0 6px rgba(225, 29, 72, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.pb-safe { padding-bottom: calc(4.5rem + var(--safe-bottom)); }
+
+@page { size: A4; margin: 8mm; }
+@media print {
+  body * { visibility: hidden; }
+  #pr-docket-modal, #pr-docket-modal * { visibility: visible; }
+  #pr-docket-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+  .no-print { display: none !important; }
+  #pr-voucher-body {
+    padding: 15mm !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  #pr-docket-modal, #pr-docket-modal * { max-height: none !important; overflow: visible !important; }
+  #pr-voucher-body * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  table { page-break-inside: auto; }
+  tr, .signature-card { break-inside: avoid; }
+  thead { display: table-header-group; }
+  .signature-card { height: auto !important; min-height: 9rem; }
+  .line-clamp-2 { display: block !important; -webkit-line-clamp: unset !important; }
+}
+
+/* Form 04 GRN docket: same print behaviour as the Form 01 docket */
+@media print {
+  body * { visibility: hidden; }
+  #grn-docket-modal, #grn-docket-modal * { visibility: visible; }
+  #grn-docket-modal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+  .no-print { display: none !important; }
+  #grn-voucher-body {
+    padding: 15mm !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  #grn-docket-modal, #grn-docket-modal * { max-height: none !important; overflow: visible !important; }
+  #grn-voucher-body * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  table { page-break-inside: auto; }
+  tr, .signature-card { break-inside: avoid; }
+  thead { display: table-header-group; }
+  .signature-card { height: auto !important; min-height: 9rem; }
+  .line-clamp-2 { display: block !important; -webkit-line-clamp: unset !important; }
+}
